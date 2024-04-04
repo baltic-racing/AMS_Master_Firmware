@@ -9,6 +9,7 @@
 #include "LTC6811.h"
 #include "stdio.h"
 #include "math.h"
+#include "can.h"
 
 
 #define NUM_STACK 12						 //total slaves
@@ -61,17 +62,27 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 
 
-//CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 7};
-CAN_TxHeaderTypeDef AMS0_header;
-		AMS0_header.DLC = 8;
 
+/* {StdId, ExtId, IDE, RTR, DLC}
+ * uint32_t StdId;   Specifies the standard identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x7FF.
 
+  uint32_t ExtId;    Specifies the extended identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x1FFFFFFF.
 
+  uint32_t IDE;      Specifies the type of identifier for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_identifier_type
 
+  uint32_t RTR;      Specifies the type of frame for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_remote_transmission_request
 
-CAN_TxHeaderTypeDef AMS1_header;
-CAN_TxHeaderTypeDef AMS2_header;
-CAN_TxHeaderTypeDef AMS3_header;
+  uint32_t DLC;
+
+ */
+CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 7};
+CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 6};
+CAN_TxHeaderTypeDef AMS2_header = {0x202, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS3_header = {0x203, 0, CAN_ID_STD, CAN_RTR_DATA, 1};
 
 
 uint8_t can_cnt = 0; //can counter to adjust timings
