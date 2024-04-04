@@ -1,5 +1,5 @@
-Core/Src/bms.o: ../Core/Src/bms.c ../Core/Inc/bms.h ../Core/Inc/main.h \
- ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h \
+Core/Src/usb_otg.o: ../Core/Src/usb_otg.c ../Core/Inc/usb_otg.h \
+ ../Core/Inc/main.h ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h \
  ../Core/Inc/stm32f2xx_hal_conf.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_rcc.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_def.h \
@@ -29,9 +29,8 @@ Core/Src/bms.o: ../Core/Src/bms.c ../Core/Inc/bms.h ../Core/Inc/main.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_tim_ex.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_ll_usb.h \
- ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h \
- ../Core/Inc/LTC6811.h ../Core/Inc/can.h
-../Core/Inc/bms.h:
+ ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h
+../Core/Inc/usb_otg.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h:
 ../Core/Inc/stm32f2xx_hal_conf.h:
@@ -64,5 +63,3 @@ Core/Src/bms.o: ../Core/Src/bms.c ../Core/Inc/bms.h ../Core/Inc/main.h \
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_ll_usb.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h:
-../Core/Inc/LTC6811.h:
-../Core/Inc/can.h:

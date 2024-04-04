@@ -216,11 +216,12 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 /* USER CODE BEGIN 1 */
 
 
-void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t TxData[], uint32_t TxMailbox, uint32_t canerror)
+void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t TxData[])
 {
+	uint32_t TxMailbox;
 	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	{
-	   canerror =  HAL_CAN_GetError(hcan);
+
 	}
 }
 
@@ -228,9 +229,48 @@ void CAN_RX(CAN_HandleTypeDef hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef RxHeade
 {
 	if (HAL_CAN_GetRxMessage(&hcan, RxFifo, &RxHeader, RxData) != HAL_OK)
 	{
-	   canerror = HAL_CAN_GetError(hcan);
+	   canerror = HAL_CAN_GetError(&hcan);
 	}
 }
+
+
+/* {StdId, ExtId, IDE, RTR, DLC}
+ * uint32_t StdId;   Specifies the standard identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x7FF.
+
+  uint32_t ExtId;    Specifies the extended identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x1FFFFFFF.
+
+  uint32_t IDE;      Specifies the type of identifier for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_identifier_type
+
+  uint32_t RTR;      Specifies the type of frame for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_remote_transmission_request
+
+  uint32_t DLC;
+
+ */
+CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS2_header = {0x202, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS3_header = {0x203, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+
+uint8_t* AMS0_databytes[8], *AMS1_databytes[8], *AMS2_databytes[8], *AMS3_databytes[8];
+
+
+void CAN_100()		// CAN Messages transmitted with 100 Hz
+{
+
+	CAN_TX(hcan1, AMS0_header, AMS0_databytes[8]);
+}
+
+void CAN_10()
+{
+	CAN_TX(hcan1, AMS1_header, AMS1_databytes[8]);
+	CAN_TX(hcan1, AMS2_header, AMS2_databytes[8]);
+	CAN_TX(hcan1, AMS3_header, AMS3_databytes[8]);
+}
+
 /*
 uint32_t CAN_Error( CAN_HandleTypeDef *hcan)
 {

@@ -1,0 +1,5 @@
+../Core/Src/bms.c:74:6:HAL_TIM_PeriodElapsedCallback	3
+../Core/Src/bms.c:88:6:BMS_init	1
+../Core/Src/bms.c:93:6:BMS	3
+../Core/Src/bms.c:150:6:convertVoltage	3
+../Core/Src/bms.c:165:6:convertTemperature	5
