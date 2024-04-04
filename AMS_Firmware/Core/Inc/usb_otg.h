@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    can.h
+  * @file    usb_otg.h
   * @brief   This file contains all the function prototypes for
-  *          the can.c file
+  *          the usb_otg.c file
   ******************************************************************************
   * @attention
   *
@@ -18,8 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __CAN_H__
-#define __CAN_H__
+#ifndef __USB_OTG_H__
+#define __USB_OTG_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,16 +32,13 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern CAN_HandleTypeDef hcan1;
-
-extern CAN_HandleTypeDef hcan2;
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_CAN1_Init(void);
-void MX_CAN2_Init(void);
+void MX_USB_OTG_FS_PCD_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -51,5 +48,5 @@ void MX_CAN2_Init(void);
 }
 #endif
 
-#endif /* __CAN_H__ */
+#endif /* __USB_OTG_H__ */
 
