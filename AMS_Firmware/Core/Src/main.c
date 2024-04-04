@@ -133,8 +133,6 @@ int main(void)
 
 
 
-
-
   	  TxHeader.DLC = 8;
   	  TxHeader.IDE = CAN_ID_STD;
   	  TxHeader.RTR = CAN_RTR_DATA;
@@ -434,7 +432,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 72;
+  htim2.Init.Prescaler = 48;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

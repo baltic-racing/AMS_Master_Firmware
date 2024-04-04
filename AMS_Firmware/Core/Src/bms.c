@@ -61,6 +61,39 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 
 
+//CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 7};
+CAN_TxHeaderTypeDef AMS0_header;
+		AMS0_header.DLC = 8;
+
+
+
+
+
+CAN_TxHeaderTypeDef AMS1_header;
+CAN_TxHeaderTypeDef AMS2_header;
+CAN_TxHeaderTypeDef AMS3_header;
+
+
+uint8_t can_cnt = 0; //can counter to adjust timings
+
+/* 1 ms interrupt
+ * HLCK 96 MHz
+ * APB1 48 MHz
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	switch(can_cnt)
+	{
+		case 10: CAN_100(); break; //100 Hz
+		case 100: CAN_10(); break; //10 Hz
+	}
+
+	can_cnt++;
+
+}
+
+
+
 void BMS_init()
 {
 	LTC6811_initialize();
