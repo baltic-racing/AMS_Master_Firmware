@@ -1,0 +1,5 @@
+../Core/Src/bms.c:74:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/bms.c:88:6:BMS_init	8	static
+../Core/Src/bms.c:93:6:BMS	16	static
+../Core/Src/bms.c:150:6:convertVoltage	1184	static
+../Core/Src/bms.c:171:6:convertTemperature	48	static

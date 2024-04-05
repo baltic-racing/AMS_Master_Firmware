@@ -38,8 +38,7 @@
 #define ACCU_CUR_CHG_MAX 139 * 2 * 1000 //in [mA]
 
 */
-uint16_t cellVoltageMin = 42000, cellVoltageMax = 30000;
-int16_t cellTemperatureMin = 60, cellTemperatureMax = -10;
+
 
 #define FAIL_TIMEOUT_ISA (1 << 0)
 #define FAIL_TIMEOUT_LTC (1 << 1)
@@ -61,7 +60,12 @@ int16_t cellTemperatures[NUM_CELLS] = {0}; //cell temperatures in 0.1[°C]
 uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO1..3 can be used for measurement
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 
+uint16_t cell_max = cellVoltages[0];
+uint16_t cell_min = cellVoltages[0];
+uint16_t temp_max = slaveGPIOs[0];
+uint16_t temp_min = slaveGPIOs[0];
 
+uint8_t AMS2_databytes[8];
 
 
 
@@ -153,8 +157,12 @@ void convertVoltage()
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
+
 		for(uint8_t i = 0; i < 12; i++)
 		{
+			if(cellVoltages[i + k * 12] > cell_max) cell_max = cellVoltages[i + k * 12];
+			else if(cellVoltages[i + k * 12] < cell_min) cell_min = cellVoltages[i + k * 12];
+
 			voltage[i + k * 12] = (double)cellVoltages[i + k * 12]/10000;
 			printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
 		}
@@ -165,17 +173,38 @@ void convertVoltage()
 void convertTemperature(uint8_t selTemp)
 {
 	static double calc_temp[NUM_STACK][12];
-	static double convert_R[3];
+	//static double convert_R[3];
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 		for(uint8_t i = 0; i < 3; i++)
 		{
+
 			convert_R[i] = (slaveGPIOs[i + k * 6] * 100000)/(slaveGPIOs[5 + k * 6] - slaveGPIOs[i + k * 6]);
 			calc_temp[k][i + selTemp * 3] = 1/((1/298.15)-(log(10000/convert_R[i])/3435)) - 273.15;
 		}
 	}
 
+
+
+
+
+	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
+	for(uint8_t k = 0; k < NUM_STACK; k++)
+	{
+
+			for(uint8_t j = 0; j < 3; j++)
+			{
+				cell_Temp[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * 6]);
+			}
+	}
+
+	if(selTemp == 3)
+	{
+		//verarbeitung
+	}
+
+/*
 	if(selTemp == 3)
 	{
 		for(uint8_t k = 0; k < NUM_STACK; k++)
@@ -194,6 +223,14 @@ void convertTemperature(uint8_t selTemp)
 				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 8, calc_temp[k][11]);
 		}
 	}
+	*/
+
+}
+
+uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)
+{
+	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+	return 1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15;
 
 }
 
