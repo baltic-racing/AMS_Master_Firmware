@@ -174,12 +174,20 @@ void convertVoltage()
 
 }
 
+uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)
+{
+	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+	return 1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15;
+
+}
+
 void convertTemperature(uint8_t selTemp)
 {
 
+	/*
 	uint16_t temp_max = slaveGPIOs[0];
 	uint16_t temp_min = slaveGPIOs[0];
-
+*/
 
 	//min und max Werte noch finden
 
@@ -187,7 +195,6 @@ void convertTemperature(uint8_t selTemp)
 	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
-
 			for(uint8_t j = 0; j < 3; j++)
 			{
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * 6]);
@@ -222,11 +229,5 @@ void convertTemperature(uint8_t selTemp)
 
 }
 
-uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)
-{
-	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-	return 1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15;
-
-}
 
 
