@@ -264,7 +264,7 @@ void CAN_100()		// CAN Messages transmitted with 100 Hz
 	CAN_TX(hcan1, AMS0_header, AMS0_databytes[8]);
 }
 
-void CAN_10()
+void CAN_10()		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, AMS1_databytes[8]);
 	CAN_TX(hcan1, AMS2_header, AMS2_databytes[8]);

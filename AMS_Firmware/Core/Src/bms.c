@@ -77,10 +77,21 @@ uint8_t can_cnt = 0; //can counter to adjust timings
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+
 	switch(can_cnt)
 	{
-		case 10: CAN_100(); break; //100 Hz
-		case 100: CAN_10(); break; //10 Hz
+		case 10 + last10:
+		{
+			CAN_100();
+			last10 =can_cnt;
+			break; //100 Hz
+		}
+		case 100:
+		{
+			CAN_10();
+			can_cnt = 0;
+			break; //10 Hz
+		}
 	}
 
 	can_cnt++;
