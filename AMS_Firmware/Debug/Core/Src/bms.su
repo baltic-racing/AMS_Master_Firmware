@@ -3,4 +3,4 @@
 ../Core/Src/bms.c:100:6:BMS	16	static
 ../Core/Src/bms.c:156:6:convertVoltage	1184	static
 ../Core/Src/bms.c:177:10:calculateTemperature	24	static
-../Core/Src/bms.c:185:6:convertTemperature	40	static
+../Core/Src/bms.c:184:6:convertTemperature	40	static

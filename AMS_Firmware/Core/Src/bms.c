@@ -61,7 +61,7 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 uint16_t temperature[NUM_CELLS] = {0};
 
-uint8_t AMS2_databytes[8];
+uint8_t* AMS2_databytes[8];
 
 
 
@@ -77,10 +77,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	can_cnt++;
 
-	if (can_cnt == (last10 + 10) )
+	if (can_cnt == (last10 + 10))
 		{
 			CAN_100();				//CAN Messages transmitted with 100 Hz
-			last10 =can_cnt;
+			last10 = can_cnt;
 		}
 
 	if (can_cnt == 100)
