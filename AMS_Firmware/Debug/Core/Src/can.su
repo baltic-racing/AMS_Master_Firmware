@@ -5,4 +5,4 @@
 ../Core/Src/can.c:219:6:CAN_TX	16	static
 ../Core/Src/can.c:228:6:CAN_RX	8	static
 ../Core/Src/can.c:261:6:CAN_100	80	static
-../Core/Src/can.c:267:6:CAN_10	80	static
+../Core/Src/can.c:267:6:CAN_10	88	static

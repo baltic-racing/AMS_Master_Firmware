@@ -79,13 +79,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	if (can_cnt == (last10 + 10) )
 		{
-			CAN_100();
+			CAN_100();				//CAN Messages transmitted with 100 Hz
 			last10 =can_cnt;
 		}
 
 	if (can_cnt == 100)
 		{
-			CAN_10();
+			CAN_10(AMS2_databytes[8]);				//CAN Messages transmitted with 10 Hz
 			can_cnt = 0;
 		}
 }
