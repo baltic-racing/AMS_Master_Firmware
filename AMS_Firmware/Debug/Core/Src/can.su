@@ -2,7 +2,7 @@
 ../Core/Src/can.c:63:6:MX_CAN2_Init	8	static
 ../Core/Src/can.c:97:6:HAL_CAN_MspInit	56	static
 ../Core/Src/can.c:164:6:HAL_CAN_MspDeInit	16	static
-../Core/Src/can.c:219:6:CAN_TX	16	static
-../Core/Src/can.c:228:6:CAN_RX	8	static
-../Core/Src/can.c:261:6:CAN_100	80	static
-../Core/Src/can.c:267:6:CAN_10	88	static
+../Core/Src/can.c:241:6:CAN_TX	16	static
+../Core/Src/can.c:250:6:CAN_RX	48	static
+../Core/Src/can.c:272:6:CAN_100	80	static
+../Core/Src/can.c:278:6:CAN_10	88	static

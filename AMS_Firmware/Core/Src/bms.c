@@ -90,6 +90,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 }
 
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+   {
+    CAN_RX(hcan1);
+   }
 
 
 void BMS_init()

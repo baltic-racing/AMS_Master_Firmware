@@ -70,18 +70,7 @@ int datacheck = 0;
 uint8_t sc_error = 0;
 uint8_t sc_closed =0;
 
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-   {
-     if (HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
-     {
-       Error_Handler();
-     }
 
-     if ((RxHeader.StdId == 0x500))
-     {
-   	  datacheck = 1;
-     }
-   }
 
 /* USER CODE END 0 */
 
