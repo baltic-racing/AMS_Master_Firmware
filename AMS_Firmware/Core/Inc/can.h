@@ -44,7 +44,8 @@ void MX_CAN1_Init(void);
 void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t TxData[]);
+void CAN_RX(CAN_HandleTypeDef hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef RxHeader, uint8_t RxData[], uint32_t canerror);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
