@@ -59,11 +59,7 @@ uint16_t cellVoltages[NUM_CELLS] = {0};	//cell voltages in 0.1[mV]
 int16_t cellTemperatures[NUM_CELLS] = {0}; //cell temperatures in 0.1[°C]
 uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO1..3 can be used for measurement
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
-
-uint16_t cell_max = cellVoltages[0];
-uint16_t cell_min = cellVoltages[0];
-uint16_t temp_max = slaveGPIOs[0];
-uint16_t temp_min = slaveGPIOs[0];
+uint16_t temperature[NUM_CELLS] = {0};
 
 uint8_t AMS2_databytes[8];
 
@@ -139,7 +135,6 @@ void BMS()
 	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);
 	HAL_Delay(3);
 
-
 	convertVoltage();
 
 	convertTemperature(selTemp);
@@ -165,6 +160,8 @@ void BMS()
 void convertVoltage()
 {
 	double voltage[NUM_CELLS];
+	uint16_t cell_max = cellVoltages[0];
+	uint16_t cell_min = cellVoltages[0];
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
@@ -183,21 +180,12 @@ void convertVoltage()
 
 void convertTemperature(uint8_t selTemp)
 {
-	static double calc_temp[NUM_STACK][12];
-	//static double convert_R[3];
 
-	for(uint8_t k = 0; k < NUM_STACK; k++)
-	{
-		for(uint8_t i = 0; i < 3; i++)
-		{
-
-			convert_R[i] = (slaveGPIOs[i + k * 6] * 100000)/(slaveGPIOs[5 + k * 6] - slaveGPIOs[i + k * 6]);
-			calc_temp[k][i + selTemp * 3] = 1/((1/298.15)-(log(10000/convert_R[i])/3435)) - 273.15;
-		}
-	}
+	uint16_t temp_max = slaveGPIOs[0];
+	uint16_t temp_min = slaveGPIOs[0];
 
 
-
+	//min und max Werte noch finden
 
 
 	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
@@ -206,7 +194,7 @@ void convertTemperature(uint8_t selTemp)
 
 			for(uint8_t j = 0; j < 3; j++)
 			{
-				cell_Temp[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * 6]);
+				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * 6]);
 			}
 	}
 
