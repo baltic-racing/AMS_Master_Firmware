@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bms.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -109,6 +109,8 @@ int main(void)
   MX_CAN2_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
+  // Start timer
+  HAL_TIM_Base_Start_IT(&htim2);
   HAL_CAN_Start(&hcan1);
 
 
@@ -153,7 +155,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  	  HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox);
+	  	 // HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox);
 	  	  sc_closed =HAL_GPIO_ReadPin(GPIOC,AIR_N_INT_Pin);
 	  	  if (sc_closed ==0 && TxData[0] == 1)
 	  	  {

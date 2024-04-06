@@ -66,14 +66,14 @@ uint8_t* AMS2_databytes[8];
 
 
 uint8_t can_cnt = 0; //can counter to adjust timings
-
+uint8_t last10 =0;
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	uint8_t last10 =0;
+
 
 	can_cnt++;
 
@@ -87,6 +87,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			CAN_10(AMS2_databytes[8]);				//CAN Messages transmitted with 10 Hz
 			can_cnt = 0;
+			last10 = 0;
 		}
 }
 
