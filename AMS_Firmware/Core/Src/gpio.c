@@ -22,14 +22,51 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+uint8_t error;
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
 /* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
+void open_sdc()
+{
+	HAL_GPIO_WritePin(SC_OPEN_GPIO_Port, SC_OPEN_Pin, GPIO_PIN_RESET);
 
+}
+
+void close_sdc()
+{
+	HAL_GPIO_WritePin(SC_OPEN_GPIO_Port, SC_OPEN_Pin, GPIO_PIN_SET);
+
+}
+
+uint8_t read_sdc()
+{
+	// returns 1 if closed
+	// returns 0 if open
+	return HAL_GPIO_ReadPin(GPIOC,AIR_N_INT_Pin);
+}
+
+void AIR_Logic(uint8_t ts_on, uint8_t ts_ready, uint8_t ts_start)
+{
+
+	 if (error == 0)
+	 {
+		 if (ts_on>= 1)
+		 {
+
+			 HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+			 ts_ready = 1;
+
+		 }
+
+		 if (ts_start>= 1)
+		 {
+			 HAL_GPIO_WritePin(GPIOC,AIR_P_SW_Pin, GPIO_PIN_SET);
+		 }
+	}
+}
 /* USER CODE END 1 */
 
 /** Configure pins as

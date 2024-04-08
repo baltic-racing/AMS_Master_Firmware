@@ -88,6 +88,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			CAN_10(AMS2_databytes[8]);				//CAN Messages transmitted with 10 Hz
 			can_cnt = 0;
 			last10 = 0;
+			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
+			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		}
 }
 
@@ -102,14 +104,14 @@ void BMS_init()
 	LTC6811_initialize();
 }
 
-void BMS()
+void BMS()		// Battery Management System function for main loop.
 {
 	uint8_t pec = 0;
 	static uint8_t selTemp = 0;
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
-		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);
+		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00;
 		cfg[i][2] = 0x00;
 		cfg[i][3] = 0x00;
@@ -117,23 +119,23 @@ void BMS()
 		cfg[i][5] = 0x00;
 	}
 
-	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);
+	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
 
-	//wakeup_idle();
+	//wakeup_idle();									// read config
 	//LTC6811_rdcfg();
 	//HAL_Delay(3);
 
-	LTC6811_adcv();
+	LTC6811_adcv();										// measure voltages
 	HAL_Delay(3);
 
-	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);
+	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);	//read voltages
 	HAL_Delay(3);
 
-	LTC6811_adax();
+	LTC6811_adax();										// measure 3 celltemp
 	HAL_Delay(3);
 
-	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);
+	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
 
 	convertVoltage();
@@ -149,7 +151,7 @@ void BMS()
 	LTC6811_rdstat();
 */
 
-	if (selTemp < 3)
+	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
 		selTemp++;
 	else
 		selTemp = 0;
@@ -158,7 +160,7 @@ void BMS()
 
 }
 
-void convertVoltage()
+void convertVoltage()		//convert and sort Voltages
 {
 	double voltage[NUM_CELLS];
 	uint16_t cell_max = cellVoltages[0];
@@ -179,14 +181,14 @@ void convertVoltage()
 
 }
 
-uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)
+uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
 	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
 	return 1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15;
 
 }
 
-void convertTemperature(uint8_t selTemp)
+void convertTemperature(uint8_t selTemp)		// sort temp
 {
 
 	/*

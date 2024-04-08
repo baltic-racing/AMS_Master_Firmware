@@ -20,8 +20,90 @@
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
 
+
 /* USER CODE BEGIN 0 */
 
+#include "gpio.h"
+
+uint8_t AMS0_databytes[8], AMS3_databytes[8], AMS1_databytes[8], DIC0_databytes[8] ;
+
+
+/* {StdId, ExtId, IDE, RTR, DLC}
+ * uint32_t StdId;   Specifies the standard identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x7FF.
+
+  uint32_t ExtId;    Specifies the extended identifier.
+                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x1FFFFFFF.
+
+  uint32_t IDE;      Specifies the type of identifier for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_identifier_type
+
+  uint32_t RTR;      Specifies the type of frame for the message that will be transmitted.
+                          This parameter can be a value of @ref CAN_remote_transmission_request
+
+  uint32_t DLC;
+
+ */
+// Header from DBC
+CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS2_header = {0x202, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS3_header = {0x203, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+
+
+uint32_t RxFifo;
+
+	// transmit CAN Message
+void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxData)
+{
+	uint32_t TxMailbox;
+	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	{
+		CAN_TX(hcan, TxHeader, TxData);		//retry when failed
+	}
+}
+
+	// receive CAN Message
+void CAN_RX(CAN_HandleTypeDef hcan)
+{
+
+	CAN_RxHeaderTypeDef RxHeader;
+	uint8_t RxData[8];
+
+
+	if (HAL_CAN_GetRxMessage(&hcan, RxFifo, &RxHeader, RxData) != HAL_OK)
+	{
+
+	}
+
+	if( RxHeader.StdId == 0x500)
+	{
+
+		DIC0_databytes[8] = RxData[8];
+
+		AIR_Logic(DIC0_databytes[0], AMS3_databytes[0], DIC0_databytes[1]);
+
+	}
+
+	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
+
+}
+
+
+
+
+void CAN_100()		// CAN Messages transmitted with 100 Hz
+{
+
+	CAN_TX(hcan1, AMS0_header, AMS0_databytes);
+}
+
+void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
+{
+	CAN_TX(hcan1, AMS1_header, AMS1_databytes);
+	CAN_TX(hcan1, AMS2_header, bms_data);
+	CAN_TX(hcan1, AMS3_header, AMS3_databytes);
+}
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -32,6 +114,15 @@ void MX_CAN1_Init(void)
 {
 
   /* USER CODE BEGIN CAN1_Init 0 */
+AMS3_databytes[0]=0;
+AMS3_databytes[1]=0;
+AMS3_databytes[2]=0;
+AMS3_databytes[3]=0;
+AMS3_databytes[4]=0;
+AMS3_databytes[5]=0;
+AMS3_databytes[6]=0;
+AMS3_databytes[7]=0;
+
 
   /* USER CODE END CAN1_Init 0 */
 
@@ -56,6 +147,10 @@ void MX_CAN1_Init(void)
   }
   /* USER CODE BEGIN CAN1_Init 2 */
 
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+    {
+  	  Error_Handler();
+    }
   /* USER CODE END CAN1_Init 2 */
 
 }
@@ -217,75 +312,6 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
-/* {StdId, ExtId, IDE, RTR, DLC}
- * uint32_t StdId;   Specifies the standard identifier.
-                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x7FF.
-
-  uint32_t ExtId;    Specifies the extended identifier.
-                          This parameter must be a number between Min_Data = 0 and Max_Data = 0x1FFFFFFF.
-
-  uint32_t IDE;      Specifies the type of identifier for the message that will be transmitted.
-                          This parameter can be a value of @ref CAN_identifier_type
-
-  uint32_t RTR;      Specifies the type of frame for the message that will be transmitted.
-                          This parameter can be a value of @ref CAN_remote_transmission_request
-
-  uint32_t DLC;
-
- */
-CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-CAN_TxHeaderTypeDef AMS2_header = {0x202, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-CAN_TxHeaderTypeDef AMS3_header = {0x203, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-
-uint8_t* AMS0_databytes[8], *AMS1_databytes[8], *AMS3_databytes[8], DIC0_databytes[8] ;
-uint32_t RxFifo;
-
-void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t TxData[])
-{
-	uint32_t TxMailbox;
-	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	{
-		CAN_TX(hcan, TxHeader, TxData);		//retry when failed
-	}
-}
-
-void CAN_RX(CAN_HandleTypeDef hcan)
-{
-
-	CAN_RxHeaderTypeDef RxHeader;
-	uint8_t RxData[8];
-	if (HAL_CAN_GetRxMessage(&hcan, RxFifo, &RxHeader, RxData) != HAL_OK)
-	{
-
-	}
-
-	if( RxHeader.StdId == 0x500)
-	{
-		DIC0_databytes[8] = RxData[8];
-	}
-
-	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
-
-}
-
-
-
-
-void CAN_100()		// CAN Messages transmitted with 100 Hz
-{
-
-	CAN_TX(hcan1, AMS0_header, AMS0_databytes[8]);
-}
-
-void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
-{
-	CAN_TX(hcan1, AMS1_header, AMS1_databytes[8]);
-	CAN_TX(hcan1, AMS2_header, &bms_data[8]);
-	CAN_TX(hcan1, AMS3_header, AMS3_databytes[8]);
-}
-
-
 
 /*
 uint32_t CAN_Error( CAN_HandleTypeDef *hcan)

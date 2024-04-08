@@ -1,7 +1,7 @@
 ../Core/Src/bms.c:74:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/bms.c:94:6:HAL_CAN_RxFifo0MsgPendingCallback	56	static
-../Core/Src/bms.c:100:6:BMS_init	8	static
-../Core/Src/bms.c:105:6:BMS	16	static
-../Core/Src/bms.c:161:6:convertVoltage	1184	static
-../Core/Src/bms.c:182:10:calculateTemperature	24	static
-../Core/Src/bms.c:189:6:convertTemperature	40	static
+../Core/Src/bms.c:96:6:HAL_CAN_RxFifo0MsgPendingCallback	56	static
+../Core/Src/bms.c:102:6:BMS_init	8	static
+../Core/Src/bms.c:107:6:BMS	16	static
+../Core/Src/bms.c:163:6:convertVoltage	1184	static
+../Core/Src/bms.c:184:10:calculateTemperature	24	static
+../Core/Src/bms.c:191:6:convertTemperature	40	static

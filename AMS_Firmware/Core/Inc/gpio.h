@@ -39,7 +39,10 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void open_sdc(void);
+void close_sdc(void);
+uint8_t read_sdc(void);
+void AIR_Logic(uint8_t ts_on, uint8_t ts_ready, uint8_t ts_start);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -58,17 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-CAN_RxHeaderTypeDef   RxHeader;
-CAN_TxHeaderTypeDef   TxHeader;
 
-uint8_t TxData[8];
-uint8_t RxData[8];
-
-uint32_t TxMailbox;
-
-int datacheck = 0;
-uint8_t sc_error = 0;
-uint8_t sc_closed =0;
 
 
 
@@ -112,36 +102,15 @@ int main(void)
   // Start timer
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_CAN_Start(&hcan1);
+  BMS_init();
 
 
 
 
 
-  	  TxHeader.DLC = 8;
-  	  TxHeader.IDE = CAN_ID_STD;
-  	  TxHeader.RTR = CAN_RTR_DATA;
-  	  TxHeader.StdId = 0x203;
 
 
 
-
-/*
-   	uint8_t					RxData[8];
-   	uint8_t					TxData[8];
-   	uint32_t              	TxMailbox;
-   	uint32_t				datacheck;
-   	*/
-   //	uint32_t now = 0, last_blink = 0, last_tx = 0, error =0, last_rx =0, datacheck =0;
-
-
-   	TxData[0]= 0;
-   	TxData[1]= 0xFF;
-   	TxData[2]= 0xFF;
-   	TxData[3]= 0xFF;
-   	TxData[4]= 0xFF;
-   	TxData[5]= 0xFF;
-   	TxData[6]= 0xFF;
-   	TxData[7]= 0xFF;
 
     if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
     {
@@ -155,71 +124,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  	 // HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox);
-	  	  sc_closed =HAL_GPIO_ReadPin(GPIOC,AIR_N_INT_Pin);
-	  	  if (sc_closed ==0 && TxData[0] == 1)
-	  	  {
-	  		  sc_error =1;
-	  		 HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-	  		 HAL_GPIO_WritePin(GPIOC,AIR_P_SW_Pin, GPIO_PIN_RESET);
-	  		 TxData[0]= 0;
-	  	  }
-	  	 // HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData);
-
-	  	 if (datacheck)
-	  	{
-	  	 HAL_GPIO_TogglePin(GPIOC, LED_RD_Pin);
-	  	 datacheck =0;
-
-			 if (sc_error == 0)
-			 {
-				 if (RxData[0]>= 1)
-				 {
-
-					 HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
-					 TxData[0] = 1;
-
-				 }
-
-				 if (RxData[1]>= 1)
-				 {
-					 HAL_GPIO_WritePin(GPIOC,AIR_P_SW_Pin, GPIO_PIN_SET);
-				 }
-			}
-	  	}
-	  	 HAL_Delay(100);
-	  //now = HAL_GetTick();
-
-	 /* if(now-last_rx >= 20) {
-		  if (HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
-		   {
-			  error= HAL_CAN_GetError(&hcan1);
-		    // Error_Handler();
-		   }
-
-		   if ((RxHeader.StdId == 0x203))
-		   {
-		 	  datacheck = 1;
-		   }
-		   last_rx= HAL_GetTick();
-	  }
-*/
-	 // if (now - last_tx >= 100) {
-	 //HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox);
-		 // uint32_t              	TxMailbox;
-	// if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	// {
-	//	error = HAL_CAN_GetError(&hcan1);
-	   // Error_Handler ();
-
-	// }
-
-
-
-	 HAL_GPIO_TogglePin(GPIOA, WDI_Pin);
-	 HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);
-	//  }
-
+	 BMS();
 
   }
 

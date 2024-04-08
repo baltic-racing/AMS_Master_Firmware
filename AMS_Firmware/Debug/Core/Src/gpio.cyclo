@@ -1,1 +1,5 @@
-../Core/Src/gpio.c:42:6:MX_GPIO_Init	1
+../Core/Src/gpio.c:32:6:open_sdc	1
+../Core/Src/gpio.c:38:6:close_sdc	1
+../Core/Src/gpio.c:44:9:read_sdc	1
+../Core/Src/gpio.c:51:6:AIR_Logic	4
+../Core/Src/gpio.c:79:6:MX_GPIO_Init	1
