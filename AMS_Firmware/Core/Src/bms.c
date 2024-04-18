@@ -8,11 +8,12 @@
 #include "bms.h"
 #include "LTC6811.h"
 #include "stdio.h"
+#include "stdlib.h"
 #include "math.h"
 #include "can.h"
 
 
-#define NUM_STACK 12						 //total slaves
+#define NUM_STACK 1						 //total slaves
 #define NUM_CELLS_STACK 12					 //Cells per stack
 #define NUM_GPIO_STACK 6					 //GPIOs per slave
 #define NUM_CELLS NUM_CELLS_STACK *NUM_STACK //Cells per accu container
@@ -89,7 +90,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			can_cnt = 0;
 			last10 = 0;
 			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
-			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
+			//HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		}
 }
 
