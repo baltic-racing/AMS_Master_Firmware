@@ -182,10 +182,18 @@ void convertVoltage()		//convert and sort Voltages
 
 }
 
+/*
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
 	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-	return 1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15;
+	return(1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15);
+
+}
+*/
+uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
+{
+	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+	return 1.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273.15;
 
 }
 
@@ -205,13 +213,19 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 	{
 			for(uint8_t j = 0; j < 3; j++)
 			{
-				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * 6]);
+				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 			}
 	}
 
 	if(selTemp == 3)
 	{
-		//verarbeitung
+		for(uint8_t k = 0; k < NUM_STACK; k++)
+		{
+			for(uint8_t i = 0; i < NUM_CELLS; i++)
+			{
+				printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
+			}
+		}
 	}
 
 /*
@@ -236,6 +250,5 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 	*/
 
 }
-
 
 

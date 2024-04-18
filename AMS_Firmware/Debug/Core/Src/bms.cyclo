@@ -3,5 +3,5 @@
 ../Core/Src/bms.c:103:6:BMS_init	1
 ../Core/Src/bms.c:108:6:BMS	3
 ../Core/Src/bms.c:164:6:convertVoltage	5
-../Core/Src/bms.c:185:10:calculateTemperature	1
-../Core/Src/bms.c:192:6:convertTemperature	3
+../Core/Src/bms.c:193:10:calculateTemperature	1
+../Core/Src/bms.c:200:6:convertTemperature	6
