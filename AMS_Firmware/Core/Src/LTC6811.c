@@ -346,6 +346,78 @@ void LTC6811_rdaux_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
     }
 }
 
+
+
+int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[], uint8_t r_statb[][6])
+{
+  const uint8_t BYTES_IN_REG = 8;
+
+  uint8_t cmd[4];
+  uint8_t *rx_data;
+  int8_t pec_error = 0;
+  uint16_t data_pec;
+  uint16_t received_pec;
+  rx_data = (uint8_t *)malloc((8 * total_ic) * sizeof(uint8_t));
+  //1
+  cmd[0] = 0x00;
+  cmd[1] = 0x12;
+
+  //2
+  wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
+  //3
+  for (int current_ic = 0; current_ic < total_ic; current_ic++)
+  {
+    cmd[0] = 0x80 + (current_ic << 3); //Setting address
+    data_pec = pec15_calc(2, cmd);
+    cmd[2] = (uint8_t)(data_pec >> 8);
+    cmd[3] = (uint8_t)(data_pec);
+    HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+    spi_write_read(cmd, 4, &rx_data[current_ic * 8], 8);
+    HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+  }
+
+  for (uint8_t current_ic = 0; current_ic < total_ic; current_ic++) //executes for each LTC6804 in the stack
+  {
+	  uint8_t i =0;
+	  /*
+	  for (uint8_t byte = 2; byte < 5; byte++)
+	  {
+		  for (uint8_t bit = 0; bit < 8; bit+=2)
+		  {
+			  OV_flag[current_ic] |= (((rx_data[(current_ic * BYTES_IN_REG)+ byte])>>(1 + bit))&1)<<i;
+			  UV_flag[current_ic] |= (((rx_data[(current_ic * BYTES_IN_REG)+ byte])>>(bit))&1)<<i;
+			  i++;
+		  }
+	  }
+*/
+
+    //4.a
+    for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
+    {
+      r_statb[current_ic][current_byte] = rx_data[current_byte + (current_ic * BYTES_IN_REG)];
+    }
+
+    for (uint8_t byte = 2; byte < 5; byte++)
+   	  {
+   		  for (uint8_t bit = 0; bit < 8; bit+=2)
+   		  {
+   			  OV_flag[current_ic] |= ((r_statb[current_ic][byte]>>(bit +1))&1)<<i;
+   			  UV_flag[current_ic] |= (((r_statb[current_ic][byte])>>(bit))&1)<<i;
+   			  i++;
+   		  }
+   	  }
+    //4.b
+    received_pec = (r_statb[current_ic][6] << 8) + r_statb[current_ic][7];
+    data_pec = pec15_calc(6, &r_statb[current_ic][0]);
+    if (received_pec != data_pec)
+    {
+      pec_error = -1;
+    }
+  }
+  free(rx_data);
+  //5
+  return (pec_error);
+}
 /*
 void LTC6811_adstat()
 {

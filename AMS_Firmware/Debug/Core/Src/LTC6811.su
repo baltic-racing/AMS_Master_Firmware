@@ -10,4 +10,5 @@
 ../Core/Src/LTC6811.c:255:6:LTC6811_rdcv_reg	24	static
 ../Core/Src/LTC6811.c:282:8:LTC6811_rdaux	40	static
 ../Core/Src/LTC6811.c:324:6:LTC6811_rdaux_reg	24	static
-../Core/Src/LTC6811.c:396:10:pec15_calc	32	static
+../Core/Src/LTC6811.c:351:8:LTC6811_rdstatb	56	static
+../Core/Src/LTC6811.c:468:10:pec15_calc	32	static

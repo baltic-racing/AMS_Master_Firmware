@@ -114,7 +114,7 @@ void LTC6811_adax(void);
 void LTC6811_cvst(void);
 void LTC6811_axst(void);
 void LTC6811_adstat(void);
-void LTC6811_rdstat(void);
+int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[], uint8_t r_statb[][6]);
 uint8_t LTC6811_rdcv(uint8_t reg, uint8_t total_ic, uint16_t cell_codes[][12]);
 void LTC6811_rdcv_reg(uint8_t reg, uint8_t nIC, uint8_t *data);
 int8_t LTC6811_rdaux(uint8_t reg, uint8_t nIC, uint16_t aux_codes[][6]);
