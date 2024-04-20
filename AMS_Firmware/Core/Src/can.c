@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
 
-
 /* USER CODE BEGIN 0 */
 
 #include "gpio.h"

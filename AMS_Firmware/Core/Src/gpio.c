@@ -89,9 +89,7 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, LED_GN_Pin|LED_RD_Pin|AIR_P_SW_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOC, LED_YW_Pin|AIR_P_SW_Pin, GPIO_PIN_RESET);
-  //HAL_GPIO_WritePin(GPIOC, LED_GN_Pin|LED_YW_Pin|LED_RD_Pin|AIR_P_SW_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, LED_GN_Pin|LED_YW_Pin|LED_RD_Pin|AIR_P_SW_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, WDI_Pin|SPI3_CS_Pin, GPIO_PIN_RESET);
