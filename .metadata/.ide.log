@@ -278,3 +278,5 @@
 2024-04-22 14:16:19,126 [INFO] WebApp:442 - Direct internet connection detected
 2024-04-22 14:16:19,388 [INFO] WebApp:192 - Starting web application
 2024-04-22 14:16:19,388 [INFO] WebApp:544 - Web application path used C:\ST\STM32CubeIDE_1.15.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.11.0.202403141607\db\plugins\mcufinder\reactClient1\index.html
+2024-04-22 14:21:55,204 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
+2024-04-22 14:21:55,204 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
