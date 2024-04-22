@@ -1,70 +1,14 @@
-13:50:06 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38468	    564	   3604	  42636	   a68c	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-13:50:13 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38468	    564	   3604	  42636	   a68c	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-13:51:27 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
-arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+14:20:15 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+make -j4 all 
+arm-none-eabi-gcc "../Core/Src/LTC6811.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/LTC6811.d" -MT"Core/Src/LTC6811.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/LTC6811.o"
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\racin\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: AMS_Firmware.elf
  
 arm-none-eabi-size  AMS_Firmware.elf 
 arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
+  38528	    564	   3604	  42696	   a6c8	AMS_Firmware.elf
 Finished building: default.size.stdout
  
 Finished building: AMS_Firmware.list
- 
-13:52:53 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
-arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: AMS_Firmware.elf
- 
-arm-none-eabi-size  AMS_Firmware.elf 
-arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
-   text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-Finished building: AMS_Firmware.list
- 
-13:56:30 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-14:01:11 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-14:04:24 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
-Finished building: default.size.stdout
- 
-14:07:59 **** Incremental Build of configuration Debug for project AMS_Firmware ****
-make -j12 all 
-arm-none-eabi-size  AMS_Firmware.elf 
-   text	   data	    bss	    dec	    hex	filename
-  38476	    564	   3604	  42644	   a694	AMS_Firmware.elf
-Finished building: default.size.stdout
  

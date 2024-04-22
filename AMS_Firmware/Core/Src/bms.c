@@ -154,9 +154,14 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	HAL_Delay(3);
 
+	LTC6811_clrstat();
+	HAL_Delay(3);
+
 	convertVoltage();
 
 	convertTemperature(selTemp);
+
+
 
 /*
 	wakeup_idle();

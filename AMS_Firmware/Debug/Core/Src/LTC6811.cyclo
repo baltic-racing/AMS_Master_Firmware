@@ -1,5 +1,5 @@
-../Core/Inc/LTC6811.h:142:20:spi_write_array	1
-../Core/Inc/LTC6811.h:155:20:spi_write_read	1
+../Core/Inc/LTC6811.h:143:20:spi_write_array	1
+../Core/Inc/LTC6811.h:156:20:spi_write_read	1
 ../Core/Src/LTC6811.c:26:6:LTC6811_initialize	1
 ../Core/Src/LTC6811.c:32:6:wakeup_idle	1
 ../Core/Src/LTC6811.c:54:6:set_adc	1
@@ -11,4 +11,5 @@
 ../Core/Src/LTC6811.c:282:8:LTC6811_rdaux	5
 ../Core/Src/LTC6811.c:324:6:LTC6811_rdaux_reg	4
 ../Core/Src/LTC6811.c:351:8:LTC6811_rdstatb	7
-../Core/Src/LTC6811.c:468:10:pec15_calc	2
+../Core/Src/LTC6811.c:422:6:LTC6811_clrstat	1
+../Core/Src/LTC6811.c:490:10:pec15_calc	2

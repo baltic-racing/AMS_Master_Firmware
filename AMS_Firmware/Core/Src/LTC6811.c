@@ -418,6 +418,28 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
   //5
   return (pec_error);
 }
+
+void LTC6811_clrstat()
+{
+  uint8_t cmd[4];
+  uint16_t cmd_pec;
+
+  //1
+  cmd[0] = 0x07;
+  cmd[1] = 0x13;
+
+  //2
+  cmd_pec = pec15_calc(2, cmd);
+  cmd[2] = (uint8_t)(cmd_pec >> 8);
+  cmd[3] = (uint8_t)(cmd_pec);
+
+  //3
+  wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
+  //4
+  HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+  spi_write_read(cmd, 4, 0, 0);
+  HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+}
 /*
 void LTC6811_adstat()
 {
