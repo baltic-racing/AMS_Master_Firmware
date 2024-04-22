@@ -20,7 +20,7 @@
 #define NUM_GPIO NUM_GPIO_STACK *NUM_STACK   //GPIOs per slave
 
 
-#define MAX_VOLTAGE 42000					// Wert in 0,1 mV
+#define MAX_VOLTAGE 40000					// Wert in 0,1 mV
 #define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
@@ -97,7 +97,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			can_cnt = 0;
 			last10 = 0;
 			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
-			//HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
+			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		}
 }
 
