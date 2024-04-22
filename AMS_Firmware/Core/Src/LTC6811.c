@@ -437,8 +437,11 @@ void LTC6811_clrstat()
   wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
   //4
   HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
-  spi_write_read(cmd, 4, 0, 0);
+  spi_write_array(4, cmd);
   HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+
+  HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
+  HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 }
 /*
 void LTC6811_adstat()

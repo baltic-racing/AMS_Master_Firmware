@@ -20,7 +20,7 @@
 #define NUM_GPIO NUM_GPIO_STACK *NUM_STACK   //GPIOs per slave
 
 
-#define MAX_VOLTAGE 40000					// Wert in 0,1 mV
+#define MAX_VOLTAGE 40400					// Wert in 0,1 mV
 #define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
@@ -130,6 +130,10 @@ void BMS()		// Battery Management System function for main loop.
 		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
 	}
 
+	LTC6811_clrstat();
+	HAL_Delay(3);
+
+
 	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
 
@@ -154,12 +158,14 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	HAL_Delay(3);
 
-	LTC6811_clrstat();
-	HAL_Delay(3);
 
 	convertVoltage();
 
 	convertTemperature(selTemp);
+
+
+
+
 
 
 

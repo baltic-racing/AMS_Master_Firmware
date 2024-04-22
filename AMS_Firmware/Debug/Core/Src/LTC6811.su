@@ -12,4 +12,4 @@
 ../Core/Src/LTC6811.c:324:6:LTC6811_rdaux_reg	24	static
 ../Core/Src/LTC6811.c:351:8:LTC6811_rdstatb	56	static
 ../Core/Src/LTC6811.c:422:6:LTC6811_clrstat	16	static
-../Core/Src/LTC6811.c:490:10:pec15_calc	32	static
+../Core/Src/LTC6811.c:493:10:pec15_calc	32	static
