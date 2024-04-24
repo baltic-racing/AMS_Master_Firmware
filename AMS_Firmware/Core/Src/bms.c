@@ -20,7 +20,7 @@
 #define NUM_GPIO NUM_GPIO_STACK *NUM_STACK   //GPIOs per slave
 
 
-#define MAX_VOLTAGE 40400					// Wert in 0,1 mV
+#define MAX_VOLTAGE 39000					// Wert in 0,1 mV
 #define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
@@ -56,7 +56,7 @@
 
 uint8_t failureState = 0;
 
-bool balancing = false;
+bool balancing = true;
 uint16_t balanceMargin = 500; //in 0.1mV
 
 
@@ -122,17 +122,45 @@ void BMS()		// Battery Management System function for main loop.
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
+		//Balancing with flags
+		/*
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00 | VUV;
 		cfg[i][2] = 0x00 | (VOV<<4) | (VUV>>4);
 		cfg[i][3] = 0x00 | (VOV>>4);
 		cfg[i][4] = 0x00 | OV_flag[i];
 		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
+		*/
+
+		//Balancing without flags
+
+		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
+		cfg[i][1] = 0x00;
+		cfg[i][2] = 0x00;
+		cfg[i][3] = 0x00;
+		cfg[i][4] = 0x00;
+		cfg[i][5] = 0x00;
+
+		if(balancing)
+		{
+			if(selTemp < 3)
+			{
+				for(uint8_t j = 0; j < 8; j++)
+				{
+					if(cellVoltages[i * NUM_STACK + j] - MAX_VOLTAGE > balanceMargin)cfg[i][4] |= 1 << j;
+				}
+				for(uint8_t j = 0; j < 3; j++)
+				{
+					if(cellVoltages[i * NUM_STACK + j + 8] - MAX_VOLTAGE > balanceMargin)cfg[i][5] |= 1 << j;
+				}
+			}
+		}
 	}
 
+	/*
 	LTC6811_clrstat();
 	HAL_Delay(3);
-
+*/
 
 	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
@@ -155,9 +183,10 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
 
+	/*
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	HAL_Delay(3);
-
+*/
 
 	convertVoltage();
 

@@ -1,10 +1,24 @@
-15:49:53 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+19:10:34 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j12 all 
+arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
+../Core/Src/bms.c: In function 'BMS':
+../Core/Src/bms.c:120:18: warning: unused variable 'VUV' [-Wunused-variable]
+  120 |         uint16_t VUV = (MIN_VOLTAGE/16)-1;
+      |                  ^~~
+../Core/Src/bms.c:119:18: warning: unused variable 'VOV' [-Wunused-variable]
+  119 |         uint16_t VOV = MAX_VOLTAGE/16;                                  // Formeln aus Datenblatt S.65
+      |                  ^~~
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AMS_Firmware.elf
+ 
 arm-none-eabi-size  AMS_Firmware.elf 
+arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  38620	    564	   3604	  42788	   a724	AMS_Firmware.elf
+  37988	    568	   3584	  42140	   a49c	AMS_Firmware.elf
 Finished building: default.size.stdout
  
+Finished building: AMS_Firmware.list
+ 
 
-15:49:53 Build Finished. 0 errors, 0 warnings. (took 470ms)
+19:10:35 Build Finished. 0 errors, 2 warnings. (took 1s.226ms)
 

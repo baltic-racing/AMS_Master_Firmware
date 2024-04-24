@@ -1,7 +1,7 @@
 ../Core/Src/bms.c:82:6:HAL_TIM_PeriodElapsedCallback	3
 ../Core/Src/bms.c:104:6:HAL_CAN_RxFifo0MsgPendingCallback	1
 ../Core/Src/bms.c:110:6:BMS_init	1
-../Core/Src/bms.c:115:6:BMS	3
-../Core/Src/bms.c:190:6:convertVoltage	5
-../Core/Src/bms.c:219:10:calculateTemperature	1
-../Core/Src/bms.c:226:6:convertTemperature	6
+../Core/Src/bms.c:115:6:BMS	9
+../Core/Src/bms.c:219:6:convertVoltage	5
+../Core/Src/bms.c:248:10:calculateTemperature	1
+../Core/Src/bms.c:255:6:convertTemperature	6
