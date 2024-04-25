@@ -165,8 +165,6 @@ void BMS()		// Battery Management System function for main loop.
 	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
 
-
-
 	//wakeup_idle();									// read config
 	//LTC6811_rdcfg();
 	//HAL_Delay(3);
@@ -276,27 +274,6 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 			}
 		}
 	}
-
-/*
-	if(selTemp == 3)
-	{
-		for(uint8_t k = 0; k < NUM_STACK; k++)
-		{
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 9, calc_temp[k][0]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 4, calc_temp[k][1]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 11, calc_temp[k][2]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 7, calc_temp[k][3]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 6, calc_temp[k][4]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 1, calc_temp[k][5]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 0, calc_temp[k][6]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 3, calc_temp[k][7]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 10, calc_temp[k][8]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 2, calc_temp[k][9]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 5, calc_temp[k][10]);
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 8, calc_temp[k][11]);
-		}
-	}
-	*/
 
 }
 

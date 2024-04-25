@@ -6,10 +6,10 @@
 ../Core/Src/LTC6811.c:88:6:LTC6811_adcv	1
 ../Core/Src/LTC6811.c:121:6:LTC6811_adax	1
 ../Core/Src/LTC6811.c:145:6:LTC6811_wrcfg	4
-../Core/Src/LTC6811.c:214:9:LTC6811_rdcv	5
-../Core/Src/LTC6811.c:255:6:LTC6811_rdcv_reg	6
-../Core/Src/LTC6811.c:282:8:LTC6811_rdaux	5
-../Core/Src/LTC6811.c:324:6:LTC6811_rdaux_reg	4
-../Core/Src/LTC6811.c:351:8:LTC6811_rdstatb	7
-../Core/Src/LTC6811.c:422:6:LTC6811_clrstat	1
-../Core/Src/LTC6811.c:493:10:pec15_calc	2
+../Core/Src/LTC6811.c:216:9:LTC6811_rdcv	5
+../Core/Src/LTC6811.c:257:6:LTC6811_rdcv_reg	6
+../Core/Src/LTC6811.c:284:8:LTC6811_rdaux	5
+../Core/Src/LTC6811.c:326:6:LTC6811_rdaux_reg	4
+../Core/Src/LTC6811.c:353:8:LTC6811_rdstatb	7
+../Core/Src/LTC6811.c:424:6:LTC6811_clrstat	1
+../Core/Src/LTC6811.c:495:10:pec15_calc	2

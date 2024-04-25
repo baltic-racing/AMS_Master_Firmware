@@ -579,3 +579,28 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 C:\Users\Maximus\Docum
 
 !ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2024-04-25 17:35:43.143
 !MESSAGE SWV configuration; base: 1440000000; minDiv: 48; maxDiv: 2147483647; maxSWO: 30000000; limit: 2147483647 => SWO: 24000000; CPU: 96000000; div: 4
+!SESSION 2024-04-25 23:40:39.788 -----------------------------------------------
+eclipse.buildId=Version 1.14.0
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_DE
+Framework arguments:  C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\.project
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\.project
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-04-25 23:40:55.047
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-04-25 23:40:55.054
+!MESSAGE Log4j2 initialized with config file C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-04-25 23:41:01.030
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-04-25 23:41:05.961
+!MESSAGE Indexed 'AMS_Firmware' (32 sources, 126 headers) in 4.56 sec: 12,000 declarations; 63,496 references; 2 unresolved inclusions; 29 syntax errors; 147 unresolved names (0.19%)
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2024-04-25 23:41:16.775
+!MESSAGE SWV configuration; base: 1440000000; minDiv: 48; maxDiv: 2147483647; maxSWO: 30000000; limit: 2147483647 => SWO: 24000000; CPU: 96000000; div: 4
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2024-04-25 23:43:04.677
+!MESSAGE SWV configuration; base: 1440000000; minDiv: 48; maxDiv: 2147483647; maxSWO: 30000000; limit: 2147483647 => SWO: 24000000; CPU: 96000000; div: 4

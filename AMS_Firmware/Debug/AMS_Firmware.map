@@ -4536,38 +4536,37 @@ LOAD C:/ST/STM32CubeIDE_1.14.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x000000000800101c       0x84 ./Core/Src/LTC6811.o
                 0x000000000800101c                LTC6811_adax
  .text.LTC6811_wrcfg
-                0x00000000080010a0      0x16c ./Core/Src/LTC6811.o
+                0x00000000080010a0      0x170 ./Core/Src/LTC6811.o
                 0x00000000080010a0                LTC6811_wrcfg
  .text.LTC6811_rdcv
-                0x000000000800120c      0x124 ./Core/Src/LTC6811.o
-                0x000000000800120c                LTC6811_rdcv
+                0x0000000008001210      0x124 ./Core/Src/LTC6811.o
+                0x0000000008001210                LTC6811_rdcv
  .text.LTC6811_rdcv_reg
-                0x0000000008001330       0xc8 ./Core/Src/LTC6811.o
-                0x0000000008001330                LTC6811_rdcv_reg
+                0x0000000008001334       0xc8 ./Core/Src/LTC6811.o
+                0x0000000008001334                LTC6811_rdcv_reg
  .text.LTC6811_rdaux
-                0x00000000080013f8      0x128 ./Core/Src/LTC6811.o
-                0x00000000080013f8                LTC6811_rdaux
+                0x00000000080013fc      0x128 ./Core/Src/LTC6811.o
+                0x00000000080013fc                LTC6811_rdaux
  .text.LTC6811_rdaux_reg
-                0x0000000008001520       0xa8 ./Core/Src/LTC6811.o
-                0x0000000008001520                LTC6811_rdaux_reg
+                0x0000000008001524       0xa8 ./Core/Src/LTC6811.o
+                0x0000000008001524                LTC6811_rdaux_reg
  .text.LTC6811_rdstatb
-                0x00000000080015c8      0x270 ./Core/Src/LTC6811.o
-                0x00000000080015c8                LTC6811_rdstatb
+                0x00000000080015cc      0x270 ./Core/Src/LTC6811.o
+                0x00000000080015cc                LTC6811_rdstatb
  .text.pec15_calc
-                0x0000000008001838       0x64 ./Core/Src/LTC6811.o
-                0x0000000008001838                pec15_calc
+                0x000000000800183c       0x64 ./Core/Src/LTC6811.o
+                0x000000000800183c                pec15_calc
  .text.HAL_TIM_PeriodElapsedCallback
-                0x000000000800189c       0x7c ./Core/Src/bms.o
-                0x000000000800189c                HAL_TIM_PeriodElapsedCallback
+                0x00000000080018a0       0x7c ./Core/Src/bms.o
+                0x00000000080018a0                HAL_TIM_PeriodElapsedCallback
  .text.HAL_CAN_RxFifo0MsgPendingCallback
-                0x0000000008001918       0x30 ./Core/Src/bms.o
-                0x0000000008001918                HAL_CAN_RxFifo0MsgPendingCallback
+                0x000000000800191c       0x30 ./Core/Src/bms.o
+                0x000000000800191c                HAL_CAN_RxFifo0MsgPendingCallback
  .text.BMS_init
-                0x0000000008001948        0xc ./Core/Src/bms.o
-                0x0000000008001948                BMS_init
- .text.BMS      0x0000000008001954      0x258 ./Core/Src/bms.o
-                0x0000000008001954                BMS
- *fill*         0x0000000008001bac        0x4 
+                0x000000000800194c        0xc ./Core/Src/bms.o
+                0x000000000800194c                BMS_init
+ .text.BMS      0x0000000008001958      0x258 ./Core/Src/bms.o
+                0x0000000008001958                BMS
  .text.convertVoltage
                 0x0000000008001bb0      0x160 ./Core/Src/bms.o
                 0x0000000008001bb0                convertVoltage
@@ -5683,57 +5682,57 @@ LOAD C:/ST/STM32CubeIDE_1.14.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .comment       0x0000000000000043       0x44 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
  .comment       0x0000000000000043       0x44 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
-.debug_info     0x0000000000000000    0x12f6e
- .debug_info    0x0000000000000000      0xf80 ./Core/Src/LTC6811.o
- .debug_info    0x0000000000000f80     0x101e ./Core/Src/bms.o
- .debug_info    0x0000000000001f9e      0xdeb ./Core/Src/can.o
- .debug_info    0x0000000000002d89      0x4de ./Core/Src/gpio.o
- .debug_info    0x0000000000003267      0xc9a ./Core/Src/main.o
- .debug_info    0x0000000000003f01      0x943 ./Core/Src/spi.o
- .debug_info    0x0000000000004844      0x269 ./Core/Src/stm32f2xx_hal_msp.o
- .debug_info    0x0000000000004aad      0xadf ./Core/Src/stm32f2xx_it.o
- .debug_info    0x000000000000558c      0x6d1 ./Core/Src/syscalls.o
- .debug_info    0x0000000000005c5d      0x168 ./Core/Src/sysmem.o
- .debug_info    0x0000000000005dc5      0x31f ./Core/Src/system_stm32f2xx.o
- .debug_info    0x00000000000060e4      0xbef ./Core/Src/tim.o
- .debug_info    0x0000000000006cd3      0x91a ./Core/Src/usb_otg.o
- .debug_info    0x00000000000075ed       0x23 ./Core/Startup/startup_stm32f205rbtx.o
- .debug_info    0x0000000000007610      0x9b1 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
- .debug_info    0x0000000000007fc1      0xf21 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
- .debug_info    0x0000000000008ee2      0xd34 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
- .debug_info    0x0000000000009c16      0x68e ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
- .debug_info    0x000000000000a2a4     0x14ce ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
- .debug_info    0x000000000000b772      0xa39 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
- .debug_info    0x000000000000c1ab     0x15ec ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
- .debug_info    0x000000000000d797     0x297d ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
- .debug_info    0x0000000000010114     0x14db ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
- .debug_info    0x00000000000115ef     0x197f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
+.debug_info     0x0000000000000000    0x12f6a
+ .debug_info    0x0000000000000000      0xf81 ./Core/Src/LTC6811.o
+ .debug_info    0x0000000000000f81     0x1019 ./Core/Src/bms.o
+ .debug_info    0x0000000000001f9a      0xdeb ./Core/Src/can.o
+ .debug_info    0x0000000000002d85      0x4de ./Core/Src/gpio.o
+ .debug_info    0x0000000000003263      0xc9a ./Core/Src/main.o
+ .debug_info    0x0000000000003efd      0x943 ./Core/Src/spi.o
+ .debug_info    0x0000000000004840      0x269 ./Core/Src/stm32f2xx_hal_msp.o
+ .debug_info    0x0000000000004aa9      0xadf ./Core/Src/stm32f2xx_it.o
+ .debug_info    0x0000000000005588      0x6d1 ./Core/Src/syscalls.o
+ .debug_info    0x0000000000005c59      0x168 ./Core/Src/sysmem.o
+ .debug_info    0x0000000000005dc1      0x31f ./Core/Src/system_stm32f2xx.o
+ .debug_info    0x00000000000060e0      0xbef ./Core/Src/tim.o
+ .debug_info    0x0000000000006ccf      0x91a ./Core/Src/usb_otg.o
+ .debug_info    0x00000000000075e9       0x23 ./Core/Startup/startup_stm32f205rbtx.o
+ .debug_info    0x000000000000760c      0x9b1 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
+ .debug_info    0x0000000000007fbd      0xf21 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
+ .debug_info    0x0000000000008ede      0xd34 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
+ .debug_info    0x0000000000009c12      0x68e ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
+ .debug_info    0x000000000000a2a0     0x14ce ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
+ .debug_info    0x000000000000b76e      0xa39 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
+ .debug_info    0x000000000000c1a7     0x15ec ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
+ .debug_info    0x000000000000d793     0x297d ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
+ .debug_info    0x0000000000010110     0x14db ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
+ .debug_info    0x00000000000115eb     0x197f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
-.debug_abbrev   0x0000000000000000     0x332c
+.debug_abbrev   0x0000000000000000     0x3300
  .debug_abbrev  0x0000000000000000      0x330 ./Core/Src/LTC6811.o
- .debug_abbrev  0x0000000000000330      0x31e ./Core/Src/bms.o
- .debug_abbrev  0x000000000000064e      0x2ab ./Core/Src/can.o
- .debug_abbrev  0x00000000000008f9      0x1c9 ./Core/Src/gpio.o
- .debug_abbrev  0x0000000000000ac2      0x268 ./Core/Src/main.o
- .debug_abbrev  0x0000000000000d2a      0x1f3 ./Core/Src/spi.o
- .debug_abbrev  0x0000000000000f1d       0xd8 ./Core/Src/stm32f2xx_hal_msp.o
- .debug_abbrev  0x0000000000000ff5      0x1ee ./Core/Src/stm32f2xx_it.o
- .debug_abbrev  0x00000000000011e3      0x1b1 ./Core/Src/syscalls.o
- .debug_abbrev  0x0000000000001394       0xbc ./Core/Src/sysmem.o
- .debug_abbrev  0x0000000000001450      0x11c ./Core/Src/system_stm32f2xx.o
- .debug_abbrev  0x000000000000156c      0x20f ./Core/Src/tim.o
- .debug_abbrev  0x000000000000177b      0x218 ./Core/Src/usb_otg.o
- .debug_abbrev  0x0000000000001993       0x12 ./Core/Startup/startup_stm32f205rbtx.o
- .debug_abbrev  0x00000000000019a5      0x286 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
- .debug_abbrev  0x0000000000001c2b      0x22f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
- .debug_abbrev  0x0000000000001e5a      0x327 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
- .debug_abbrev  0x0000000000002181      0x1cb ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
- .debug_abbrev  0x000000000000234c      0x2c1 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
- .debug_abbrev  0x000000000000260d      0x2d6 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
- .debug_abbrev  0x00000000000028e3      0x284 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
- .debug_abbrev  0x0000000000002b67      0x28f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
- .debug_abbrev  0x0000000000002df6      0x283 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
- .debug_abbrev  0x0000000000003079      0x2b3 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
+ .debug_abbrev  0x0000000000000330      0x2f2 ./Core/Src/bms.o
+ .debug_abbrev  0x0000000000000622      0x2ab ./Core/Src/can.o
+ .debug_abbrev  0x00000000000008cd      0x1c9 ./Core/Src/gpio.o
+ .debug_abbrev  0x0000000000000a96      0x268 ./Core/Src/main.o
+ .debug_abbrev  0x0000000000000cfe      0x1f3 ./Core/Src/spi.o
+ .debug_abbrev  0x0000000000000ef1       0xd8 ./Core/Src/stm32f2xx_hal_msp.o
+ .debug_abbrev  0x0000000000000fc9      0x1ee ./Core/Src/stm32f2xx_it.o
+ .debug_abbrev  0x00000000000011b7      0x1b1 ./Core/Src/syscalls.o
+ .debug_abbrev  0x0000000000001368       0xbc ./Core/Src/sysmem.o
+ .debug_abbrev  0x0000000000001424      0x11c ./Core/Src/system_stm32f2xx.o
+ .debug_abbrev  0x0000000000001540      0x20f ./Core/Src/tim.o
+ .debug_abbrev  0x000000000000174f      0x218 ./Core/Src/usb_otg.o
+ .debug_abbrev  0x0000000000001967       0x12 ./Core/Startup/startup_stm32f205rbtx.o
+ .debug_abbrev  0x0000000000001979      0x286 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
+ .debug_abbrev  0x0000000000001bff      0x22f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
+ .debug_abbrev  0x0000000000001e2e      0x327 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
+ .debug_abbrev  0x0000000000002155      0x1cb ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
+ .debug_abbrev  0x0000000000002320      0x2c1 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
+ .debug_abbrev  0x00000000000025e1      0x2d6 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
+ .debug_abbrev  0x00000000000028b7      0x284 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
+ .debug_abbrev  0x0000000000002b3b      0x28f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
+ .debug_abbrev  0x0000000000002dca      0x283 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
+ .debug_abbrev  0x000000000000304d      0x2b3 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
 .debug_aranges  0x0000000000000000     0x1208
  .debug_aranges
@@ -5958,31 +5957,31 @@ LOAD C:/ST/STM32CubeIDE_1.14.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_macro   0x00000000000209c8      0x1f5 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
  .debug_macro   0x0000000000020bbd      0x1f5 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
-.debug_line     0x0000000000000000    0x15c9c
- .debug_line    0x0000000000000000     0x10ee ./Core/Src/LTC6811.o
- .debug_line    0x00000000000010ee      0xcd0 ./Core/Src/bms.o
- .debug_line    0x0000000000001dbe      0x934 ./Core/Src/can.o
- .debug_line    0x00000000000026f2      0x84f ./Core/Src/gpio.o
- .debug_line    0x0000000000002f41      0x9a9 ./Core/Src/main.o
- .debug_line    0x00000000000038ea      0x7fc ./Core/Src/spi.o
- .debug_line    0x00000000000040e6      0x78b ./Core/Src/stm32f2xx_hal_msp.o
- .debug_line    0x0000000000004871      0x8ad ./Core/Src/stm32f2xx_it.o
- .debug_line    0x000000000000511e      0x8e7 ./Core/Src/syscalls.o
- .debug_line    0x0000000000005a05      0x583 ./Core/Src/sysmem.o
- .debug_line    0x0000000000005f88      0x807 ./Core/Src/system_stm32f2xx.o
- .debug_line    0x000000000000678f      0x7f8 ./Core/Src/tim.o
- .debug_line    0x0000000000006f87      0x802 ./Core/Src/usb_otg.o
- .debug_line    0x0000000000007789       0x7a ./Core/Startup/startup_stm32f205rbtx.o
- .debug_line    0x0000000000007803      0xa9e ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
- .debug_line    0x00000000000082a1     0x11e2 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
- .debug_line    0x0000000000009483      0xd21 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
- .debug_line    0x000000000000a1a4      0xbec ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
- .debug_line    0x000000000000ad90     0x1497 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
- .debug_line    0x000000000000c227      0xf30 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
- .debug_line    0x000000000000d157     0x1cb9 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
- .debug_line    0x000000000000ee10     0x37e3 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
- .debug_line    0x00000000000125f3     0x1a7c ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
- .debug_line    0x000000000001406f     0x1c2d ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
+.debug_line     0x0000000000000000    0x15c9f
+ .debug_line    0x0000000000000000     0x10f1 ./Core/Src/LTC6811.o
+ .debug_line    0x00000000000010f1      0xcd0 ./Core/Src/bms.o
+ .debug_line    0x0000000000001dc1      0x934 ./Core/Src/can.o
+ .debug_line    0x00000000000026f5      0x84f ./Core/Src/gpio.o
+ .debug_line    0x0000000000002f44      0x9a9 ./Core/Src/main.o
+ .debug_line    0x00000000000038ed      0x7fc ./Core/Src/spi.o
+ .debug_line    0x00000000000040e9      0x78b ./Core/Src/stm32f2xx_hal_msp.o
+ .debug_line    0x0000000000004874      0x8ad ./Core/Src/stm32f2xx_it.o
+ .debug_line    0x0000000000005121      0x8e7 ./Core/Src/syscalls.o
+ .debug_line    0x0000000000005a08      0x583 ./Core/Src/sysmem.o
+ .debug_line    0x0000000000005f8b      0x807 ./Core/Src/system_stm32f2xx.o
+ .debug_line    0x0000000000006792      0x7f8 ./Core/Src/tim.o
+ .debug_line    0x0000000000006f8a      0x802 ./Core/Src/usb_otg.o
+ .debug_line    0x000000000000778c       0x7a ./Core/Startup/startup_stm32f205rbtx.o
+ .debug_line    0x0000000000007806      0xa9e ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
+ .debug_line    0x00000000000082a4     0x11e2 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_can.o
+ .debug_line    0x0000000000009486      0xd21 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
+ .debug_line    0x000000000000a1a7      0xbec ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
+ .debug_line    0x000000000000ad93     0x1497 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
+ .debug_line    0x000000000000c22a      0xf30 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
+ .debug_line    0x000000000000d15a     0x1cb9 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_spi.o
+ .debug_line    0x000000000000ee13     0x37e3 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim.o
+ .debug_line    0x00000000000125f6     0x1a7c ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_tim_ex.o
+ .debug_line    0x0000000000014072     0x1c2d ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
 .debug_str      0x0000000000000000    0xbeef0
  .debug_str     0x0000000000000000    0xb7fff ./Core/Src/LTC6811.o

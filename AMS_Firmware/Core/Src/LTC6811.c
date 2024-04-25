@@ -189,6 +189,8 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 
 	}
+
+	free(WRCFG);
 }
 
 

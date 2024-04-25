@@ -29,23 +29,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  12 .comment      00000043  00000000  00000000  00020261  2**0
                   CONTENTS, READONLY
- 13 .debug_info   00012f6e  00000000  00000000  000202a4  2**0
+ 13 .debug_info   00012f6a  00000000  00000000  000202a4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 0000332c  00000000  00000000  00033212  2**0
+ 14 .debug_abbrev 00003300  00000000  00000000  0003320e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001208  00000000  00000000  00036540  2**3
+ 15 .debug_aranges 00001208  00000000  00000000  00036510  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_rnglists 00000dca  00000000  00000000  00037748  2**0
+ 16 .debug_rnglists 00000dca  00000000  00000000  00037718  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00020db2  00000000  00000000  00038512  2**0
+ 17 .debug_macro  00020db2  00000000  00000000  000384e2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00015c9c  00000000  00000000  000592c4  2**0
+ 18 .debug_line   00015c9f  00000000  00000000  00059294  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000beef0  00000000  00000000  0006ef60  2**0
+ 19 .debug_str    000beef0  00000000  00000000  0006ef33  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  00005c94  00000000  00000000  0012de50  2**2
+ 20 .debug_frame  00005c94  00000000  00000000  0012de24  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000071  00000000  00000000  00133ae4  2**0
+ 21 .debug_line_str 00000071  00000000  00000000  00133ab8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1412,7 +1412,7 @@ void LTC6811_adcv()
 	temp_pec = pec15_calc(2, ADCV);
  8000faa:	4918      	ldr	r1, [pc, #96]	; (800100c <LTC6811_adcv+0x74>)
  8000fac:	2002      	movs	r0, #2
- 8000fae:	f000 fc43 	bl	8001838 <pec15_calc>
+ 8000fae:	f000 fc45 	bl	800183c <pec15_calc>
  8000fb2:	4603      	mov	r3, r0
  8000fb4:	80fb      	strh	r3, [r7, #6]
 	cmd[2] = (uint8_t)(temp_pec >> 8);
@@ -1493,7 +1493,7 @@ void LTC6811_adax()
 	temp_pec = pec15_calc(2, ADAX);
  800102e:	4918      	ldr	r1, [pc, #96]	; (8001090 <LTC6811_adax+0x74>)
  8001030:	2002      	movs	r0, #2
- 8001032:	f000 fc01 	bl	8001838 <pec15_calc>
+ 8001032:	f000 fc03 	bl	800183c <pec15_calc>
  8001036:	4603      	mov	r3, r0
  8001038:	80fb      	strh	r3, [r7, #6]
 	cmd[2] = (uint8_t)(temp_pec >> 8);
@@ -1637,7 +1637,7 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
  8001118:	7d3b      	ldrb	r3, [r7, #20]
  800111a:	4611      	mov	r1, r2
  800111c:	4618      	mov	r0, r3
- 800111e:	f000 fb8b 	bl	8001838 <pec15_calc>
+ 800111e:	f000 fb8d 	bl	800183c <pec15_calc>
  8001122:	4603      	mov	r3, r0
  8001124:	817b      	strh	r3, [r7, #10]
 		WRCFG[WRCFG_index] = (uint8_t)(temp_pec >> 8);
@@ -1695,7 +1695,7 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 	    temp_pec = pec15_calc(2, WRCFG);
  8001178:	68f9      	ldr	r1, [r7, #12]
  800117a:	2002      	movs	r0, #2
- 800117c:	f000 fb5c 	bl	8001838 <pec15_calc>
+ 800117c:	f000 fb5e 	bl	800183c <pec15_calc>
  8001180:	4603      	mov	r3, r0
  8001182:	817b      	strh	r3, [r7, #10]
 	    WRCFG[2] = (uint8_t)(temp_pec >> 8);
@@ -1715,7 +1715,7 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 		HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
  800119c:	2200      	movs	r2, #0
  800119e:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 80011a2:	4817      	ldr	r0, [pc, #92]	; (8001200 <LTC6811_wrcfg+0x160>)
+ 80011a2:	4818      	ldr	r0, [pc, #96]	; (8001204 <LTC6811_wrcfg+0x164>)
  80011a4:	f002 fdea 	bl	8003d7c <HAL_GPIO_WritePin>
 		spi_write_array(4, WRCFG);
  80011a8:	68f9      	ldr	r1, [r7, #12]
@@ -1734,21 +1734,21 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 		HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
  80011c4:	2201      	movs	r2, #1
  80011c6:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 80011ca:	480d      	ldr	r0, [pc, #52]	; (8001200 <LTC6811_wrcfg+0x160>)
+ 80011ca:	480e      	ldr	r0, [pc, #56]	; (8001204 <LTC6811_wrcfg+0x164>)
  80011cc:	f002 fdd6 	bl	8003d7c <HAL_GPIO_WritePin>
 
 
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
  80011d0:	2301      	movs	r3, #1
  80011d2:	2201      	movs	r2, #1
- 80011d4:	490b      	ldr	r1, [pc, #44]	; (8001204 <LTC6811_wrcfg+0x164>)
- 80011d6:	480c      	ldr	r0, [pc, #48]	; (8001208 <LTC6811_wrcfg+0x168>)
+ 80011d4:	490c      	ldr	r1, [pc, #48]	; (8001208 <LTC6811_wrcfg+0x168>)
+ 80011d6:	480d      	ldr	r0, [pc, #52]	; (800120c <LTC6811_wrcfg+0x16c>)
  80011d8:	f003 fbad 	bl	8004936 <HAL_SPI_Transmit>
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
  80011dc:	2301      	movs	r3, #1
  80011de:	2201      	movs	r2, #1
- 80011e0:	4908      	ldr	r1, [pc, #32]	; (8001204 <LTC6811_wrcfg+0x164>)
- 80011e2:	4809      	ldr	r0, [pc, #36]	; (8001208 <LTC6811_wrcfg+0x168>)
+ 80011e0:	4909      	ldr	r1, [pc, #36]	; (8001208 <LTC6811_wrcfg+0x168>)
+ 80011e2:	480a      	ldr	r0, [pc, #40]	; (800120c <LTC6811_wrcfg+0x16c>)
  80011e4:	f003 fba7 	bl	8004936 <HAL_SPI_Transmit>
 	for(current_ic = 0; current_ic < nIC; current_ic++)
  80011e8:	7dfb      	ldrb	r3, [r7, #23]
@@ -1760,1458 +1760,1460 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
  80011f4:	d3b5      	bcc.n	8001162 <LTC6811_wrcfg+0xc2>
 
 	}
-}
- 80011f6:	bf00      	nop
- 80011f8:	bf00      	nop
- 80011fa:	3718      	adds	r7, #24
- 80011fc:	46bd      	mov	sp, r7
- 80011fe:	bd80      	pop	{r7, pc}
- 8001200:	40020000 	.word	0x40020000
- 8001204:	2000025a 	.word	0x2000025a
- 8001208:	20000350 	.word	0x20000350
 
-0800120c <LTC6811_rdcv>:
+	free(WRCFG);
+ 80011f6:	68f8      	ldr	r0, [r7, #12]
+ 80011f8:	f004 ffe6 	bl	80061c8 <free>
+}
+ 80011fc:	bf00      	nop
+ 80011fe:	3718      	adds	r7, #24
+ 8001200:	46bd      	mov	sp, r7
+ 8001202:	bd80      	pop	{r7, pc}
+ 8001204:	40020000 	.word	0x40020000
+ 8001208:	2000025a 	.word	0x2000025a
+ 800120c:	20000350 	.word	0x20000350
+
+08001210 <LTC6811_rdcv>:
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
 }
 */
 
 uint8_t LTC6811_rdcv(uint8_t reg, uint8_t nIC, uint16_t cell_codes[][12])
 {
- 800120c:	b580      	push	{r7, lr}
- 800120e:	b088      	sub	sp, #32
- 8001210:	af00      	add	r7, sp, #0
- 8001212:	4603      	mov	r3, r0
- 8001214:	603a      	str	r2, [r7, #0]
- 8001216:	71fb      	strb	r3, [r7, #7]
- 8001218:	460b      	mov	r3, r1
- 800121a:	71bb      	strb	r3, [r7, #6]
+ 8001210:	b580      	push	{r7, lr}
+ 8001212:	b088      	sub	sp, #32
+ 8001214:	af00      	add	r7, sp, #0
+ 8001216:	4603      	mov	r3, r0
+ 8001218:	603a      	str	r2, [r7, #0]
+ 800121a:	71fb      	strb	r3, [r7, #7]
+ 800121c:	460b      	mov	r3, r1
+ 800121e:	71bb      	strb	r3, [r7, #6]
 	const uint8_t NUM_RX_BYT = 8;
- 800121c:	2308      	movs	r3, #8
- 800121e:	76bb      	strb	r3, [r7, #26]
+ 8001220:	2308      	movs	r3, #8
+ 8001222:	76bb      	strb	r3, [r7, #26]
 	const uint8_t BYT_IN_REG = 6;
- 8001220:	2306      	movs	r3, #6
- 8001222:	767b      	strb	r3, [r7, #25]
+ 8001224:	2306      	movs	r3, #6
+ 8001226:	767b      	strb	r3, [r7, #25]
 	const uint8_t CELL_IN_REG = 3;
- 8001224:	2303      	movs	r3, #3
- 8001226:	763b      	strb	r3, [r7, #24]
+ 8001228:	2303      	movs	r3, #3
+ 800122a:	763b      	strb	r3, [r7, #24]
 
 	uint8_t pec_error = 0; //pec Error wenn -1
- 8001228:	2300      	movs	r3, #0
- 800122a:	77fb      	strb	r3, [r7, #31]
+ 800122c:	2300      	movs	r3, #0
+ 800122e:	77fb      	strb	r3, [r7, #31]
 	uint16_t received_pec;
 	uint16_t data_pec;
 	uint8_t data_counter = 0;
- 800122c:	2300      	movs	r3, #0
- 800122e:	77bb      	strb	r3, [r7, #30]
+ 8001230:	2300      	movs	r3, #0
+ 8001232:	77bb      	strb	r3, [r7, #30]
 	uint8_t *cell_data;
 	cell_data = (uint8_t *)malloc((NUM_RX_BYT * nIC) * sizeof(uint8_t));
- 8001230:	7ebb      	ldrb	r3, [r7, #26]
- 8001232:	79ba      	ldrb	r2, [r7, #6]
- 8001234:	fb02 f303 	mul.w	r3, r2, r3
- 8001238:	4618      	mov	r0, r3
- 800123a:	f004 ffbd 	bl	80061b8 <malloc>
- 800123e:	4603      	mov	r3, r0
- 8001240:	617b      	str	r3, [r7, #20]
+ 8001234:	7ebb      	ldrb	r3, [r7, #26]
+ 8001236:	79ba      	ldrb	r2, [r7, #6]
+ 8001238:	fb02 f303 	mul.w	r3, r2, r3
+ 800123c:	4618      	mov	r0, r3
+ 800123e:	f004 ffbb 	bl	80061b8 <malloc>
+ 8001242:	4603      	mov	r3, r0
+ 8001244:	617b      	str	r3, [r7, #20]
 
 	for(uint8_t cell_reg = 1; cell_reg < 5; cell_reg++)	//executes once for each of the LTC6804 cell voltage registers
- 8001242:	2301      	movs	r3, #1
- 8001244:	777b      	strb	r3, [r7, #29]
- 8001246:	e068      	b.n	800131a <LTC6811_rdcv+0x10e>
+ 8001246:	2301      	movs	r3, #1
+ 8001248:	777b      	strb	r3, [r7, #29]
+ 800124a:	e068      	b.n	800131e <LTC6811_rdcv+0x10e>
 	{
 		data_counter = 0;
- 8001248:	2300      	movs	r3, #0
- 800124a:	77bb      	strb	r3, [r7, #30]
+ 800124c:	2300      	movs	r3, #0
+ 800124e:	77bb      	strb	r3, [r7, #30]
 		LTC6811_rdcv_reg(cell_reg, nIC, cell_data);
- 800124c:	79b9      	ldrb	r1, [r7, #6]
- 800124e:	7f7b      	ldrb	r3, [r7, #29]
- 8001250:	697a      	ldr	r2, [r7, #20]
- 8001252:	4618      	mov	r0, r3
- 8001254:	f000 f86c 	bl	8001330 <LTC6811_rdcv_reg>
+ 8001250:	79b9      	ldrb	r1, [r7, #6]
+ 8001252:	7f7b      	ldrb	r3, [r7, #29]
+ 8001254:	697a      	ldr	r2, [r7, #20]
+ 8001256:	4618      	mov	r0, r3
+ 8001258:	f000 f86c 	bl	8001334 <LTC6811_rdcv_reg>
 
 		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
- 8001258:	2300      	movs	r3, #0
- 800125a:	773b      	strb	r3, [r7, #28]
- 800125c:	e056      	b.n	800130c <LTC6811_rdcv+0x100>
+ 800125c:	2300      	movs	r3, #0
+ 800125e:	773b      	strb	r3, [r7, #28]
+ 8001260:	e056      	b.n	8001310 <LTC6811_rdcv+0x100>
 		{
 			 // current_ic is used as an IC counter
 			for(uint8_t current_cell = 0; current_cell < CELL_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
- 800125e:	2300      	movs	r3, #0
- 8001260:	76fb      	strb	r3, [r7, #27]
- 8001262:	e026      	b.n	80012b2 <LTC6811_rdcv+0xa6>
+ 8001262:	2300      	movs	r3, #0
+ 8001264:	76fb      	strb	r3, [r7, #27]
+ 8001266:	e026      	b.n	80012b6 <LTC6811_rdcv+0xa6>
 			{
 				uint16_t parsed_cell = cell_data[data_counter] | (cell_data[data_counter + 1] << 8);
- 8001264:	7fbb      	ldrb	r3, [r7, #30]
- 8001266:	697a      	ldr	r2, [r7, #20]
- 8001268:	4413      	add	r3, r2
- 800126a:	781b      	ldrb	r3, [r3, #0]
- 800126c:	b21a      	sxth	r2, r3
- 800126e:	7fbb      	ldrb	r3, [r7, #30]
- 8001270:	3301      	adds	r3, #1
- 8001272:	6979      	ldr	r1, [r7, #20]
- 8001274:	440b      	add	r3, r1
- 8001276:	781b      	ldrb	r3, [r3, #0]
- 8001278:	021b      	lsls	r3, r3, #8
- 800127a:	b21b      	sxth	r3, r3
- 800127c:	4313      	orrs	r3, r2
+ 8001268:	7fbb      	ldrb	r3, [r7, #30]
+ 800126a:	697a      	ldr	r2, [r7, #20]
+ 800126c:	4413      	add	r3, r2
+ 800126e:	781b      	ldrb	r3, [r3, #0]
+ 8001270:	b21a      	sxth	r2, r3
+ 8001272:	7fbb      	ldrb	r3, [r7, #30]
+ 8001274:	3301      	adds	r3, #1
+ 8001276:	6979      	ldr	r1, [r7, #20]
+ 8001278:	440b      	add	r3, r1
+ 800127a:	781b      	ldrb	r3, [r3, #0]
+ 800127c:	021b      	lsls	r3, r3, #8
  800127e:	b21b      	sxth	r3, r3
- 8001280:	81fb      	strh	r3, [r7, #14]
+ 8001280:	4313      	orrs	r3, r2
+ 8001282:	b21b      	sxth	r3, r3
+ 8001284:	81fb      	strh	r3, [r7, #14]
 				cell_codes[current_ic][current_cell + ((cell_reg - 1) * CELL_IN_REG)] = parsed_cell;
- 8001282:	7f3a      	ldrb	r2, [r7, #28]
- 8001284:	4613      	mov	r3, r2
- 8001286:	005b      	lsls	r3, r3, #1
- 8001288:	4413      	add	r3, r2
- 800128a:	00db      	lsls	r3, r3, #3
- 800128c:	461a      	mov	r2, r3
- 800128e:	683b      	ldr	r3, [r7, #0]
- 8001290:	4413      	add	r3, r2
- 8001292:	7ef9      	ldrb	r1, [r7, #27]
- 8001294:	7f7a      	ldrb	r2, [r7, #29]
- 8001296:	3a01      	subs	r2, #1
- 8001298:	7e38      	ldrb	r0, [r7, #24]
- 800129a:	fb00 f202 	mul.w	r2, r0, r2
- 800129e:	440a      	add	r2, r1
- 80012a0:	89f9      	ldrh	r1, [r7, #14]
- 80012a2:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]
+ 8001286:	7f3a      	ldrb	r2, [r7, #28]
+ 8001288:	4613      	mov	r3, r2
+ 800128a:	005b      	lsls	r3, r3, #1
+ 800128c:	4413      	add	r3, r2
+ 800128e:	00db      	lsls	r3, r3, #3
+ 8001290:	461a      	mov	r2, r3
+ 8001292:	683b      	ldr	r3, [r7, #0]
+ 8001294:	4413      	add	r3, r2
+ 8001296:	7ef9      	ldrb	r1, [r7, #27]
+ 8001298:	7f7a      	ldrb	r2, [r7, #29]
+ 800129a:	3a01      	subs	r2, #1
+ 800129c:	7e38      	ldrb	r0, [r7, #24]
+ 800129e:	fb00 f202 	mul.w	r2, r0, r2
+ 80012a2:	440a      	add	r2, r1
+ 80012a4:	89f9      	ldrh	r1, [r7, #14]
+ 80012a6:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]
 				data_counter = data_counter + 2;
- 80012a6:	7fbb      	ldrb	r3, [r7, #30]
- 80012a8:	3302      	adds	r3, #2
- 80012aa:	77bb      	strb	r3, [r7, #30]
+ 80012aa:	7fbb      	ldrb	r3, [r7, #30]
+ 80012ac:	3302      	adds	r3, #2
+ 80012ae:	77bb      	strb	r3, [r7, #30]
 			for(uint8_t current_cell = 0; current_cell < CELL_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
- 80012ac:	7efb      	ldrb	r3, [r7, #27]
- 80012ae:	3301      	adds	r3, #1
- 80012b0:	76fb      	strb	r3, [r7, #27]
- 80012b2:	7efa      	ldrb	r2, [r7, #27]
- 80012b4:	7e3b      	ldrb	r3, [r7, #24]
- 80012b6:	429a      	cmp	r2, r3
- 80012b8:	d3d4      	bcc.n	8001264 <LTC6811_rdcv+0x58>
+ 80012b0:	7efb      	ldrb	r3, [r7, #27]
+ 80012b2:	3301      	adds	r3, #1
+ 80012b4:	76fb      	strb	r3, [r7, #27]
+ 80012b6:	7efa      	ldrb	r2, [r7, #27]
+ 80012b8:	7e3b      	ldrb	r3, [r7, #24]
+ 80012ba:	429a      	cmp	r2, r3
+ 80012bc:	d3d4      	bcc.n	8001268 <LTC6811_rdcv+0x58>
 			}
 			received_pec = (cell_data[data_counter] << 8) + cell_data[data_counter + 1];
- 80012ba:	7fbb      	ldrb	r3, [r7, #30]
- 80012bc:	697a      	ldr	r2, [r7, #20]
- 80012be:	4413      	add	r3, r2
- 80012c0:	781b      	ldrb	r3, [r3, #0]
- 80012c2:	b29b      	uxth	r3, r3
- 80012c4:	021b      	lsls	r3, r3, #8
- 80012c6:	b29a      	uxth	r2, r3
- 80012c8:	7fbb      	ldrb	r3, [r7, #30]
- 80012ca:	3301      	adds	r3, #1
- 80012cc:	6979      	ldr	r1, [r7, #20]
- 80012ce:	440b      	add	r3, r1
- 80012d0:	781b      	ldrb	r3, [r3, #0]
- 80012d2:	b29b      	uxth	r3, r3
- 80012d4:	4413      	add	r3, r2
- 80012d6:	827b      	strh	r3, [r7, #18]
+ 80012be:	7fbb      	ldrb	r3, [r7, #30]
+ 80012c0:	697a      	ldr	r2, [r7, #20]
+ 80012c2:	4413      	add	r3, r2
+ 80012c4:	781b      	ldrb	r3, [r3, #0]
+ 80012c6:	b29b      	uxth	r3, r3
+ 80012c8:	021b      	lsls	r3, r3, #8
+ 80012ca:	b29a      	uxth	r2, r3
+ 80012cc:	7fbb      	ldrb	r3, [r7, #30]
+ 80012ce:	3301      	adds	r3, #1
+ 80012d0:	6979      	ldr	r1, [r7, #20]
+ 80012d2:	440b      	add	r3, r1
+ 80012d4:	781b      	ldrb	r3, [r3, #0]
+ 80012d6:	b29b      	uxth	r3, r3
+ 80012d8:	4413      	add	r3, r2
+ 80012da:	827b      	strh	r3, [r7, #18]
 			data_pec = pec15_calc(BYT_IN_REG, &cell_data[current_ic * NUM_RX_BYT]);
- 80012d8:	7f3b      	ldrb	r3, [r7, #28]
- 80012da:	7eba      	ldrb	r2, [r7, #26]
- 80012dc:	fb02 f303 	mul.w	r3, r2, r3
- 80012e0:	461a      	mov	r2, r3
- 80012e2:	697b      	ldr	r3, [r7, #20]
- 80012e4:	441a      	add	r2, r3
- 80012e6:	7e7b      	ldrb	r3, [r7, #25]
- 80012e8:	4611      	mov	r1, r2
- 80012ea:	4618      	mov	r0, r3
- 80012ec:	f000 faa4 	bl	8001838 <pec15_calc>
- 80012f0:	4603      	mov	r3, r0
- 80012f2:	823b      	strh	r3, [r7, #16]
+ 80012dc:	7f3b      	ldrb	r3, [r7, #28]
+ 80012de:	7eba      	ldrb	r2, [r7, #26]
+ 80012e0:	fb02 f303 	mul.w	r3, r2, r3
+ 80012e4:	461a      	mov	r2, r3
+ 80012e6:	697b      	ldr	r3, [r7, #20]
+ 80012e8:	441a      	add	r2, r3
+ 80012ea:	7e7b      	ldrb	r3, [r7, #25]
+ 80012ec:	4611      	mov	r1, r2
+ 80012ee:	4618      	mov	r0, r3
+ 80012f0:	f000 faa4 	bl	800183c <pec15_calc>
+ 80012f4:	4603      	mov	r3, r0
+ 80012f6:	823b      	strh	r3, [r7, #16]
 			if (received_pec != data_pec)
- 80012f4:	8a7a      	ldrh	r2, [r7, #18]
- 80012f6:	8a3b      	ldrh	r3, [r7, #16]
- 80012f8:	429a      	cmp	r2, r3
- 80012fa:	d001      	beq.n	8001300 <LTC6811_rdcv+0xf4>
+ 80012f8:	8a7a      	ldrh	r2, [r7, #18]
+ 80012fa:	8a3b      	ldrh	r3, [r7, #16]
+ 80012fc:	429a      	cmp	r2, r3
+ 80012fe:	d001      	beq.n	8001304 <LTC6811_rdcv+0xf4>
 			{
 			  pec_error = -1;
- 80012fc:	23ff      	movs	r3, #255	; 0xff
- 80012fe:	77fb      	strb	r3, [r7, #31]
+ 8001300:	23ff      	movs	r3, #255	; 0xff
+ 8001302:	77fb      	strb	r3, [r7, #31]
 			}
 			data_counter = data_counter + 2;
- 8001300:	7fbb      	ldrb	r3, [r7, #30]
- 8001302:	3302      	adds	r3, #2
- 8001304:	77bb      	strb	r3, [r7, #30]
+ 8001304:	7fbb      	ldrb	r3, [r7, #30]
+ 8001306:	3302      	adds	r3, #2
+ 8001308:	77bb      	strb	r3, [r7, #30]
 		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
- 8001306:	7f3b      	ldrb	r3, [r7, #28]
- 8001308:	3301      	adds	r3, #1
- 800130a:	773b      	strb	r3, [r7, #28]
- 800130c:	7f3a      	ldrb	r2, [r7, #28]
- 800130e:	79bb      	ldrb	r3, [r7, #6]
- 8001310:	429a      	cmp	r2, r3
- 8001312:	d3a4      	bcc.n	800125e <LTC6811_rdcv+0x52>
+ 800130a:	7f3b      	ldrb	r3, [r7, #28]
+ 800130c:	3301      	adds	r3, #1
+ 800130e:	773b      	strb	r3, [r7, #28]
+ 8001310:	7f3a      	ldrb	r2, [r7, #28]
+ 8001312:	79bb      	ldrb	r3, [r7, #6]
+ 8001314:	429a      	cmp	r2, r3
+ 8001316:	d3a4      	bcc.n	8001262 <LTC6811_rdcv+0x52>
 	for(uint8_t cell_reg = 1; cell_reg < 5; cell_reg++)	//executes once for each of the LTC6804 cell voltage registers
- 8001314:	7f7b      	ldrb	r3, [r7, #29]
- 8001316:	3301      	adds	r3, #1
- 8001318:	777b      	strb	r3, [r7, #29]
- 800131a:	7f7b      	ldrb	r3, [r7, #29]
- 800131c:	2b04      	cmp	r3, #4
- 800131e:	d993      	bls.n	8001248 <LTC6811_rdcv+0x3c>
+ 8001318:	7f7b      	ldrb	r3, [r7, #29]
+ 800131a:	3301      	adds	r3, #1
+ 800131c:	777b      	strb	r3, [r7, #29]
+ 800131e:	7f7b      	ldrb	r3, [r7, #29]
+ 8001320:	2b04      	cmp	r3, #4
+ 8001322:	d993      	bls.n	800124c <LTC6811_rdcv+0x3c>
 		}
 	}
 
 	free(cell_data);
- 8001320:	6978      	ldr	r0, [r7, #20]
- 8001322:	f004 ff51 	bl	80061c8 <free>
+ 8001324:	6978      	ldr	r0, [r7, #20]
+ 8001326:	f004 ff4f 	bl	80061c8 <free>
 	return(pec_error);
- 8001326:	7ffb      	ldrb	r3, [r7, #31]
+ 800132a:	7ffb      	ldrb	r3, [r7, #31]
 }
- 8001328:	4618      	mov	r0, r3
- 800132a:	3720      	adds	r7, #32
- 800132c:	46bd      	mov	sp, r7
- 800132e:	bd80      	pop	{r7, pc}
+ 800132c:	4618      	mov	r0, r3
+ 800132e:	3720      	adds	r7, #32
+ 8001330:	46bd      	mov	sp, r7
+ 8001332:	bd80      	pop	{r7, pc}
 
-08001330 <LTC6811_rdcv_reg>:
+08001334 <LTC6811_rdcv_reg>:
 
 void LTC6811_rdcv_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
 {
- 8001330:	b580      	push	{r7, lr}
- 8001332:	b084      	sub	sp, #16
- 8001334:	af00      	add	r7, sp, #0
- 8001336:	4603      	mov	r3, r0
- 8001338:	603a      	str	r2, [r7, #0]
- 800133a:	71fb      	strb	r3, [r7, #7]
- 800133c:	460b      	mov	r3, r1
- 800133e:	71bb      	strb	r3, [r7, #6]
+ 8001334:	b580      	push	{r7, lr}
+ 8001336:	b084      	sub	sp, #16
+ 8001338:	af00      	add	r7, sp, #0
+ 800133a:	4603      	mov	r3, r0
+ 800133c:	603a      	str	r2, [r7, #0]
+ 800133e:	71fb      	strb	r3, [r7, #7]
+ 8001340:	460b      	mov	r3, r1
+ 8001342:	71bb      	strb	r3, [r7, #6]
 	uint8_t RDCV[4];
 	uint16_t temp_pec;
 
 	switch(reg){
- 8001340:	79fb      	ldrb	r3, [r7, #7]
- 8001342:	3b01      	subs	r3, #1
- 8001344:	2b03      	cmp	r3, #3
- 8001346:	d817      	bhi.n	8001378 <LTC6811_rdcv_reg+0x48>
- 8001348:	a201      	add	r2, pc, #4	; (adr r2, 8001350 <LTC6811_rdcv_reg+0x20>)
- 800134a:	f852 f023 	ldr.w	pc, [r2, r3, lsl #2]
- 800134e:	bf00      	nop
- 8001350:	08001361 	.word	0x08001361
- 8001354:	08001367 	.word	0x08001367
- 8001358:	0800136d 	.word	0x0800136d
- 800135c:	08001373 	.word	0x08001373
+ 8001344:	79fb      	ldrb	r3, [r7, #7]
+ 8001346:	3b01      	subs	r3, #1
+ 8001348:	2b03      	cmp	r3, #3
+ 800134a:	d817      	bhi.n	800137c <LTC6811_rdcv_reg+0x48>
+ 800134c:	a201      	add	r2, pc, #4	; (adr r2, 8001354 <LTC6811_rdcv_reg+0x20>)
+ 800134e:	f852 f023 	ldr.w	pc, [r2, r3, lsl #2]
+ 8001352:	bf00      	nop
+ 8001354:	08001365 	.word	0x08001365
+ 8001358:	0800136b 	.word	0x0800136b
+ 800135c:	08001371 	.word	0x08001371
+ 8001360:	08001377 	.word	0x08001377
 		case 1: RDCV[1] = 0x04; break;
- 8001360:	2304      	movs	r3, #4
- 8001362:	727b      	strb	r3, [r7, #9]
- 8001364:	e008      	b.n	8001378 <LTC6811_rdcv_reg+0x48>
+ 8001364:	2304      	movs	r3, #4
+ 8001366:	727b      	strb	r3, [r7, #9]
+ 8001368:	e008      	b.n	800137c <LTC6811_rdcv_reg+0x48>
 		case 2: RDCV[1] = 0x06; break;
- 8001366:	2306      	movs	r3, #6
- 8001368:	727b      	strb	r3, [r7, #9]
- 800136a:	e005      	b.n	8001378 <LTC6811_rdcv_reg+0x48>
+ 800136a:	2306      	movs	r3, #6
+ 800136c:	727b      	strb	r3, [r7, #9]
+ 800136e:	e005      	b.n	800137c <LTC6811_rdcv_reg+0x48>
 		case 3: RDCV[1] = 0x08; break;
- 800136c:	2308      	movs	r3, #8
- 800136e:	727b      	strb	r3, [r7, #9]
- 8001370:	e002      	b.n	8001378 <LTC6811_rdcv_reg+0x48>
+ 8001370:	2308      	movs	r3, #8
+ 8001372:	727b      	strb	r3, [r7, #9]
+ 8001374:	e002      	b.n	800137c <LTC6811_rdcv_reg+0x48>
 		case 4: RDCV[1] = 0x0a; break;
- 8001372:	230a      	movs	r3, #10
- 8001374:	727b      	strb	r3, [r7, #9]
- 8001376:	bf00      	nop
+ 8001376:	230a      	movs	r3, #10
+ 8001378:	727b      	strb	r3, [r7, #9]
+ 800137a:	bf00      	nop
 	}
 
 	wakeup_idle();
- 8001378:	f7ff fda4 	bl	8000ec4 <wakeup_idle>
+ 800137c:	f7ff fda2 	bl	8000ec4 <wakeup_idle>
 
     //Register A-D = reg 1-4
     for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
- 800137c:	2300      	movs	r3, #0
- 800137e:	73fb      	strb	r3, [r7, #15]
- 8001380:	e02f      	b.n	80013e2 <LTC6811_rdcv_reg+0xb2>
+ 8001380:	2300      	movs	r3, #0
+ 8001382:	73fb      	strb	r3, [r7, #15]
+ 8001384:	e02f      	b.n	80013e6 <LTC6811_rdcv_reg+0xb2>
     {
     	RDCV[0] = 0x80 + (current_ic << 3);
- 8001382:	7bfb      	ldrb	r3, [r7, #15]
- 8001384:	00db      	lsls	r3, r3, #3
- 8001386:	b2db      	uxtb	r3, r3
- 8001388:	3b80      	subs	r3, #128	; 0x80
+ 8001386:	7bfb      	ldrb	r3, [r7, #15]
+ 8001388:	00db      	lsls	r3, r3, #3
  800138a:	b2db      	uxtb	r3, r3
- 800138c:	723b      	strb	r3, [r7, #8]
+ 800138c:	3b80      	subs	r3, #128	; 0x80
+ 800138e:	b2db      	uxtb	r3, r3
+ 8001390:	723b      	strb	r3, [r7, #8]
         temp_pec = pec15_calc(2, RDCV);
- 800138e:	f107 0308 	add.w	r3, r7, #8
- 8001392:	4619      	mov	r1, r3
- 8001394:	2002      	movs	r0, #2
- 8001396:	f000 fa4f 	bl	8001838 <pec15_calc>
- 800139a:	4603      	mov	r3, r0
- 800139c:	81bb      	strh	r3, [r7, #12]
+ 8001392:	f107 0308 	add.w	r3, r7, #8
+ 8001396:	4619      	mov	r1, r3
+ 8001398:	2002      	movs	r0, #2
+ 800139a:	f000 fa4f 	bl	800183c <pec15_calc>
+ 800139e:	4603      	mov	r3, r0
+ 80013a0:	81bb      	strh	r3, [r7, #12]
         RDCV[2] = (uint8_t)(temp_pec >> 8);
- 800139e:	89bb      	ldrh	r3, [r7, #12]
- 80013a0:	0a1b      	lsrs	r3, r3, #8
- 80013a2:	b29b      	uxth	r3, r3
- 80013a4:	b2db      	uxtb	r3, r3
- 80013a6:	72bb      	strb	r3, [r7, #10]
+ 80013a2:	89bb      	ldrh	r3, [r7, #12]
+ 80013a4:	0a1b      	lsrs	r3, r3, #8
+ 80013a6:	b29b      	uxth	r3, r3
+ 80013a8:	b2db      	uxtb	r3, r3
+ 80013aa:	72bb      	strb	r3, [r7, #10]
         RDCV[3] = (uint8_t)(temp_pec);
- 80013a8:	89bb      	ldrh	r3, [r7, #12]
- 80013aa:	b2db      	uxtb	r3, r3
- 80013ac:	72fb      	strb	r3, [r7, #11]
+ 80013ac:	89bb      	ldrh	r3, [r7, #12]
+ 80013ae:	b2db      	uxtb	r3, r3
+ 80013b0:	72fb      	strb	r3, [r7, #11]
         HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
- 80013ae:	2200      	movs	r2, #0
- 80013b0:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 80013b4:	480f      	ldr	r0, [pc, #60]	; (80013f4 <LTC6811_rdcv_reg+0xc4>)
- 80013b6:	f002 fce1 	bl	8003d7c <HAL_GPIO_WritePin>
+ 80013b2:	2200      	movs	r2, #0
+ 80013b4:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 80013b8:	480f      	ldr	r0, [pc, #60]	; (80013f8 <LTC6811_rdcv_reg+0xc4>)
+ 80013ba:	f002 fcdf 	bl	8003d7c <HAL_GPIO_WritePin>
         spi_write_read(RDCV, 4, &data[current_ic * 8], 8);
- 80013ba:	7bfb      	ldrb	r3, [r7, #15]
- 80013bc:	00db      	lsls	r3, r3, #3
- 80013be:	461a      	mov	r2, r3
- 80013c0:	683b      	ldr	r3, [r7, #0]
- 80013c2:	441a      	add	r2, r3
- 80013c4:	f107 0008 	add.w	r0, r7, #8
- 80013c8:	2308      	movs	r3, #8
- 80013ca:	2104      	movs	r1, #4
- 80013cc:	f7ff fd4c 	bl	8000e68 <spi_write_read>
+ 80013be:	7bfb      	ldrb	r3, [r7, #15]
+ 80013c0:	00db      	lsls	r3, r3, #3
+ 80013c2:	461a      	mov	r2, r3
+ 80013c4:	683b      	ldr	r3, [r7, #0]
+ 80013c6:	441a      	add	r2, r3
+ 80013c8:	f107 0008 	add.w	r0, r7, #8
+ 80013cc:	2308      	movs	r3, #8
+ 80013ce:	2104      	movs	r1, #4
+ 80013d0:	f7ff fd4a 	bl	8000e68 <spi_write_read>
         HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
- 80013d0:	2201      	movs	r2, #1
- 80013d2:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 80013d6:	4807      	ldr	r0, [pc, #28]	; (80013f4 <LTC6811_rdcv_reg+0xc4>)
- 80013d8:	f002 fcd0 	bl	8003d7c <HAL_GPIO_WritePin>
+ 80013d4:	2201      	movs	r2, #1
+ 80013d6:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 80013da:	4807      	ldr	r0, [pc, #28]	; (80013f8 <LTC6811_rdcv_reg+0xc4>)
+ 80013dc:	f002 fcce 	bl	8003d7c <HAL_GPIO_WritePin>
     for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
- 80013dc:	7bfb      	ldrb	r3, [r7, #15]
- 80013de:	3301      	adds	r3, #1
- 80013e0:	73fb      	strb	r3, [r7, #15]
- 80013e2:	7bfa      	ldrb	r2, [r7, #15]
- 80013e4:	79bb      	ldrb	r3, [r7, #6]
- 80013e6:	429a      	cmp	r2, r3
- 80013e8:	d3cb      	bcc.n	8001382 <LTC6811_rdcv_reg+0x52>
+ 80013e0:	7bfb      	ldrb	r3, [r7, #15]
+ 80013e2:	3301      	adds	r3, #1
+ 80013e4:	73fb      	strb	r3, [r7, #15]
+ 80013e6:	7bfa      	ldrb	r2, [r7, #15]
+ 80013e8:	79bb      	ldrb	r3, [r7, #6]
+ 80013ea:	429a      	cmp	r2, r3
+ 80013ec:	d3cb      	bcc.n	8001386 <LTC6811_rdcv_reg+0x52>
     }
 }
- 80013ea:	bf00      	nop
- 80013ec:	bf00      	nop
- 80013ee:	3710      	adds	r7, #16
- 80013f0:	46bd      	mov	sp, r7
- 80013f2:	bd80      	pop	{r7, pc}
- 80013f4:	40020000 	.word	0x40020000
+ 80013ee:	bf00      	nop
+ 80013f0:	bf00      	nop
+ 80013f2:	3710      	adds	r7, #16
+ 80013f4:	46bd      	mov	sp, r7
+ 80013f6:	bd80      	pop	{r7, pc}
+ 80013f8:	40020000 	.word	0x40020000
 
-080013f8 <LTC6811_rdaux>:
+080013fc <LTC6811_rdaux>:
 
 int8_t LTC6811_rdaux(uint8_t reg, uint8_t nIC, uint16_t aux_codes[][6])
 {
- 80013f8:	b580      	push	{r7, lr}
- 80013fa:	b088      	sub	sp, #32
- 80013fc:	af00      	add	r7, sp, #0
- 80013fe:	4603      	mov	r3, r0
- 8001400:	603a      	str	r2, [r7, #0]
- 8001402:	71fb      	strb	r3, [r7, #7]
- 8001404:	460b      	mov	r3, r1
- 8001406:	71bb      	strb	r3, [r7, #6]
+ 80013fc:	b580      	push	{r7, lr}
+ 80013fe:	b088      	sub	sp, #32
+ 8001400:	af00      	add	r7, sp, #0
+ 8001402:	4603      	mov	r3, r0
+ 8001404:	603a      	str	r2, [r7, #0]
+ 8001406:	71fb      	strb	r3, [r7, #7]
+ 8001408:	460b      	mov	r3, r1
+ 800140a:	71bb      	strb	r3, [r7, #6]
 	const uint8_t NUM_RX_BYT = 8;
- 8001408:	2308      	movs	r3, #8
- 800140a:	76bb      	strb	r3, [r7, #26]
+ 800140c:	2308      	movs	r3, #8
+ 800140e:	76bb      	strb	r3, [r7, #26]
 	const uint8_t BYT_IN_REG = 6;
- 800140c:	2306      	movs	r3, #6
- 800140e:	767b      	strb	r3, [r7, #25]
+ 8001410:	2306      	movs	r3, #6
+ 8001412:	767b      	strb	r3, [r7, #25]
 	const uint8_t AUX_IN_REG = 3;
- 8001410:	2303      	movs	r3, #3
- 8001412:	763b      	strb	r3, [r7, #24]
+ 8001414:	2303      	movs	r3, #3
+ 8001416:	763b      	strb	r3, [r7, #24]
 
 	uint8_t pec_error = 0; //pec Error wenn -1
- 8001414:	2300      	movs	r3, #0
- 8001416:	77fb      	strb	r3, [r7, #31]
+ 8001418:	2300      	movs	r3, #0
+ 800141a:	77fb      	strb	r3, [r7, #31]
 	uint16_t received_pec;
 	uint16_t data_pec;
 	uint8_t data_counter = 0;
- 8001418:	2300      	movs	r3, #0
- 800141a:	77bb      	strb	r3, [r7, #30]
+ 800141c:	2300      	movs	r3, #0
+ 800141e:	77bb      	strb	r3, [r7, #30]
 	uint8_t *aux_data;
 
 	aux_data = (uint8_t *)malloc((NUM_RX_BYT * nIC) * sizeof(uint8_t));
- 800141c:	7ebb      	ldrb	r3, [r7, #26]
- 800141e:	79ba      	ldrb	r2, [r7, #6]
- 8001420:	fb02 f303 	mul.w	r3, r2, r3
- 8001424:	4618      	mov	r0, r3
- 8001426:	f004 fec7 	bl	80061b8 <malloc>
- 800142a:	4603      	mov	r3, r0
- 800142c:	617b      	str	r3, [r7, #20]
+ 8001420:	7ebb      	ldrb	r3, [r7, #26]
+ 8001422:	79ba      	ldrb	r2, [r7, #6]
+ 8001424:	fb02 f303 	mul.w	r3, r2, r3
+ 8001428:	4618      	mov	r0, r3
+ 800142a:	f004 fec5 	bl	80061b8 <malloc>
+ 800142e:	4603      	mov	r3, r0
+ 8001430:	617b      	str	r3, [r7, #20]
 
 	for(uint8_t aux_reg = 1; aux_reg < AUX_IN_REG; aux_reg++)	//executes once for each of the LTC6804 cell voltage registers
- 800142e:	2301      	movs	r3, #1
- 8001430:	777b      	strb	r3, [r7, #29]
- 8001432:	e068      	b.n	8001506 <LTC6811_rdaux+0x10e>
+ 8001432:	2301      	movs	r3, #1
+ 8001434:	777b      	strb	r3, [r7, #29]
+ 8001436:	e068      	b.n	800150a <LTC6811_rdaux+0x10e>
 	{
 		data_counter = 0;
- 8001434:	2300      	movs	r3, #0
- 8001436:	77bb      	strb	r3, [r7, #30]
+ 8001438:	2300      	movs	r3, #0
+ 800143a:	77bb      	strb	r3, [r7, #30]
 		LTC6811_rdaux_reg(aux_reg, nIC, aux_data);
- 8001438:	79b9      	ldrb	r1, [r7, #6]
- 800143a:	7f7b      	ldrb	r3, [r7, #29]
- 800143c:	697a      	ldr	r2, [r7, #20]
- 800143e:	4618      	mov	r0, r3
- 8001440:	f000 f86e 	bl	8001520 <LTC6811_rdaux_reg>
+ 800143c:	79b9      	ldrb	r1, [r7, #6]
+ 800143e:	7f7b      	ldrb	r3, [r7, #29]
+ 8001440:	697a      	ldr	r2, [r7, #20]
+ 8001442:	4618      	mov	r0, r3
+ 8001444:	f000 f86e 	bl	8001524 <LTC6811_rdaux_reg>
 
 		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
- 8001444:	2300      	movs	r3, #0
- 8001446:	773b      	strb	r3, [r7, #28]
- 8001448:	e056      	b.n	80014f8 <LTC6811_rdaux+0x100>
+ 8001448:	2300      	movs	r3, #0
+ 800144a:	773b      	strb	r3, [r7, #28]
+ 800144c:	e056      	b.n	80014fc <LTC6811_rdaux+0x100>
 		{
 			 // current_ic is used as an IC counter
 			for(uint8_t current_cell = 0; current_cell < AUX_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
- 800144a:	2300      	movs	r3, #0
- 800144c:	76fb      	strb	r3, [r7, #27]
- 800144e:	e026      	b.n	800149e <LTC6811_rdaux+0xa6>
+ 800144e:	2300      	movs	r3, #0
+ 8001450:	76fb      	strb	r3, [r7, #27]
+ 8001452:	e026      	b.n	80014a2 <LTC6811_rdaux+0xa6>
 			{
 				uint16_t parsed_cell = aux_data[data_counter] | (aux_data[data_counter + 1] << 8);
- 8001450:	7fbb      	ldrb	r3, [r7, #30]
- 8001452:	697a      	ldr	r2, [r7, #20]
- 8001454:	4413      	add	r3, r2
- 8001456:	781b      	ldrb	r3, [r3, #0]
- 8001458:	b21a      	sxth	r2, r3
- 800145a:	7fbb      	ldrb	r3, [r7, #30]
- 800145c:	3301      	adds	r3, #1
- 800145e:	6979      	ldr	r1, [r7, #20]
- 8001460:	440b      	add	r3, r1
- 8001462:	781b      	ldrb	r3, [r3, #0]
- 8001464:	021b      	lsls	r3, r3, #8
- 8001466:	b21b      	sxth	r3, r3
- 8001468:	4313      	orrs	r3, r2
+ 8001454:	7fbb      	ldrb	r3, [r7, #30]
+ 8001456:	697a      	ldr	r2, [r7, #20]
+ 8001458:	4413      	add	r3, r2
+ 800145a:	781b      	ldrb	r3, [r3, #0]
+ 800145c:	b21a      	sxth	r2, r3
+ 800145e:	7fbb      	ldrb	r3, [r7, #30]
+ 8001460:	3301      	adds	r3, #1
+ 8001462:	6979      	ldr	r1, [r7, #20]
+ 8001464:	440b      	add	r3, r1
+ 8001466:	781b      	ldrb	r3, [r3, #0]
+ 8001468:	021b      	lsls	r3, r3, #8
  800146a:	b21b      	sxth	r3, r3
- 800146c:	81fb      	strh	r3, [r7, #14]
+ 800146c:	4313      	orrs	r3, r2
+ 800146e:	b21b      	sxth	r3, r3
+ 8001470:	81fb      	strh	r3, [r7, #14]
 				aux_codes[current_ic][current_cell + ((aux_reg - 1) * AUX_IN_REG)] = parsed_cell;
- 800146e:	7f3a      	ldrb	r2, [r7, #28]
- 8001470:	4613      	mov	r3, r2
- 8001472:	005b      	lsls	r3, r3, #1
- 8001474:	4413      	add	r3, r2
- 8001476:	009b      	lsls	r3, r3, #2
- 8001478:	461a      	mov	r2, r3
- 800147a:	683b      	ldr	r3, [r7, #0]
- 800147c:	4413      	add	r3, r2
- 800147e:	7ef9      	ldrb	r1, [r7, #27]
- 8001480:	7f7a      	ldrb	r2, [r7, #29]
- 8001482:	3a01      	subs	r2, #1
- 8001484:	7e38      	ldrb	r0, [r7, #24]
- 8001486:	fb00 f202 	mul.w	r2, r0, r2
- 800148a:	440a      	add	r2, r1
- 800148c:	89f9      	ldrh	r1, [r7, #14]
- 800148e:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]
+ 8001472:	7f3a      	ldrb	r2, [r7, #28]
+ 8001474:	4613      	mov	r3, r2
+ 8001476:	005b      	lsls	r3, r3, #1
+ 8001478:	4413      	add	r3, r2
+ 800147a:	009b      	lsls	r3, r3, #2
+ 800147c:	461a      	mov	r2, r3
+ 800147e:	683b      	ldr	r3, [r7, #0]
+ 8001480:	4413      	add	r3, r2
+ 8001482:	7ef9      	ldrb	r1, [r7, #27]
+ 8001484:	7f7a      	ldrb	r2, [r7, #29]
+ 8001486:	3a01      	subs	r2, #1
+ 8001488:	7e38      	ldrb	r0, [r7, #24]
+ 800148a:	fb00 f202 	mul.w	r2, r0, r2
+ 800148e:	440a      	add	r2, r1
+ 8001490:	89f9      	ldrh	r1, [r7, #14]
+ 8001492:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]
 				data_counter += 2;
- 8001492:	7fbb      	ldrb	r3, [r7, #30]
- 8001494:	3302      	adds	r3, #2
- 8001496:	77bb      	strb	r3, [r7, #30]
+ 8001496:	7fbb      	ldrb	r3, [r7, #30]
+ 8001498:	3302      	adds	r3, #2
+ 800149a:	77bb      	strb	r3, [r7, #30]
 			for(uint8_t current_cell = 0; current_cell < AUX_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
- 8001498:	7efb      	ldrb	r3, [r7, #27]
- 800149a:	3301      	adds	r3, #1
- 800149c:	76fb      	strb	r3, [r7, #27]
- 800149e:	7efa      	ldrb	r2, [r7, #27]
- 80014a0:	7e3b      	ldrb	r3, [r7, #24]
- 80014a2:	429a      	cmp	r2, r3
- 80014a4:	d3d4      	bcc.n	8001450 <LTC6811_rdaux+0x58>
+ 800149c:	7efb      	ldrb	r3, [r7, #27]
+ 800149e:	3301      	adds	r3, #1
+ 80014a0:	76fb      	strb	r3, [r7, #27]
+ 80014a2:	7efa      	ldrb	r2, [r7, #27]
+ 80014a4:	7e3b      	ldrb	r3, [r7, #24]
+ 80014a6:	429a      	cmp	r2, r3
+ 80014a8:	d3d4      	bcc.n	8001454 <LTC6811_rdaux+0x58>
 			}
 			received_pec = (aux_data[data_counter] << 8) + aux_data[data_counter + 1];
- 80014a6:	7fbb      	ldrb	r3, [r7, #30]
- 80014a8:	697a      	ldr	r2, [r7, #20]
- 80014aa:	4413      	add	r3, r2
- 80014ac:	781b      	ldrb	r3, [r3, #0]
- 80014ae:	b29b      	uxth	r3, r3
- 80014b0:	021b      	lsls	r3, r3, #8
- 80014b2:	b29a      	uxth	r2, r3
- 80014b4:	7fbb      	ldrb	r3, [r7, #30]
- 80014b6:	3301      	adds	r3, #1
- 80014b8:	6979      	ldr	r1, [r7, #20]
- 80014ba:	440b      	add	r3, r1
- 80014bc:	781b      	ldrb	r3, [r3, #0]
- 80014be:	b29b      	uxth	r3, r3
- 80014c0:	4413      	add	r3, r2
- 80014c2:	827b      	strh	r3, [r7, #18]
+ 80014aa:	7fbb      	ldrb	r3, [r7, #30]
+ 80014ac:	697a      	ldr	r2, [r7, #20]
+ 80014ae:	4413      	add	r3, r2
+ 80014b0:	781b      	ldrb	r3, [r3, #0]
+ 80014b2:	b29b      	uxth	r3, r3
+ 80014b4:	021b      	lsls	r3, r3, #8
+ 80014b6:	b29a      	uxth	r2, r3
+ 80014b8:	7fbb      	ldrb	r3, [r7, #30]
+ 80014ba:	3301      	adds	r3, #1
+ 80014bc:	6979      	ldr	r1, [r7, #20]
+ 80014be:	440b      	add	r3, r1
+ 80014c0:	781b      	ldrb	r3, [r3, #0]
+ 80014c2:	b29b      	uxth	r3, r3
+ 80014c4:	4413      	add	r3, r2
+ 80014c6:	827b      	strh	r3, [r7, #18]
 			data_pec = pec15_calc(BYT_IN_REG, &aux_data[current_ic * NUM_RX_BYT]);
- 80014c4:	7f3b      	ldrb	r3, [r7, #28]
- 80014c6:	7eba      	ldrb	r2, [r7, #26]
- 80014c8:	fb02 f303 	mul.w	r3, r2, r3
- 80014cc:	461a      	mov	r2, r3
- 80014ce:	697b      	ldr	r3, [r7, #20]
- 80014d0:	441a      	add	r2, r3
- 80014d2:	7e7b      	ldrb	r3, [r7, #25]
- 80014d4:	4611      	mov	r1, r2
- 80014d6:	4618      	mov	r0, r3
- 80014d8:	f000 f9ae 	bl	8001838 <pec15_calc>
- 80014dc:	4603      	mov	r3, r0
- 80014de:	823b      	strh	r3, [r7, #16]
+ 80014c8:	7f3b      	ldrb	r3, [r7, #28]
+ 80014ca:	7eba      	ldrb	r2, [r7, #26]
+ 80014cc:	fb02 f303 	mul.w	r3, r2, r3
+ 80014d0:	461a      	mov	r2, r3
+ 80014d2:	697b      	ldr	r3, [r7, #20]
+ 80014d4:	441a      	add	r2, r3
+ 80014d6:	7e7b      	ldrb	r3, [r7, #25]
+ 80014d8:	4611      	mov	r1, r2
+ 80014da:	4618      	mov	r0, r3
+ 80014dc:	f000 f9ae 	bl	800183c <pec15_calc>
+ 80014e0:	4603      	mov	r3, r0
+ 80014e2:	823b      	strh	r3, [r7, #16]
 			if (received_pec != data_pec)
- 80014e0:	8a7a      	ldrh	r2, [r7, #18]
- 80014e2:	8a3b      	ldrh	r3, [r7, #16]
- 80014e4:	429a      	cmp	r2, r3
- 80014e6:	d001      	beq.n	80014ec <LTC6811_rdaux+0xf4>
+ 80014e4:	8a7a      	ldrh	r2, [r7, #18]
+ 80014e6:	8a3b      	ldrh	r3, [r7, #16]
+ 80014e8:	429a      	cmp	r2, r3
+ 80014ea:	d001      	beq.n	80014f0 <LTC6811_rdaux+0xf4>
 			{
 			  pec_error = -1;
- 80014e8:	23ff      	movs	r3, #255	; 0xff
- 80014ea:	77fb      	strb	r3, [r7, #31]
+ 80014ec:	23ff      	movs	r3, #255	; 0xff
+ 80014ee:	77fb      	strb	r3, [r7, #31]
 			}
 			data_counter += 2;
- 80014ec:	7fbb      	ldrb	r3, [r7, #30]
- 80014ee:	3302      	adds	r3, #2
- 80014f0:	77bb      	strb	r3, [r7, #30]
+ 80014f0:	7fbb      	ldrb	r3, [r7, #30]
+ 80014f2:	3302      	adds	r3, #2
+ 80014f4:	77bb      	strb	r3, [r7, #30]
 		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
- 80014f2:	7f3b      	ldrb	r3, [r7, #28]
- 80014f4:	3301      	adds	r3, #1
- 80014f6:	773b      	strb	r3, [r7, #28]
- 80014f8:	7f3a      	ldrb	r2, [r7, #28]
- 80014fa:	79bb      	ldrb	r3, [r7, #6]
- 80014fc:	429a      	cmp	r2, r3
- 80014fe:	d3a4      	bcc.n	800144a <LTC6811_rdaux+0x52>
+ 80014f6:	7f3b      	ldrb	r3, [r7, #28]
+ 80014f8:	3301      	adds	r3, #1
+ 80014fa:	773b      	strb	r3, [r7, #28]
+ 80014fc:	7f3a      	ldrb	r2, [r7, #28]
+ 80014fe:	79bb      	ldrb	r3, [r7, #6]
+ 8001500:	429a      	cmp	r2, r3
+ 8001502:	d3a4      	bcc.n	800144e <LTC6811_rdaux+0x52>
 	for(uint8_t aux_reg = 1; aux_reg < AUX_IN_REG; aux_reg++)	//executes once for each of the LTC6804 cell voltage registers
- 8001500:	7f7b      	ldrb	r3, [r7, #29]
- 8001502:	3301      	adds	r3, #1
- 8001504:	777b      	strb	r3, [r7, #29]
- 8001506:	7f7a      	ldrb	r2, [r7, #29]
- 8001508:	7e3b      	ldrb	r3, [r7, #24]
- 800150a:	429a      	cmp	r2, r3
- 800150c:	d392      	bcc.n	8001434 <LTC6811_rdaux+0x3c>
+ 8001504:	7f7b      	ldrb	r3, [r7, #29]
+ 8001506:	3301      	adds	r3, #1
+ 8001508:	777b      	strb	r3, [r7, #29]
+ 800150a:	7f7a      	ldrb	r2, [r7, #29]
+ 800150c:	7e3b      	ldrb	r3, [r7, #24]
+ 800150e:	429a      	cmp	r2, r3
+ 8001510:	d392      	bcc.n	8001438 <LTC6811_rdaux+0x3c>
 		}
 	}
 
 	free(aux_data);
- 800150e:	6978      	ldr	r0, [r7, #20]
- 8001510:	f004 fe5a 	bl	80061c8 <free>
+ 8001512:	6978      	ldr	r0, [r7, #20]
+ 8001514:	f004 fe58 	bl	80061c8 <free>
 	return(pec_error);
- 8001514:	f997 301f 	ldrsb.w	r3, [r7, #31]
+ 8001518:	f997 301f 	ldrsb.w	r3, [r7, #31]
 }
- 8001518:	4618      	mov	r0, r3
- 800151a:	3720      	adds	r7, #32
- 800151c:	46bd      	mov	sp, r7
- 800151e:	bd80      	pop	{r7, pc}
+ 800151c:	4618      	mov	r0, r3
+ 800151e:	3720      	adds	r7, #32
+ 8001520:	46bd      	mov	sp, r7
+ 8001522:	bd80      	pop	{r7, pc}
 
-08001520 <LTC6811_rdaux_reg>:
+08001524 <LTC6811_rdaux_reg>:
 
 void LTC6811_rdaux_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
 {
- 8001520:	b580      	push	{r7, lr}
- 8001522:	b084      	sub	sp, #16
- 8001524:	af00      	add	r7, sp, #0
- 8001526:	4603      	mov	r3, r0
- 8001528:	603a      	str	r2, [r7, #0]
- 800152a:	71fb      	strb	r3, [r7, #7]
- 800152c:	460b      	mov	r3, r1
- 800152e:	71bb      	strb	r3, [r7, #6]
+ 8001524:	b580      	push	{r7, lr}
+ 8001526:	b084      	sub	sp, #16
+ 8001528:	af00      	add	r7, sp, #0
+ 800152a:	4603      	mov	r3, r0
+ 800152c:	603a      	str	r2, [r7, #0]
+ 800152e:	71fb      	strb	r3, [r7, #7]
+ 8001530:	460b      	mov	r3, r1
+ 8001532:	71bb      	strb	r3, [r7, #6]
 	uint8_t RDAUX[4];
 	uint16_t temp_pec;
 
 	switch(reg){
- 8001530:	79fb      	ldrb	r3, [r7, #7]
- 8001532:	2b01      	cmp	r3, #1
- 8001534:	d002      	beq.n	800153c <LTC6811_rdaux_reg+0x1c>
- 8001536:	2b02      	cmp	r3, #2
- 8001538:	d003      	beq.n	8001542 <LTC6811_rdaux_reg+0x22>
- 800153a:	e005      	b.n	8001548 <LTC6811_rdaux_reg+0x28>
+ 8001534:	79fb      	ldrb	r3, [r7, #7]
+ 8001536:	2b01      	cmp	r3, #1
+ 8001538:	d002      	beq.n	8001540 <LTC6811_rdaux_reg+0x1c>
+ 800153a:	2b02      	cmp	r3, #2
+ 800153c:	d003      	beq.n	8001546 <LTC6811_rdaux_reg+0x22>
+ 800153e:	e005      	b.n	800154c <LTC6811_rdaux_reg+0x28>
 		case 1: RDAUX[1] = 0xC; break;
- 800153c:	230c      	movs	r3, #12
- 800153e:	727b      	strb	r3, [r7, #9]
- 8001540:	e002      	b.n	8001548 <LTC6811_rdaux_reg+0x28>
+ 8001540:	230c      	movs	r3, #12
+ 8001542:	727b      	strb	r3, [r7, #9]
+ 8001544:	e002      	b.n	800154c <LTC6811_rdaux_reg+0x28>
 		case 2: RDAUX[1] = 0xE; break;
- 8001542:	230e      	movs	r3, #14
- 8001544:	727b      	strb	r3, [r7, #9]
- 8001546:	bf00      	nop
+ 8001546:	230e      	movs	r3, #14
+ 8001548:	727b      	strb	r3, [r7, #9]
+ 800154a:	bf00      	nop
 	}
 
 	wakeup_idle();
- 8001548:	f7ff fcbc 	bl	8000ec4 <wakeup_idle>
+ 800154c:	f7ff fcba 	bl	8000ec4 <wakeup_idle>
 
     //Register A-D = reg 1-4
     for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
- 800154c:	2300      	movs	r3, #0
- 800154e:	73fb      	strb	r3, [r7, #15]
- 8001550:	e02f      	b.n	80015b2 <LTC6811_rdaux_reg+0x92>
+ 8001550:	2300      	movs	r3, #0
+ 8001552:	73fb      	strb	r3, [r7, #15]
+ 8001554:	e02f      	b.n	80015b6 <LTC6811_rdaux_reg+0x92>
     {
     	RDAUX[0] = 0x80 + (current_ic << 3);
- 8001552:	7bfb      	ldrb	r3, [r7, #15]
- 8001554:	00db      	lsls	r3, r3, #3
- 8001556:	b2db      	uxtb	r3, r3
- 8001558:	3b80      	subs	r3, #128	; 0x80
+ 8001556:	7bfb      	ldrb	r3, [r7, #15]
+ 8001558:	00db      	lsls	r3, r3, #3
  800155a:	b2db      	uxtb	r3, r3
- 800155c:	723b      	strb	r3, [r7, #8]
+ 800155c:	3b80      	subs	r3, #128	; 0x80
+ 800155e:	b2db      	uxtb	r3, r3
+ 8001560:	723b      	strb	r3, [r7, #8]
         temp_pec = pec15_calc(2, RDAUX);
- 800155e:	f107 0308 	add.w	r3, r7, #8
- 8001562:	4619      	mov	r1, r3
- 8001564:	2002      	movs	r0, #2
- 8001566:	f000 f967 	bl	8001838 <pec15_calc>
- 800156a:	4603      	mov	r3, r0
- 800156c:	81bb      	strh	r3, [r7, #12]
+ 8001562:	f107 0308 	add.w	r3, r7, #8
+ 8001566:	4619      	mov	r1, r3
+ 8001568:	2002      	movs	r0, #2
+ 800156a:	f000 f967 	bl	800183c <pec15_calc>
+ 800156e:	4603      	mov	r3, r0
+ 8001570:	81bb      	strh	r3, [r7, #12]
         RDAUX[2] = (uint8_t)(temp_pec >> 8);
- 800156e:	89bb      	ldrh	r3, [r7, #12]
- 8001570:	0a1b      	lsrs	r3, r3, #8
- 8001572:	b29b      	uxth	r3, r3
- 8001574:	b2db      	uxtb	r3, r3
- 8001576:	72bb      	strb	r3, [r7, #10]
+ 8001572:	89bb      	ldrh	r3, [r7, #12]
+ 8001574:	0a1b      	lsrs	r3, r3, #8
+ 8001576:	b29b      	uxth	r3, r3
+ 8001578:	b2db      	uxtb	r3, r3
+ 800157a:	72bb      	strb	r3, [r7, #10]
         RDAUX[3] = (uint8_t)(temp_pec);
- 8001578:	89bb      	ldrh	r3, [r7, #12]
- 800157a:	b2db      	uxtb	r3, r3
- 800157c:	72fb      	strb	r3, [r7, #11]
+ 800157c:	89bb      	ldrh	r3, [r7, #12]
+ 800157e:	b2db      	uxtb	r3, r3
+ 8001580:	72fb      	strb	r3, [r7, #11]
         HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
- 800157e:	2200      	movs	r2, #0
- 8001580:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 8001584:	480f      	ldr	r0, [pc, #60]	; (80015c4 <LTC6811_rdaux_reg+0xa4>)
- 8001586:	f002 fbf9 	bl	8003d7c <HAL_GPIO_WritePin>
+ 8001582:	2200      	movs	r2, #0
+ 8001584:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 8001588:	480f      	ldr	r0, [pc, #60]	; (80015c8 <LTC6811_rdaux_reg+0xa4>)
+ 800158a:	f002 fbf7 	bl	8003d7c <HAL_GPIO_WritePin>
         spi_write_read(RDAUX, 4, &data[current_ic * 8], 8);
- 800158a:	7bfb      	ldrb	r3, [r7, #15]
- 800158c:	00db      	lsls	r3, r3, #3
- 800158e:	461a      	mov	r2, r3
- 8001590:	683b      	ldr	r3, [r7, #0]
- 8001592:	441a      	add	r2, r3
- 8001594:	f107 0008 	add.w	r0, r7, #8
- 8001598:	2308      	movs	r3, #8
- 800159a:	2104      	movs	r1, #4
- 800159c:	f7ff fc64 	bl	8000e68 <spi_write_read>
+ 800158e:	7bfb      	ldrb	r3, [r7, #15]
+ 8001590:	00db      	lsls	r3, r3, #3
+ 8001592:	461a      	mov	r2, r3
+ 8001594:	683b      	ldr	r3, [r7, #0]
+ 8001596:	441a      	add	r2, r3
+ 8001598:	f107 0008 	add.w	r0, r7, #8
+ 800159c:	2308      	movs	r3, #8
+ 800159e:	2104      	movs	r1, #4
+ 80015a0:	f7ff fc62 	bl	8000e68 <spi_write_read>
         HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
- 80015a0:	2201      	movs	r2, #1
- 80015a2:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 80015a6:	4807      	ldr	r0, [pc, #28]	; (80015c4 <LTC6811_rdaux_reg+0xa4>)
- 80015a8:	f002 fbe8 	bl	8003d7c <HAL_GPIO_WritePin>
+ 80015a4:	2201      	movs	r2, #1
+ 80015a6:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 80015aa:	4807      	ldr	r0, [pc, #28]	; (80015c8 <LTC6811_rdaux_reg+0xa4>)
+ 80015ac:	f002 fbe6 	bl	8003d7c <HAL_GPIO_WritePin>
     for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
- 80015ac:	7bfb      	ldrb	r3, [r7, #15]
- 80015ae:	3301      	adds	r3, #1
- 80015b0:	73fb      	strb	r3, [r7, #15]
- 80015b2:	7bfa      	ldrb	r2, [r7, #15]
- 80015b4:	79bb      	ldrb	r3, [r7, #6]
- 80015b6:	429a      	cmp	r2, r3
- 80015b8:	d3cb      	bcc.n	8001552 <LTC6811_rdaux_reg+0x32>
+ 80015b0:	7bfb      	ldrb	r3, [r7, #15]
+ 80015b2:	3301      	adds	r3, #1
+ 80015b4:	73fb      	strb	r3, [r7, #15]
+ 80015b6:	7bfa      	ldrb	r2, [r7, #15]
+ 80015b8:	79bb      	ldrb	r3, [r7, #6]
+ 80015ba:	429a      	cmp	r2, r3
+ 80015bc:	d3cb      	bcc.n	8001556 <LTC6811_rdaux_reg+0x32>
     }
 }
- 80015ba:	bf00      	nop
- 80015bc:	bf00      	nop
- 80015be:	3710      	adds	r7, #16
- 80015c0:	46bd      	mov	sp, r7
- 80015c2:	bd80      	pop	{r7, pc}
- 80015c4:	40020000 	.word	0x40020000
+ 80015be:	bf00      	nop
+ 80015c0:	bf00      	nop
+ 80015c2:	3710      	adds	r7, #16
+ 80015c4:	46bd      	mov	sp, r7
+ 80015c6:	bd80      	pop	{r7, pc}
+ 80015c8:	40020000 	.word	0x40020000
 
-080015c8 <LTC6811_rdstatb>:
+080015cc <LTC6811_rdstatb>:
 
 
 
 int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[], uint8_t r_statb[][6])
 {
- 80015c8:	b580      	push	{r7, lr}
- 80015ca:	b08c      	sub	sp, #48	; 0x30
- 80015cc:	af00      	add	r7, sp, #0
- 80015ce:	60b9      	str	r1, [r7, #8]
- 80015d0:	607a      	str	r2, [r7, #4]
- 80015d2:	603b      	str	r3, [r7, #0]
- 80015d4:	4603      	mov	r3, r0
- 80015d6:	73fb      	strb	r3, [r7, #15]
+ 80015cc:	b580      	push	{r7, lr}
+ 80015ce:	b08c      	sub	sp, #48	; 0x30
+ 80015d0:	af00      	add	r7, sp, #0
+ 80015d2:	60b9      	str	r1, [r7, #8]
+ 80015d4:	607a      	str	r2, [r7, #4]
+ 80015d6:	603b      	str	r3, [r7, #0]
+ 80015d8:	4603      	mov	r3, r0
+ 80015da:	73fb      	strb	r3, [r7, #15]
   const uint8_t BYTES_IN_REG = 8;
- 80015d8:	2308      	movs	r3, #8
- 80015da:	f887 3022 	strb.w	r3, [r7, #34]	; 0x22
+ 80015dc:	2308      	movs	r3, #8
+ 80015de:	f887 3022 	strb.w	r3, [r7, #34]	; 0x22
 
   uint8_t cmd[4];
   uint8_t *rx_data;
   int8_t pec_error = 0;
- 80015de:	2300      	movs	r3, #0
- 80015e0:	f887 302f 	strb.w	r3, [r7, #47]	; 0x2f
+ 80015e2:	2300      	movs	r3, #0
+ 80015e4:	f887 302f 	strb.w	r3, [r7, #47]	; 0x2f
   uint16_t data_pec;
   uint16_t received_pec;
   rx_data = (uint8_t *)malloc((8 * total_ic) * sizeof(uint8_t));
- 80015e4:	7bfb      	ldrb	r3, [r7, #15]
- 80015e6:	00db      	lsls	r3, r3, #3
- 80015e8:	4618      	mov	r0, r3
- 80015ea:	f004 fde5 	bl	80061b8 <malloc>
- 80015ee:	4603      	mov	r3, r0
- 80015f0:	61fb      	str	r3, [r7, #28]
+ 80015e8:	7bfb      	ldrb	r3, [r7, #15]
+ 80015ea:	00db      	lsls	r3, r3, #3
+ 80015ec:	4618      	mov	r0, r3
+ 80015ee:	f004 fde3 	bl	80061b8 <malloc>
+ 80015f2:	4603      	mov	r3, r0
+ 80015f4:	61fb      	str	r3, [r7, #28]
   //1
   cmd[0] = 0x00;
- 80015f2:	2300      	movs	r3, #0
- 80015f4:	753b      	strb	r3, [r7, #20]
+ 80015f6:	2300      	movs	r3, #0
+ 80015f8:	753b      	strb	r3, [r7, #20]
   cmd[1] = 0x12;
- 80015f6:	2312      	movs	r3, #18
- 80015f8:	757b      	strb	r3, [r7, #21]
+ 80015fa:	2312      	movs	r3, #18
+ 80015fc:	757b      	strb	r3, [r7, #21]
 
   //2
   wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
- 80015fa:	f7ff fc63 	bl	8000ec4 <wakeup_idle>
+ 80015fe:	f7ff fc61 	bl	8000ec4 <wakeup_idle>
   //3
   for (int current_ic = 0; current_ic < total_ic; current_ic++)
- 80015fe:	2300      	movs	r3, #0
- 8001600:	62bb      	str	r3, [r7, #40]	; 0x28
- 8001602:	e030      	b.n	8001666 <LTC6811_rdstatb+0x9e>
+ 8001602:	2300      	movs	r3, #0
+ 8001604:	62bb      	str	r3, [r7, #40]	; 0x28
+ 8001606:	e030      	b.n	800166a <LTC6811_rdstatb+0x9e>
   {
     cmd[0] = 0x80 + (current_ic << 3); //Setting address
- 8001604:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 8001606:	b2db      	uxtb	r3, r3
- 8001608:	00db      	lsls	r3, r3, #3
+ 8001608:	6abb      	ldr	r3, [r7, #40]	; 0x28
  800160a:	b2db      	uxtb	r3, r3
- 800160c:	3b80      	subs	r3, #128	; 0x80
+ 800160c:	00db      	lsls	r3, r3, #3
  800160e:	b2db      	uxtb	r3, r3
- 8001610:	753b      	strb	r3, [r7, #20]
+ 8001610:	3b80      	subs	r3, #128	; 0x80
+ 8001612:	b2db      	uxtb	r3, r3
+ 8001614:	753b      	strb	r3, [r7, #20]
     data_pec = pec15_calc(2, cmd);
- 8001612:	f107 0314 	add.w	r3, r7, #20
- 8001616:	4619      	mov	r1, r3
- 8001618:	2002      	movs	r0, #2
- 800161a:	f000 f90d 	bl	8001838 <pec15_calc>
- 800161e:	4603      	mov	r3, r0
- 8001620:	833b      	strh	r3, [r7, #24]
+ 8001616:	f107 0314 	add.w	r3, r7, #20
+ 800161a:	4619      	mov	r1, r3
+ 800161c:	2002      	movs	r0, #2
+ 800161e:	f000 f90d 	bl	800183c <pec15_calc>
+ 8001622:	4603      	mov	r3, r0
+ 8001624:	833b      	strh	r3, [r7, #24]
     cmd[2] = (uint8_t)(data_pec >> 8);
- 8001622:	8b3b      	ldrh	r3, [r7, #24]
- 8001624:	0a1b      	lsrs	r3, r3, #8
- 8001626:	b29b      	uxth	r3, r3
- 8001628:	b2db      	uxtb	r3, r3
- 800162a:	75bb      	strb	r3, [r7, #22]
+ 8001626:	8b3b      	ldrh	r3, [r7, #24]
+ 8001628:	0a1b      	lsrs	r3, r3, #8
+ 800162a:	b29b      	uxth	r3, r3
+ 800162c:	b2db      	uxtb	r3, r3
+ 800162e:	75bb      	strb	r3, [r7, #22]
     cmd[3] = (uint8_t)(data_pec);
- 800162c:	8b3b      	ldrh	r3, [r7, #24]
- 800162e:	b2db      	uxtb	r3, r3
- 8001630:	75fb      	strb	r3, [r7, #23]
+ 8001630:	8b3b      	ldrh	r3, [r7, #24]
+ 8001632:	b2db      	uxtb	r3, r3
+ 8001634:	75fb      	strb	r3, [r7, #23]
     HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
- 8001632:	2200      	movs	r2, #0
- 8001634:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 8001638:	487e      	ldr	r0, [pc, #504]	; (8001834 <LTC6811_rdstatb+0x26c>)
- 800163a:	f002 fb9f 	bl	8003d7c <HAL_GPIO_WritePin>
+ 8001636:	2200      	movs	r2, #0
+ 8001638:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 800163c:	487e      	ldr	r0, [pc, #504]	; (8001838 <LTC6811_rdstatb+0x26c>)
+ 800163e:	f002 fb9d 	bl	8003d7c <HAL_GPIO_WritePin>
     spi_write_read(cmd, 4, &rx_data[current_ic * 8], 8);
- 800163e:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 8001640:	00db      	lsls	r3, r3, #3
- 8001642:	461a      	mov	r2, r3
- 8001644:	69fb      	ldr	r3, [r7, #28]
- 8001646:	441a      	add	r2, r3
- 8001648:	f107 0014 	add.w	r0, r7, #20
- 800164c:	2308      	movs	r3, #8
- 800164e:	2104      	movs	r1, #4
- 8001650:	f7ff fc0a 	bl	8000e68 <spi_write_read>
+ 8001642:	6abb      	ldr	r3, [r7, #40]	; 0x28
+ 8001644:	00db      	lsls	r3, r3, #3
+ 8001646:	461a      	mov	r2, r3
+ 8001648:	69fb      	ldr	r3, [r7, #28]
+ 800164a:	441a      	add	r2, r3
+ 800164c:	f107 0014 	add.w	r0, r7, #20
+ 8001650:	2308      	movs	r3, #8
+ 8001652:	2104      	movs	r1, #4
+ 8001654:	f7ff fc08 	bl	8000e68 <spi_write_read>
     HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
- 8001654:	2201      	movs	r2, #1
- 8001656:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 800165a:	4876      	ldr	r0, [pc, #472]	; (8001834 <LTC6811_rdstatb+0x26c>)
- 800165c:	f002 fb8e 	bl	8003d7c <HAL_GPIO_WritePin>
+ 8001658:	2201      	movs	r2, #1
+ 800165a:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 800165e:	4876      	ldr	r0, [pc, #472]	; (8001838 <LTC6811_rdstatb+0x26c>)
+ 8001660:	f002 fb8c 	bl	8003d7c <HAL_GPIO_WritePin>
   for (int current_ic = 0; current_ic < total_ic; current_ic++)
- 8001660:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 8001662:	3301      	adds	r3, #1
- 8001664:	62bb      	str	r3, [r7, #40]	; 0x28
- 8001666:	7bfb      	ldrb	r3, [r7, #15]
- 8001668:	6aba      	ldr	r2, [r7, #40]	; 0x28
- 800166a:	429a      	cmp	r2, r3
- 800166c:	dbca      	blt.n	8001604 <LTC6811_rdstatb+0x3c>
+ 8001664:	6abb      	ldr	r3, [r7, #40]	; 0x28
+ 8001666:	3301      	adds	r3, #1
+ 8001668:	62bb      	str	r3, [r7, #40]	; 0x28
+ 800166a:	7bfb      	ldrb	r3, [r7, #15]
+ 800166c:	6aba      	ldr	r2, [r7, #40]	; 0x28
+ 800166e:	429a      	cmp	r2, r3
+ 8001670:	dbca      	blt.n	8001608 <LTC6811_rdstatb+0x3c>
   }
 
   for (uint8_t current_ic = 0; current_ic < total_ic; current_ic++) //executes for each LTC6804 in the stack
- 800166e:	2300      	movs	r3, #0
- 8001670:	f887 3027 	strb.w	r3, [r7, #39]	; 0x27
- 8001674:	e0cf      	b.n	8001816 <LTC6811_rdstatb+0x24e>
+ 8001672:	2300      	movs	r3, #0
+ 8001674:	f887 3027 	strb.w	r3, [r7, #39]	; 0x27
+ 8001678:	e0cf      	b.n	800181a <LTC6811_rdstatb+0x24e>
   {
 	  uint8_t i =0;
- 8001676:	2300      	movs	r3, #0
- 8001678:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
+ 800167a:	2300      	movs	r3, #0
+ 800167c:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
 		  }
 	  }
 */
 
     //4.a
     for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
- 800167c:	2300      	movs	r3, #0
- 800167e:	f887 3025 	strb.w	r3, [r7, #37]	; 0x25
- 8001682:	e01d      	b.n	80016c0 <LTC6811_rdstatb+0xf8>
+ 8001680:	2300      	movs	r3, #0
+ 8001682:	f887 3025 	strb.w	r3, [r7, #37]	; 0x25
+ 8001686:	e01d      	b.n	80016c4 <LTC6811_rdstatb+0xf8>
     {
       r_statb[current_ic][current_byte] = rx_data[current_byte + (current_ic * BYTES_IN_REG)];
- 8001684:	f897 2025 	ldrb.w	r2, [r7, #37]	; 0x25
- 8001688:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 800168c:	f897 1022 	ldrb.w	r1, [r7, #34]	; 0x22
- 8001690:	fb01 f303 	mul.w	r3, r1, r3
- 8001694:	4413      	add	r3, r2
- 8001696:	461a      	mov	r2, r3
- 8001698:	69fb      	ldr	r3, [r7, #28]
- 800169a:	1899      	adds	r1, r3, r2
- 800169c:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 80016a0:	4613      	mov	r3, r2
- 80016a2:	005b      	lsls	r3, r3, #1
- 80016a4:	4413      	add	r3, r2
+ 8001688:	f897 2025 	ldrb.w	r2, [r7, #37]	; 0x25
+ 800168c:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 8001690:	f897 1022 	ldrb.w	r1, [r7, #34]	; 0x22
+ 8001694:	fb01 f303 	mul.w	r3, r1, r3
+ 8001698:	4413      	add	r3, r2
+ 800169a:	461a      	mov	r2, r3
+ 800169c:	69fb      	ldr	r3, [r7, #28]
+ 800169e:	1899      	adds	r1, r3, r2
+ 80016a0:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 80016a4:	4613      	mov	r3, r2
  80016a6:	005b      	lsls	r3, r3, #1
- 80016a8:	461a      	mov	r2, r3
- 80016aa:	683b      	ldr	r3, [r7, #0]
- 80016ac:	441a      	add	r2, r3
- 80016ae:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
- 80016b2:	7809      	ldrb	r1, [r1, #0]
- 80016b4:	54d1      	strb	r1, [r2, r3]
+ 80016a8:	4413      	add	r3, r2
+ 80016aa:	005b      	lsls	r3, r3, #1
+ 80016ac:	461a      	mov	r2, r3
+ 80016ae:	683b      	ldr	r3, [r7, #0]
+ 80016b0:	441a      	add	r2, r3
+ 80016b2:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
+ 80016b6:	7809      	ldrb	r1, [r1, #0]
+ 80016b8:	54d1      	strb	r1, [r2, r3]
     for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
- 80016b6:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
- 80016ba:	3301      	adds	r3, #1
- 80016bc:	f887 3025 	strb.w	r3, [r7, #37]	; 0x25
- 80016c0:	f897 2025 	ldrb.w	r2, [r7, #37]	; 0x25
- 80016c4:	f897 3022 	ldrb.w	r3, [r7, #34]	; 0x22
- 80016c8:	429a      	cmp	r2, r3
- 80016ca:	d3db      	bcc.n	8001684 <LTC6811_rdstatb+0xbc>
+ 80016ba:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
+ 80016be:	3301      	adds	r3, #1
+ 80016c0:	f887 3025 	strb.w	r3, [r7, #37]	; 0x25
+ 80016c4:	f897 2025 	ldrb.w	r2, [r7, #37]	; 0x25
+ 80016c8:	f897 3022 	ldrb.w	r3, [r7, #34]	; 0x22
+ 80016cc:	429a      	cmp	r2, r3
+ 80016ce:	d3db      	bcc.n	8001688 <LTC6811_rdstatb+0xbc>
     }
 
     for (uint8_t byte = 2; byte < 5; byte++)
- 80016cc:	2302      	movs	r3, #2
- 80016ce:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
- 80016d2:	e067      	b.n	80017a4 <LTC6811_rdstatb+0x1dc>
+ 80016d0:	2302      	movs	r3, #2
+ 80016d2:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
+ 80016d6:	e067      	b.n	80017a8 <LTC6811_rdstatb+0x1dc>
    	  {
    		  for (uint8_t bit = 0; bit < 8; bit+=2)
- 80016d4:	2300      	movs	r3, #0
- 80016d6:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
- 80016da:	e05a      	b.n	8001792 <LTC6811_rdstatb+0x1ca>
+ 80016d8:	2300      	movs	r3, #0
+ 80016da:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+ 80016de:	e05a      	b.n	8001796 <LTC6811_rdstatb+0x1ca>
    		  {
    			  OV_flag[current_ic] |= ((r_statb[current_ic][byte]>>(bit +1))&1)<<i;
- 80016dc:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 80016e0:	005b      	lsls	r3, r3, #1
- 80016e2:	68ba      	ldr	r2, [r7, #8]
- 80016e4:	4413      	add	r3, r2
- 80016e6:	881b      	ldrh	r3, [r3, #0]
- 80016e8:	b219      	sxth	r1, r3
- 80016ea:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 80016ee:	4613      	mov	r3, r2
- 80016f0:	005b      	lsls	r3, r3, #1
- 80016f2:	4413      	add	r3, r2
+ 80016e0:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 80016e4:	005b      	lsls	r3, r3, #1
+ 80016e6:	68ba      	ldr	r2, [r7, #8]
+ 80016e8:	4413      	add	r3, r2
+ 80016ea:	881b      	ldrh	r3, [r3, #0]
+ 80016ec:	b219      	sxth	r1, r3
+ 80016ee:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 80016f2:	4613      	mov	r3, r2
  80016f4:	005b      	lsls	r3, r3, #1
- 80016f6:	461a      	mov	r2, r3
- 80016f8:	683b      	ldr	r3, [r7, #0]
- 80016fa:	441a      	add	r2, r3
- 80016fc:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
- 8001700:	5cd3      	ldrb	r3, [r2, r3]
- 8001702:	461a      	mov	r2, r3
- 8001704:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
- 8001708:	3301      	adds	r3, #1
- 800170a:	fa42 f303 	asr.w	r3, r2, r3
- 800170e:	f003 0201 	and.w	r2, r3, #1
- 8001712:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
- 8001716:	fa02 f303 	lsl.w	r3, r2, r3
- 800171a:	b21b      	sxth	r3, r3
- 800171c:	430b      	orrs	r3, r1
- 800171e:	b219      	sxth	r1, r3
- 8001720:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 8001724:	005b      	lsls	r3, r3, #1
- 8001726:	68ba      	ldr	r2, [r7, #8]
- 8001728:	4413      	add	r3, r2
- 800172a:	b28a      	uxth	r2, r1
- 800172c:	801a      	strh	r2, [r3, #0]
+ 80016f6:	4413      	add	r3, r2
+ 80016f8:	005b      	lsls	r3, r3, #1
+ 80016fa:	461a      	mov	r2, r3
+ 80016fc:	683b      	ldr	r3, [r7, #0]
+ 80016fe:	441a      	add	r2, r3
+ 8001700:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
+ 8001704:	5cd3      	ldrb	r3, [r2, r3]
+ 8001706:	461a      	mov	r2, r3
+ 8001708:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+ 800170c:	3301      	adds	r3, #1
+ 800170e:	fa42 f303 	asr.w	r3, r2, r3
+ 8001712:	f003 0201 	and.w	r2, r3, #1
+ 8001716:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
+ 800171a:	fa02 f303 	lsl.w	r3, r2, r3
+ 800171e:	b21b      	sxth	r3, r3
+ 8001720:	430b      	orrs	r3, r1
+ 8001722:	b219      	sxth	r1, r3
+ 8001724:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 8001728:	005b      	lsls	r3, r3, #1
+ 800172a:	68ba      	ldr	r2, [r7, #8]
+ 800172c:	4413      	add	r3, r2
+ 800172e:	b28a      	uxth	r2, r1
+ 8001730:	801a      	strh	r2, [r3, #0]
    			  UV_flag[current_ic] |= (((r_statb[current_ic][byte])>>(bit))&1)<<i;
- 800172e:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 8001732:	005b      	lsls	r3, r3, #1
- 8001734:	687a      	ldr	r2, [r7, #4]
- 8001736:	4413      	add	r3, r2
- 8001738:	881b      	ldrh	r3, [r3, #0]
- 800173a:	b219      	sxth	r1, r3
- 800173c:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 8001740:	4613      	mov	r3, r2
- 8001742:	005b      	lsls	r3, r3, #1
- 8001744:	4413      	add	r3, r2
+ 8001732:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 8001736:	005b      	lsls	r3, r3, #1
+ 8001738:	687a      	ldr	r2, [r7, #4]
+ 800173a:	4413      	add	r3, r2
+ 800173c:	881b      	ldrh	r3, [r3, #0]
+ 800173e:	b219      	sxth	r1, r3
+ 8001740:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 8001744:	4613      	mov	r3, r2
  8001746:	005b      	lsls	r3, r3, #1
- 8001748:	461a      	mov	r2, r3
- 800174a:	683b      	ldr	r3, [r7, #0]
- 800174c:	441a      	add	r2, r3
- 800174e:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
- 8001752:	5cd3      	ldrb	r3, [r2, r3]
- 8001754:	461a      	mov	r2, r3
- 8001756:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
- 800175a:	fa42 f303 	asr.w	r3, r2, r3
- 800175e:	f003 0201 	and.w	r2, r3, #1
- 8001762:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
- 8001766:	fa02 f303 	lsl.w	r3, r2, r3
- 800176a:	b21b      	sxth	r3, r3
- 800176c:	430b      	orrs	r3, r1
- 800176e:	b219      	sxth	r1, r3
- 8001770:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 8001774:	005b      	lsls	r3, r3, #1
- 8001776:	687a      	ldr	r2, [r7, #4]
- 8001778:	4413      	add	r3, r2
- 800177a:	b28a      	uxth	r2, r1
- 800177c:	801a      	strh	r2, [r3, #0]
+ 8001748:	4413      	add	r3, r2
+ 800174a:	005b      	lsls	r3, r3, #1
+ 800174c:	461a      	mov	r2, r3
+ 800174e:	683b      	ldr	r3, [r7, #0]
+ 8001750:	441a      	add	r2, r3
+ 8001752:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
+ 8001756:	5cd3      	ldrb	r3, [r2, r3]
+ 8001758:	461a      	mov	r2, r3
+ 800175a:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+ 800175e:	fa42 f303 	asr.w	r3, r2, r3
+ 8001762:	f003 0201 	and.w	r2, r3, #1
+ 8001766:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
+ 800176a:	fa02 f303 	lsl.w	r3, r2, r3
+ 800176e:	b21b      	sxth	r3, r3
+ 8001770:	430b      	orrs	r3, r1
+ 8001772:	b219      	sxth	r1, r3
+ 8001774:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 8001778:	005b      	lsls	r3, r3, #1
+ 800177a:	687a      	ldr	r2, [r7, #4]
+ 800177c:	4413      	add	r3, r2
+ 800177e:	b28a      	uxth	r2, r1
+ 8001780:	801a      	strh	r2, [r3, #0]
    			  i++;
- 800177e:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
- 8001782:	3301      	adds	r3, #1
- 8001784:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
+ 8001782:	f897 3026 	ldrb.w	r3, [r7, #38]	; 0x26
+ 8001786:	3301      	adds	r3, #1
+ 8001788:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
    		  for (uint8_t bit = 0; bit < 8; bit+=2)
- 8001788:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
- 800178c:	3302      	adds	r3, #2
- 800178e:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
- 8001792:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
- 8001796:	2b07      	cmp	r3, #7
- 8001798:	d9a0      	bls.n	80016dc <LTC6811_rdstatb+0x114>
+ 800178c:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+ 8001790:	3302      	adds	r3, #2
+ 8001792:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+ 8001796:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+ 800179a:	2b07      	cmp	r3, #7
+ 800179c:	d9a0      	bls.n	80016e0 <LTC6811_rdstatb+0x114>
     for (uint8_t byte = 2; byte < 5; byte++)
- 800179a:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
- 800179e:	3301      	adds	r3, #1
- 80017a0:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
- 80017a4:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
- 80017a8:	2b04      	cmp	r3, #4
- 80017aa:	d993      	bls.n	80016d4 <LTC6811_rdstatb+0x10c>
+ 800179e:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
+ 80017a2:	3301      	adds	r3, #1
+ 80017a4:	f887 3024 	strb.w	r3, [r7, #36]	; 0x24
+ 80017a8:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
+ 80017ac:	2b04      	cmp	r3, #4
+ 80017ae:	d993      	bls.n	80016d8 <LTC6811_rdstatb+0x10c>
    		  }
    	  }
     //4.b
     received_pec = (r_statb[current_ic][6] << 8) + r_statb[current_ic][7];
- 80017ac:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 80017b0:	4613      	mov	r3, r2
- 80017b2:	005b      	lsls	r3, r3, #1
- 80017b4:	4413      	add	r3, r2
+ 80017b0:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 80017b4:	4613      	mov	r3, r2
  80017b6:	005b      	lsls	r3, r3, #1
- 80017b8:	461a      	mov	r2, r3
- 80017ba:	683b      	ldr	r3, [r7, #0]
- 80017bc:	4413      	add	r3, r2
- 80017be:	799b      	ldrb	r3, [r3, #6]
- 80017c0:	b29b      	uxth	r3, r3
- 80017c2:	021b      	lsls	r3, r3, #8
- 80017c4:	b299      	uxth	r1, r3
- 80017c6:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 80017ca:	4613      	mov	r3, r2
- 80017cc:	005b      	lsls	r3, r3, #1
- 80017ce:	4413      	add	r3, r2
+ 80017b8:	4413      	add	r3, r2
+ 80017ba:	005b      	lsls	r3, r3, #1
+ 80017bc:	461a      	mov	r2, r3
+ 80017be:	683b      	ldr	r3, [r7, #0]
+ 80017c0:	4413      	add	r3, r2
+ 80017c2:	799b      	ldrb	r3, [r3, #6]
+ 80017c4:	b29b      	uxth	r3, r3
+ 80017c6:	021b      	lsls	r3, r3, #8
+ 80017c8:	b299      	uxth	r1, r3
+ 80017ca:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 80017ce:	4613      	mov	r3, r2
  80017d0:	005b      	lsls	r3, r3, #1
- 80017d2:	461a      	mov	r2, r3
- 80017d4:	683b      	ldr	r3, [r7, #0]
- 80017d6:	4413      	add	r3, r2
- 80017d8:	79db      	ldrb	r3, [r3, #7]
- 80017da:	b29b      	uxth	r3, r3
- 80017dc:	440b      	add	r3, r1
- 80017de:	837b      	strh	r3, [r7, #26]
+ 80017d2:	4413      	add	r3, r2
+ 80017d4:	005b      	lsls	r3, r3, #1
+ 80017d6:	461a      	mov	r2, r3
+ 80017d8:	683b      	ldr	r3, [r7, #0]
+ 80017da:	4413      	add	r3, r2
+ 80017dc:	79db      	ldrb	r3, [r3, #7]
+ 80017de:	b29b      	uxth	r3, r3
+ 80017e0:	440b      	add	r3, r1
+ 80017e2:	837b      	strh	r3, [r7, #26]
     data_pec = pec15_calc(6, &r_statb[current_ic][0]);
- 80017e0:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 80017e4:	4613      	mov	r3, r2
- 80017e6:	005b      	lsls	r3, r3, #1
- 80017e8:	4413      	add	r3, r2
+ 80017e4:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 80017e8:	4613      	mov	r3, r2
  80017ea:	005b      	lsls	r3, r3, #1
- 80017ec:	461a      	mov	r2, r3
- 80017ee:	683b      	ldr	r3, [r7, #0]
- 80017f0:	4413      	add	r3, r2
- 80017f2:	4619      	mov	r1, r3
- 80017f4:	2006      	movs	r0, #6
- 80017f6:	f000 f81f 	bl	8001838 <pec15_calc>
- 80017fa:	4603      	mov	r3, r0
- 80017fc:	833b      	strh	r3, [r7, #24]
+ 80017ec:	4413      	add	r3, r2
+ 80017ee:	005b      	lsls	r3, r3, #1
+ 80017f0:	461a      	mov	r2, r3
+ 80017f2:	683b      	ldr	r3, [r7, #0]
+ 80017f4:	4413      	add	r3, r2
+ 80017f6:	4619      	mov	r1, r3
+ 80017f8:	2006      	movs	r0, #6
+ 80017fa:	f000 f81f 	bl	800183c <pec15_calc>
+ 80017fe:	4603      	mov	r3, r0
+ 8001800:	833b      	strh	r3, [r7, #24]
     if (received_pec != data_pec)
- 80017fe:	8b7a      	ldrh	r2, [r7, #26]
- 8001800:	8b3b      	ldrh	r3, [r7, #24]
- 8001802:	429a      	cmp	r2, r3
- 8001804:	d002      	beq.n	800180c <LTC6811_rdstatb+0x244>
+ 8001802:	8b7a      	ldrh	r2, [r7, #26]
+ 8001804:	8b3b      	ldrh	r3, [r7, #24]
+ 8001806:	429a      	cmp	r2, r3
+ 8001808:	d002      	beq.n	8001810 <LTC6811_rdstatb+0x244>
     {
       pec_error = -1;
- 8001806:	23ff      	movs	r3, #255	; 0xff
- 8001808:	f887 302f 	strb.w	r3, [r7, #47]	; 0x2f
+ 800180a:	23ff      	movs	r3, #255	; 0xff
+ 800180c:	f887 302f 	strb.w	r3, [r7, #47]	; 0x2f
   for (uint8_t current_ic = 0; current_ic < total_ic; current_ic++) //executes for each LTC6804 in the stack
- 800180c:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
- 8001810:	3301      	adds	r3, #1
- 8001812:	f887 3027 	strb.w	r3, [r7, #39]	; 0x27
- 8001816:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
- 800181a:	7bfb      	ldrb	r3, [r7, #15]
- 800181c:	429a      	cmp	r2, r3
- 800181e:	f4ff af2a 	bcc.w	8001676 <LTC6811_rdstatb+0xae>
+ 8001810:	f897 3027 	ldrb.w	r3, [r7, #39]	; 0x27
+ 8001814:	3301      	adds	r3, #1
+ 8001816:	f887 3027 	strb.w	r3, [r7, #39]	; 0x27
+ 800181a:	f897 2027 	ldrb.w	r2, [r7, #39]	; 0x27
+ 800181e:	7bfb      	ldrb	r3, [r7, #15]
+ 8001820:	429a      	cmp	r2, r3
+ 8001822:	f4ff af2a 	bcc.w	800167a <LTC6811_rdstatb+0xae>
     }
   }
   free(rx_data);
- 8001822:	69f8      	ldr	r0, [r7, #28]
- 8001824:	f004 fcd0 	bl	80061c8 <free>
+ 8001826:	69f8      	ldr	r0, [r7, #28]
+ 8001828:	f004 fcce 	bl	80061c8 <free>
   //5
   return (pec_error);
- 8001828:	f997 302f 	ldrsb.w	r3, [r7, #47]	; 0x2f
+ 800182c:	f997 302f 	ldrsb.w	r3, [r7, #47]	; 0x2f
 }
- 800182c:	4618      	mov	r0, r3
- 800182e:	3730      	adds	r7, #48	; 0x30
- 8001830:	46bd      	mov	sp, r7
- 8001832:	bd80      	pop	{r7, pc}
- 8001834:	40020000 	.word	0x40020000
+ 8001830:	4618      	mov	r0, r3
+ 8001832:	3730      	adds	r7, #48	; 0x30
+ 8001834:	46bd      	mov	sp, r7
+ 8001836:	bd80      	pop	{r7, pc}
+ 8001838:	40020000 	.word	0x40020000
 
-08001838 <pec15_calc>:
+0800183c <pec15_calc>:
 }
 */
 
 //char *data uint8_t *data , uint8_t len
 uint16_t pec15_calc(uint8_t len, uint8_t *data)
  {
- 8001838:	b480      	push	{r7}
- 800183a:	b087      	sub	sp, #28
- 800183c:	af00      	add	r7, sp, #0
- 800183e:	4603      	mov	r3, r0
- 8001840:	6039      	str	r1, [r7, #0]
- 8001842:	71fb      	strb	r3, [r7, #7]
+ 800183c:	b480      	push	{r7}
+ 800183e:	b087      	sub	sp, #28
+ 8001840:	af00      	add	r7, sp, #0
+ 8001842:	4603      	mov	r3, r0
+ 8001844:	6039      	str	r1, [r7, #0]
+ 8001846:	71fb      	strb	r3, [r7, #7]
  uint16_t remainder, address;
 
  remainder = 16;//PEC seed
- 8001844:	2310      	movs	r3, #16
- 8001846:	82fb      	strh	r3, [r7, #22]
+ 8001848:	2310      	movs	r3, #16
+ 800184a:	82fb      	strh	r3, [r7, #22]
  for (int i = 0; i < len; i++)
- 8001848:	2300      	movs	r3, #0
- 800184a:	613b      	str	r3, [r7, #16]
- 800184c:	e018      	b.n	8001880 <pec15_calc+0x48>
+ 800184c:	2300      	movs	r3, #0
+ 800184e:	613b      	str	r3, [r7, #16]
+ 8001850:	e018      	b.n	8001884 <pec15_calc+0x48>
  {
  address = ((remainder >> 7) ^ data[i]) & 0xff;//calculate PEC table address
- 800184e:	8afb      	ldrh	r3, [r7, #22]
- 8001850:	09db      	lsrs	r3, r3, #7
- 8001852:	b29a      	uxth	r2, r3
- 8001854:	693b      	ldr	r3, [r7, #16]
- 8001856:	6839      	ldr	r1, [r7, #0]
- 8001858:	440b      	add	r3, r1
- 800185a:	781b      	ldrb	r3, [r3, #0]
- 800185c:	b29b      	uxth	r3, r3
- 800185e:	4053      	eors	r3, r2
+ 8001852:	8afb      	ldrh	r3, [r7, #22]
+ 8001854:	09db      	lsrs	r3, r3, #7
+ 8001856:	b29a      	uxth	r2, r3
+ 8001858:	693b      	ldr	r3, [r7, #16]
+ 800185a:	6839      	ldr	r1, [r7, #0]
+ 800185c:	440b      	add	r3, r1
+ 800185e:	781b      	ldrb	r3, [r3, #0]
  8001860:	b29b      	uxth	r3, r3
- 8001862:	b2db      	uxtb	r3, r3
- 8001864:	81fb      	strh	r3, [r7, #14]
+ 8001862:	4053      	eors	r3, r2
+ 8001864:	b29b      	uxth	r3, r3
+ 8001866:	b2db      	uxtb	r3, r3
+ 8001868:	81fb      	strh	r3, [r7, #14]
  remainder = (remainder << 8 ) ^ pec15Table[address];
- 8001866:	8afb      	ldrh	r3, [r7, #22]
- 8001868:	021b      	lsls	r3, r3, #8
- 800186a:	b29a      	uxth	r2, r3
- 800186c:	89fb      	ldrh	r3, [r7, #14]
- 800186e:	490a      	ldr	r1, [pc, #40]	; (8001898 <pec15_calc+0x60>)
- 8001870:	f851 3023 	ldr.w	r3, [r1, r3, lsl #2]
- 8001874:	b29b      	uxth	r3, r3
- 8001876:	4053      	eors	r3, r2
- 8001878:	82fb      	strh	r3, [r7, #22]
+ 800186a:	8afb      	ldrh	r3, [r7, #22]
+ 800186c:	021b      	lsls	r3, r3, #8
+ 800186e:	b29a      	uxth	r2, r3
+ 8001870:	89fb      	ldrh	r3, [r7, #14]
+ 8001872:	490a      	ldr	r1, [pc, #40]	; (800189c <pec15_calc+0x60>)
+ 8001874:	f851 3023 	ldr.w	r3, [r1, r3, lsl #2]
+ 8001878:	b29b      	uxth	r3, r3
+ 800187a:	4053      	eors	r3, r2
+ 800187c:	82fb      	strh	r3, [r7, #22]
  for (int i = 0; i < len; i++)
- 800187a:	693b      	ldr	r3, [r7, #16]
- 800187c:	3301      	adds	r3, #1
- 800187e:	613b      	str	r3, [r7, #16]
- 8001880:	79fb      	ldrb	r3, [r7, #7]
- 8001882:	693a      	ldr	r2, [r7, #16]
- 8001884:	429a      	cmp	r2, r3
- 8001886:	dbe2      	blt.n	800184e <pec15_calc+0x16>
+ 800187e:	693b      	ldr	r3, [r7, #16]
+ 8001880:	3301      	adds	r3, #1
+ 8001882:	613b      	str	r3, [r7, #16]
+ 8001884:	79fb      	ldrb	r3, [r7, #7]
+ 8001886:	693a      	ldr	r2, [r7, #16]
+ 8001888:	429a      	cmp	r2, r3
+ 800188a:	dbe2      	blt.n	8001852 <pec15_calc+0x16>
  }
  return (remainder*2);//The CRC15 has a 0 in the LSB so the final value must be multiplied by 2
- 8001888:	8afb      	ldrh	r3, [r7, #22]
- 800188a:	005b      	lsls	r3, r3, #1
- 800188c:	b29b      	uxth	r3, r3
+ 800188c:	8afb      	ldrh	r3, [r7, #22]
+ 800188e:	005b      	lsls	r3, r3, #1
+ 8001890:	b29b      	uxth	r3, r3
  }
- 800188e:	4618      	mov	r0, r3
- 8001890:	371c      	adds	r7, #28
- 8001892:	46bd      	mov	sp, r7
- 8001894:	bc80      	pop	{r7}
- 8001896:	4770      	bx	lr
- 8001898:	08008f7c 	.word	0x08008f7c
+ 8001892:	4618      	mov	r0, r3
+ 8001894:	371c      	adds	r7, #28
+ 8001896:	46bd      	mov	sp, r7
+ 8001898:	bc80      	pop	{r7}
+ 800189a:	4770      	bx	lr
+ 800189c:	08008f7c 	.word	0x08008f7c
 
-0800189c <HAL_TIM_PeriodElapsedCallback>:
+080018a0 <HAL_TIM_PeriodElapsedCallback>:
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
- 800189c:	b580      	push	{r7, lr}
- 800189e:	b082      	sub	sp, #8
- 80018a0:	af00      	add	r7, sp, #0
- 80018a2:	6078      	str	r0, [r7, #4]
+ 80018a0:	b580      	push	{r7, lr}
+ 80018a2:	b082      	sub	sp, #8
+ 80018a4:	af00      	add	r7, sp, #0
+ 80018a6:	6078      	str	r0, [r7, #4]
 
 
 	can_cnt++;
- 80018a4:	4b17      	ldr	r3, [pc, #92]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018a6:	781b      	ldrb	r3, [r3, #0]
- 80018a8:	3301      	adds	r3, #1
- 80018aa:	b2da      	uxtb	r2, r3
- 80018ac:	4b15      	ldr	r3, [pc, #84]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018ae:	701a      	strb	r2, [r3, #0]
+ 80018a8:	4b17      	ldr	r3, [pc, #92]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018aa:	781b      	ldrb	r3, [r3, #0]
+ 80018ac:	3301      	adds	r3, #1
+ 80018ae:	b2da      	uxtb	r2, r3
+ 80018b0:	4b15      	ldr	r3, [pc, #84]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018b2:	701a      	strb	r2, [r3, #0]
 
 	if (can_cnt == (last10 + 10))
- 80018b0:	4b14      	ldr	r3, [pc, #80]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018b2:	781b      	ldrb	r3, [r3, #0]
- 80018b4:	461a      	mov	r2, r3
- 80018b6:	4b14      	ldr	r3, [pc, #80]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x6c>)
- 80018b8:	781b      	ldrb	r3, [r3, #0]
- 80018ba:	330a      	adds	r3, #10
- 80018bc:	429a      	cmp	r2, r3
- 80018be:	d105      	bne.n	80018cc <HAL_TIM_PeriodElapsedCallback+0x30>
+ 80018b4:	4b14      	ldr	r3, [pc, #80]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018b6:	781b      	ldrb	r3, [r3, #0]
+ 80018b8:	461a      	mov	r2, r3
+ 80018ba:	4b14      	ldr	r3, [pc, #80]	; (800190c <HAL_TIM_PeriodElapsedCallback+0x6c>)
+ 80018bc:	781b      	ldrb	r3, [r3, #0]
+ 80018be:	330a      	adds	r3, #10
+ 80018c0:	429a      	cmp	r2, r3
+ 80018c2:	d105      	bne.n	80018d0 <HAL_TIM_PeriodElapsedCallback+0x30>
 		{
 			CAN_100();				//CAN Messages transmitted with 100 Hz
- 80018c0:	f000 fb62 	bl	8001f88 <CAN_100>
+ 80018c4:	f000 fb60 	bl	8001f88 <CAN_100>
 			last10 = can_cnt;
- 80018c4:	4b0f      	ldr	r3, [pc, #60]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018c6:	781a      	ldrb	r2, [r3, #0]
- 80018c8:	4b0f      	ldr	r3, [pc, #60]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x6c>)
- 80018ca:	701a      	strb	r2, [r3, #0]
+ 80018c8:	4b0f      	ldr	r3, [pc, #60]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018ca:	781a      	ldrb	r2, [r3, #0]
+ 80018cc:	4b0f      	ldr	r3, [pc, #60]	; (800190c <HAL_TIM_PeriodElapsedCallback+0x6c>)
+ 80018ce:	701a      	strb	r2, [r3, #0]
 		}
 
 	if (can_cnt == 100)
- 80018cc:	4b0d      	ldr	r3, [pc, #52]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018ce:	781b      	ldrb	r3, [r3, #0]
- 80018d0:	2b64      	cmp	r3, #100	; 0x64
- 80018d2:	d113      	bne.n	80018fc <HAL_TIM_PeriodElapsedCallback+0x60>
+ 80018d0:	4b0d      	ldr	r3, [pc, #52]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018d2:	781b      	ldrb	r3, [r3, #0]
+ 80018d4:	2b64      	cmp	r3, #100	; 0x64
+ 80018d6:	d113      	bne.n	8001900 <HAL_TIM_PeriodElapsedCallback+0x60>
 		{
 			CAN_10(AMS2_databytes[8]);				//CAN Messages transmitted with 10 Hz
- 80018d4:	4b0d      	ldr	r3, [pc, #52]	; (800190c <HAL_TIM_PeriodElapsedCallback+0x70>)
- 80018d6:	6a1b      	ldr	r3, [r3, #32]
- 80018d8:	4618      	mov	r0, r3
- 80018da:	f000 fb7b 	bl	8001fd4 <CAN_10>
+ 80018d8:	4b0d      	ldr	r3, [pc, #52]	; (8001910 <HAL_TIM_PeriodElapsedCallback+0x70>)
+ 80018da:	6a1b      	ldr	r3, [r3, #32]
+ 80018dc:	4618      	mov	r0, r3
+ 80018de:	f000 fb79 	bl	8001fd4 <CAN_10>
 			can_cnt = 0;
- 80018de:	4b09      	ldr	r3, [pc, #36]	; (8001904 <HAL_TIM_PeriodElapsedCallback+0x68>)
- 80018e0:	2200      	movs	r2, #0
- 80018e2:	701a      	strb	r2, [r3, #0]
+ 80018e2:	4b09      	ldr	r3, [pc, #36]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x68>)
+ 80018e4:	2200      	movs	r2, #0
+ 80018e6:	701a      	strb	r2, [r3, #0]
 			last10 = 0;
- 80018e4:	4b08      	ldr	r3, [pc, #32]	; (8001908 <HAL_TIM_PeriodElapsedCallback+0x6c>)
- 80018e6:	2200      	movs	r2, #0
- 80018e8:	701a      	strb	r2, [r3, #0]
+ 80018e8:	4b08      	ldr	r3, [pc, #32]	; (800190c <HAL_TIM_PeriodElapsedCallback+0x6c>)
+ 80018ea:	2200      	movs	r2, #0
+ 80018ec:	701a      	strb	r2, [r3, #0]
 			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
- 80018ea:	2110      	movs	r1, #16
- 80018ec:	4808      	ldr	r0, [pc, #32]	; (8001910 <HAL_TIM_PeriodElapsedCallback+0x74>)
- 80018ee:	f002 fa5d 	bl	8003dac <HAL_GPIO_TogglePin>
+ 80018ee:	2110      	movs	r1, #16
+ 80018f0:	4808      	ldr	r0, [pc, #32]	; (8001914 <HAL_TIM_PeriodElapsedCallback+0x74>)
+ 80018f2:	f002 fa5b 	bl	8003dac <HAL_GPIO_TogglePin>
 			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
- 80018f2:	f44f 5100 	mov.w	r1, #8192	; 0x2000
- 80018f6:	4807      	ldr	r0, [pc, #28]	; (8001914 <HAL_TIM_PeriodElapsedCallback+0x78>)
- 80018f8:	f002 fa58 	bl	8003dac <HAL_GPIO_TogglePin>
+ 80018f6:	f44f 5100 	mov.w	r1, #8192	; 0x2000
+ 80018fa:	4807      	ldr	r0, [pc, #28]	; (8001918 <HAL_TIM_PeriodElapsedCallback+0x78>)
+ 80018fc:	f002 fa56 	bl	8003dac <HAL_GPIO_TogglePin>
 		}
 }
- 80018fc:	bf00      	nop
- 80018fe:	3708      	adds	r7, #8
- 8001900:	46bd      	mov	sp, r7
- 8001902:	bd80      	pop	{r7, pc}
- 8001904:	200002ce 	.word	0x200002ce
- 8001908:	200002cf 	.word	0x200002cf
- 800190c:	200002a0 	.word	0x200002a0
- 8001910:	40020000 	.word	0x40020000
- 8001914:	40020800 	.word	0x40020800
+ 8001900:	bf00      	nop
+ 8001902:	3708      	adds	r7, #8
+ 8001904:	46bd      	mov	sp, r7
+ 8001906:	bd80      	pop	{r7, pc}
+ 8001908:	200002ce 	.word	0x200002ce
+ 800190c:	200002cf 	.word	0x200002cf
+ 8001910:	200002a0 	.word	0x200002a0
+ 8001914:	40020000 	.word	0x40020000
+ 8001918:	40020800 	.word	0x40020800
 
-08001918 <HAL_CAN_RxFifo0MsgPendingCallback>:
+0800191c <HAL_CAN_RxFifo0MsgPendingCallback>:
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
    {
- 8001918:	b5f0      	push	{r4, r5, r6, r7, lr}
- 800191a:	b089      	sub	sp, #36	; 0x24
- 800191c:	af06      	add	r7, sp, #24
- 800191e:	6078      	str	r0, [r7, #4]
+ 800191c:	b5f0      	push	{r4, r5, r6, r7, lr}
+ 800191e:	b089      	sub	sp, #36	; 0x24
+ 8001920:	af06      	add	r7, sp, #24
+ 8001922:	6078      	str	r0, [r7, #4]
     CAN_RX(hcan1);
- 8001920:	4e08      	ldr	r6, [pc, #32]	; (8001944 <HAL_CAN_RxFifo0MsgPendingCallback+0x2c>)
- 8001922:	466d      	mov	r5, sp
- 8001924:	f106 0410 	add.w	r4, r6, #16
- 8001928:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
- 800192a:	c50f      	stmia	r5!, {r0, r1, r2, r3}
- 800192c:	e894 0003 	ldmia.w	r4, {r0, r1}
- 8001930:	e885 0003 	stmia.w	r5, {r0, r1}
- 8001934:	e896 000f 	ldmia.w	r6, {r0, r1, r2, r3}
- 8001938:	f000 faf8 	bl	8001f2c <CAN_RX>
+ 8001924:	4e08      	ldr	r6, [pc, #32]	; (8001948 <HAL_CAN_RxFifo0MsgPendingCallback+0x2c>)
+ 8001926:	466d      	mov	r5, sp
+ 8001928:	f106 0410 	add.w	r4, r6, #16
+ 800192c:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
+ 800192e:	c50f      	stmia	r5!, {r0, r1, r2, r3}
+ 8001930:	e894 0003 	ldmia.w	r4, {r0, r1}
+ 8001934:	e885 0003 	stmia.w	r5, {r0, r1}
+ 8001938:	e896 000f 	ldmia.w	r6, {r0, r1, r2, r3}
+ 800193c:	f000 faf6 	bl	8001f2c <CAN_RX>
    }
- 800193c:	bf00      	nop
- 800193e:	370c      	adds	r7, #12
- 8001940:	46bd      	mov	sp, r7
- 8001942:	bdf0      	pop	{r4, r5, r6, r7, pc}
- 8001944:	200002f8 	.word	0x200002f8
+ 8001940:	bf00      	nop
+ 8001942:	370c      	adds	r7, #12
+ 8001944:	46bd      	mov	sp, r7
+ 8001946:	bdf0      	pop	{r4, r5, r6, r7, pc}
+ 8001948:	200002f8 	.word	0x200002f8
 
-08001948 <BMS_init>:
+0800194c <BMS_init>:
 
 
 void BMS_init()
 {
- 8001948:	b580      	push	{r7, lr}
- 800194a:	af00      	add	r7, sp, #0
+ 800194c:	b580      	push	{r7, lr}
+ 800194e:	af00      	add	r7, sp, #0
 	LTC6811_initialize();
- 800194c:	f7ff faac 	bl	8000ea8 <LTC6811_initialize>
+ 8001950:	f7ff faaa 	bl	8000ea8 <LTC6811_initialize>
 }
- 8001950:	bf00      	nop
- 8001952:	bd80      	pop	{r7, pc}
+ 8001954:	bf00      	nop
+ 8001956:	bd80      	pop	{r7, pc}
 
-08001954 <BMS>:
+08001958 <BMS>:
 
 void BMS()		// Battery Management System function for main loop.
 {
- 8001954:	b580      	push	{r7, lr}
- 8001956:	b082      	sub	sp, #8
- 8001958:	af00      	add	r7, sp, #0
+ 8001958:	b580      	push	{r7, lr}
+ 800195a:	b082      	sub	sp, #8
+ 800195c:	af00      	add	r7, sp, #0
 	uint8_t pec = 0;
- 800195a:	2300      	movs	r3, #0
- 800195c:	713b      	strb	r3, [r7, #4]
+ 800195e:	2300      	movs	r3, #0
+ 8001960:	713b      	strb	r3, [r7, #4]
 	static uint8_t selTemp = 0;
 	uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
- 800195e:	f640 1385 	movw	r3, #2437	; 0x985
- 8001962:	807b      	strh	r3, [r7, #2]
+ 8001962:	f640 1385 	movw	r3, #2437	; 0x985
+ 8001966:	807b      	strh	r3, [r7, #2]
 	uint16_t VUV = (MIN_VOLTAGE/16)-1;
- 8001964:	f240 7352 	movw	r3, #1874	; 0x752
- 8001968:	803b      	strh	r3, [r7, #0]
+ 8001968:	f240 7352 	movw	r3, #1874	; 0x752
+ 800196c:	803b      	strh	r3, [r7, #0]
 
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
- 800196a:	2300      	movs	r3, #0
- 800196c:	71fb      	strb	r3, [r7, #7]
- 800196e:	e0b2      	b.n	8001ad6 <BMS+0x182>
+ 800196e:	2300      	movs	r3, #0
+ 8001970:	71fb      	strb	r3, [r7, #7]
+ 8001972:	e0b2      	b.n	8001ada <BMS+0x182>
 		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
 		*/
 
 		//Balancing without flags
 
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
- 8001970:	4b85      	ldr	r3, [pc, #532]	; (8001b88 <BMS+0x234>)
- 8001972:	781b      	ldrb	r3, [r3, #0]
- 8001974:	019b      	lsls	r3, r3, #6
- 8001976:	b25b      	sxtb	r3, r3
- 8001978:	f043 033c 	orr.w	r3, r3, #60	; 0x3c
- 800197c:	b25b      	sxtb	r3, r3
- 800197e:	79fa      	ldrb	r2, [r7, #7]
- 8001980:	b2d8      	uxtb	r0, r3
- 8001982:	4982      	ldr	r1, [pc, #520]	; (8001b8c <BMS+0x238>)
- 8001984:	4613      	mov	r3, r2
- 8001986:	005b      	lsls	r3, r3, #1
- 8001988:	4413      	add	r3, r2
+ 8001974:	4b85      	ldr	r3, [pc, #532]	; (8001b8c <BMS+0x234>)
+ 8001976:	781b      	ldrb	r3, [r3, #0]
+ 8001978:	019b      	lsls	r3, r3, #6
+ 800197a:	b25b      	sxtb	r3, r3
+ 800197c:	f043 033c 	orr.w	r3, r3, #60	; 0x3c
+ 8001980:	b25b      	sxtb	r3, r3
+ 8001982:	79fa      	ldrb	r2, [r7, #7]
+ 8001984:	b2d8      	uxtb	r0, r3
+ 8001986:	4982      	ldr	r1, [pc, #520]	; (8001b90 <BMS+0x238>)
+ 8001988:	4613      	mov	r3, r2
  800198a:	005b      	lsls	r3, r3, #1
- 800198c:	440b      	add	r3, r1
- 800198e:	4602      	mov	r2, r0
- 8001990:	701a      	strb	r2, [r3, #0]
+ 800198c:	4413      	add	r3, r2
+ 800198e:	005b      	lsls	r3, r3, #1
+ 8001990:	440b      	add	r3, r1
+ 8001992:	4602      	mov	r2, r0
+ 8001994:	701a      	strb	r2, [r3, #0]
 		cfg[i][1] = 0x00;
- 8001992:	79fa      	ldrb	r2, [r7, #7]
- 8001994:	497d      	ldr	r1, [pc, #500]	; (8001b8c <BMS+0x238>)
- 8001996:	4613      	mov	r3, r2
- 8001998:	005b      	lsls	r3, r3, #1
- 800199a:	4413      	add	r3, r2
+ 8001996:	79fa      	ldrb	r2, [r7, #7]
+ 8001998:	497d      	ldr	r1, [pc, #500]	; (8001b90 <BMS+0x238>)
+ 800199a:	4613      	mov	r3, r2
  800199c:	005b      	lsls	r3, r3, #1
- 800199e:	440b      	add	r3, r1
- 80019a0:	3301      	adds	r3, #1
- 80019a2:	2200      	movs	r2, #0
- 80019a4:	701a      	strb	r2, [r3, #0]
+ 800199e:	4413      	add	r3, r2
+ 80019a0:	005b      	lsls	r3, r3, #1
+ 80019a2:	440b      	add	r3, r1
+ 80019a4:	3301      	adds	r3, #1
+ 80019a6:	2200      	movs	r2, #0
+ 80019a8:	701a      	strb	r2, [r3, #0]
 		cfg[i][2] = 0x00;
- 80019a6:	79fa      	ldrb	r2, [r7, #7]
- 80019a8:	4978      	ldr	r1, [pc, #480]	; (8001b8c <BMS+0x238>)
- 80019aa:	4613      	mov	r3, r2
- 80019ac:	005b      	lsls	r3, r3, #1
- 80019ae:	4413      	add	r3, r2
+ 80019aa:	79fa      	ldrb	r2, [r7, #7]
+ 80019ac:	4978      	ldr	r1, [pc, #480]	; (8001b90 <BMS+0x238>)
+ 80019ae:	4613      	mov	r3, r2
  80019b0:	005b      	lsls	r3, r3, #1
- 80019b2:	440b      	add	r3, r1
- 80019b4:	3302      	adds	r3, #2
- 80019b6:	2200      	movs	r2, #0
- 80019b8:	701a      	strb	r2, [r3, #0]
+ 80019b2:	4413      	add	r3, r2
+ 80019b4:	005b      	lsls	r3, r3, #1
+ 80019b6:	440b      	add	r3, r1
+ 80019b8:	3302      	adds	r3, #2
+ 80019ba:	2200      	movs	r2, #0
+ 80019bc:	701a      	strb	r2, [r3, #0]
 		cfg[i][3] = 0x00;
- 80019ba:	79fa      	ldrb	r2, [r7, #7]
- 80019bc:	4973      	ldr	r1, [pc, #460]	; (8001b8c <BMS+0x238>)
- 80019be:	4613      	mov	r3, r2
- 80019c0:	005b      	lsls	r3, r3, #1
- 80019c2:	4413      	add	r3, r2
+ 80019be:	79fa      	ldrb	r2, [r7, #7]
+ 80019c0:	4973      	ldr	r1, [pc, #460]	; (8001b90 <BMS+0x238>)
+ 80019c2:	4613      	mov	r3, r2
  80019c4:	005b      	lsls	r3, r3, #1
- 80019c6:	440b      	add	r3, r1
- 80019c8:	3303      	adds	r3, #3
- 80019ca:	2200      	movs	r2, #0
- 80019cc:	701a      	strb	r2, [r3, #0]
+ 80019c6:	4413      	add	r3, r2
+ 80019c8:	005b      	lsls	r3, r3, #1
+ 80019ca:	440b      	add	r3, r1
+ 80019cc:	3303      	adds	r3, #3
+ 80019ce:	2200      	movs	r2, #0
+ 80019d0:	701a      	strb	r2, [r3, #0]
 		cfg[i][4] = 0x00;
- 80019ce:	79fa      	ldrb	r2, [r7, #7]
- 80019d0:	496e      	ldr	r1, [pc, #440]	; (8001b8c <BMS+0x238>)
- 80019d2:	4613      	mov	r3, r2
- 80019d4:	005b      	lsls	r3, r3, #1
- 80019d6:	4413      	add	r3, r2
+ 80019d2:	79fa      	ldrb	r2, [r7, #7]
+ 80019d4:	496e      	ldr	r1, [pc, #440]	; (8001b90 <BMS+0x238>)
+ 80019d6:	4613      	mov	r3, r2
  80019d8:	005b      	lsls	r3, r3, #1
- 80019da:	440b      	add	r3, r1
- 80019dc:	3304      	adds	r3, #4
- 80019de:	2200      	movs	r2, #0
- 80019e0:	701a      	strb	r2, [r3, #0]
+ 80019da:	4413      	add	r3, r2
+ 80019dc:	005b      	lsls	r3, r3, #1
+ 80019de:	440b      	add	r3, r1
+ 80019e0:	3304      	adds	r3, #4
+ 80019e2:	2200      	movs	r2, #0
+ 80019e4:	701a      	strb	r2, [r3, #0]
 		cfg[i][5] = 0x00;
- 80019e2:	79fa      	ldrb	r2, [r7, #7]
- 80019e4:	4969      	ldr	r1, [pc, #420]	; (8001b8c <BMS+0x238>)
- 80019e6:	4613      	mov	r3, r2
- 80019e8:	005b      	lsls	r3, r3, #1
- 80019ea:	4413      	add	r3, r2
+ 80019e6:	79fa      	ldrb	r2, [r7, #7]
+ 80019e8:	4969      	ldr	r1, [pc, #420]	; (8001b90 <BMS+0x238>)
+ 80019ea:	4613      	mov	r3, r2
  80019ec:	005b      	lsls	r3, r3, #1
- 80019ee:	440b      	add	r3, r1
- 80019f0:	3305      	adds	r3, #5
- 80019f2:	2200      	movs	r2, #0
- 80019f4:	701a      	strb	r2, [r3, #0]
+ 80019ee:	4413      	add	r3, r2
+ 80019f0:	005b      	lsls	r3, r3, #1
+ 80019f2:	440b      	add	r3, r1
+ 80019f4:	3305      	adds	r3, #5
+ 80019f6:	2200      	movs	r2, #0
+ 80019f8:	701a      	strb	r2, [r3, #0]
 
 		if(balancing)
- 80019f6:	4b66      	ldr	r3, [pc, #408]	; (8001b90 <BMS+0x23c>)
- 80019f8:	781b      	ldrb	r3, [r3, #0]
- 80019fa:	2b00      	cmp	r3, #0
- 80019fc:	d068      	beq.n	8001ad0 <BMS+0x17c>
+ 80019fa:	4b66      	ldr	r3, [pc, #408]	; (8001b94 <BMS+0x23c>)
+ 80019fc:	781b      	ldrb	r3, [r3, #0]
+ 80019fe:	2b00      	cmp	r3, #0
+ 8001a00:	d068      	beq.n	8001ad4 <BMS+0x17c>
 		{
 			if(selTemp < 3)
- 80019fe:	4b62      	ldr	r3, [pc, #392]	; (8001b88 <BMS+0x234>)
- 8001a00:	781b      	ldrb	r3, [r3, #0]
- 8001a02:	2b02      	cmp	r3, #2
- 8001a04:	d864      	bhi.n	8001ad0 <BMS+0x17c>
+ 8001a02:	4b62      	ldr	r3, [pc, #392]	; (8001b8c <BMS+0x234>)
+ 8001a04:	781b      	ldrb	r3, [r3, #0]
+ 8001a06:	2b02      	cmp	r3, #2
+ 8001a08:	d864      	bhi.n	8001ad4 <BMS+0x17c>
 			{
 				for(uint8_t j = 0; j < 8; j++)
- 8001a06:	2300      	movs	r3, #0
- 8001a08:	71bb      	strb	r3, [r7, #6]
- 8001a0a:	e02b      	b.n	8001a64 <BMS+0x110>
+ 8001a0a:	2300      	movs	r3, #0
+ 8001a0c:	71bb      	strb	r3, [r7, #6]
+ 8001a0e:	e02b      	b.n	8001a68 <BMS+0x110>
 				{
 					if(cellVoltages[i * NUM_STACK + j] - MAX_VOLTAGE > balanceMargin)cfg[i][4] |= 1 << j;
- 8001a0c:	79fa      	ldrb	r2, [r7, #7]
- 8001a0e:	79bb      	ldrb	r3, [r7, #6]
- 8001a10:	4413      	add	r3, r2
- 8001a12:	4a60      	ldr	r2, [pc, #384]	; (8001b94 <BMS+0x240>)
- 8001a14:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
- 8001a18:	f5a3 4318 	sub.w	r3, r3, #38912	; 0x9800
- 8001a1c:	3b58      	subs	r3, #88	; 0x58
- 8001a1e:	4a5e      	ldr	r2, [pc, #376]	; (8001b98 <BMS+0x244>)
- 8001a20:	8812      	ldrh	r2, [r2, #0]
- 8001a22:	4293      	cmp	r3, r2
- 8001a24:	dd1b      	ble.n	8001a5e <BMS+0x10a>
- 8001a26:	79fa      	ldrb	r2, [r7, #7]
- 8001a28:	4958      	ldr	r1, [pc, #352]	; (8001b8c <BMS+0x238>)
- 8001a2a:	4613      	mov	r3, r2
- 8001a2c:	005b      	lsls	r3, r3, #1
- 8001a2e:	4413      	add	r3, r2
+ 8001a10:	79fa      	ldrb	r2, [r7, #7]
+ 8001a12:	79bb      	ldrb	r3, [r7, #6]
+ 8001a14:	4413      	add	r3, r2
+ 8001a16:	4a60      	ldr	r2, [pc, #384]	; (8001b98 <BMS+0x240>)
+ 8001a18:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
+ 8001a1c:	f5a3 4318 	sub.w	r3, r3, #38912	; 0x9800
+ 8001a20:	3b58      	subs	r3, #88	; 0x58
+ 8001a22:	4a5e      	ldr	r2, [pc, #376]	; (8001b9c <BMS+0x244>)
+ 8001a24:	8812      	ldrh	r2, [r2, #0]
+ 8001a26:	4293      	cmp	r3, r2
+ 8001a28:	dd1b      	ble.n	8001a62 <BMS+0x10a>
+ 8001a2a:	79fa      	ldrb	r2, [r7, #7]
+ 8001a2c:	4958      	ldr	r1, [pc, #352]	; (8001b90 <BMS+0x238>)
+ 8001a2e:	4613      	mov	r3, r2
  8001a30:	005b      	lsls	r3, r3, #1
- 8001a32:	440b      	add	r3, r1
- 8001a34:	3304      	adds	r3, #4
- 8001a36:	781b      	ldrb	r3, [r3, #0]
- 8001a38:	b25a      	sxtb	r2, r3
- 8001a3a:	79bb      	ldrb	r3, [r7, #6]
- 8001a3c:	2101      	movs	r1, #1
- 8001a3e:	fa01 f303 	lsl.w	r3, r1, r3
- 8001a42:	b25b      	sxtb	r3, r3
- 8001a44:	4313      	orrs	r3, r2
+ 8001a32:	4413      	add	r3, r2
+ 8001a34:	005b      	lsls	r3, r3, #1
+ 8001a36:	440b      	add	r3, r1
+ 8001a38:	3304      	adds	r3, #4
+ 8001a3a:	781b      	ldrb	r3, [r3, #0]
+ 8001a3c:	b25a      	sxtb	r2, r3
+ 8001a3e:	79bb      	ldrb	r3, [r7, #6]
+ 8001a40:	2101      	movs	r1, #1
+ 8001a42:	fa01 f303 	lsl.w	r3, r1, r3
  8001a46:	b25b      	sxtb	r3, r3
- 8001a48:	79fa      	ldrb	r2, [r7, #7]
- 8001a4a:	b2d8      	uxtb	r0, r3
- 8001a4c:	494f      	ldr	r1, [pc, #316]	; (8001b8c <BMS+0x238>)
- 8001a4e:	4613      	mov	r3, r2
- 8001a50:	005b      	lsls	r3, r3, #1
- 8001a52:	4413      	add	r3, r2
+ 8001a48:	4313      	orrs	r3, r2
+ 8001a4a:	b25b      	sxtb	r3, r3
+ 8001a4c:	79fa      	ldrb	r2, [r7, #7]
+ 8001a4e:	b2d8      	uxtb	r0, r3
+ 8001a50:	494f      	ldr	r1, [pc, #316]	; (8001b90 <BMS+0x238>)
+ 8001a52:	4613      	mov	r3, r2
  8001a54:	005b      	lsls	r3, r3, #1
- 8001a56:	440b      	add	r3, r1
- 8001a58:	3304      	adds	r3, #4
- 8001a5a:	4602      	mov	r2, r0
- 8001a5c:	701a      	strb	r2, [r3, #0]
+ 8001a56:	4413      	add	r3, r2
+ 8001a58:	005b      	lsls	r3, r3, #1
+ 8001a5a:	440b      	add	r3, r1
+ 8001a5c:	3304      	adds	r3, #4
+ 8001a5e:	4602      	mov	r2, r0
+ 8001a60:	701a      	strb	r2, [r3, #0]
 				for(uint8_t j = 0; j < 8; j++)
- 8001a5e:	79bb      	ldrb	r3, [r7, #6]
- 8001a60:	3301      	adds	r3, #1
- 8001a62:	71bb      	strb	r3, [r7, #6]
- 8001a64:	79bb      	ldrb	r3, [r7, #6]
- 8001a66:	2b07      	cmp	r3, #7
- 8001a68:	d9d0      	bls.n	8001a0c <BMS+0xb8>
+ 8001a62:	79bb      	ldrb	r3, [r7, #6]
+ 8001a64:	3301      	adds	r3, #1
+ 8001a66:	71bb      	strb	r3, [r7, #6]
+ 8001a68:	79bb      	ldrb	r3, [r7, #6]
+ 8001a6a:	2b07      	cmp	r3, #7
+ 8001a6c:	d9d0      	bls.n	8001a10 <BMS+0xb8>
 				}
 				for(uint8_t j = 0; j < 3; j++)
- 8001a6a:	2300      	movs	r3, #0
- 8001a6c:	717b      	strb	r3, [r7, #5]
- 8001a6e:	e02c      	b.n	8001aca <BMS+0x176>
+ 8001a6e:	2300      	movs	r3, #0
+ 8001a70:	717b      	strb	r3, [r7, #5]
+ 8001a72:	e02c      	b.n	8001ace <BMS+0x176>
 				{
 					if(cellVoltages[i * NUM_STACK + j + 8] - MAX_VOLTAGE > balanceMargin)cfg[i][5] |= 1 << j;
- 8001a70:	79fa      	ldrb	r2, [r7, #7]
- 8001a72:	797b      	ldrb	r3, [r7, #5]
- 8001a74:	4413      	add	r3, r2
- 8001a76:	3308      	adds	r3, #8
- 8001a78:	4a46      	ldr	r2, [pc, #280]	; (8001b94 <BMS+0x240>)
- 8001a7a:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
- 8001a7e:	f5a3 4318 	sub.w	r3, r3, #38912	; 0x9800
- 8001a82:	3b58      	subs	r3, #88	; 0x58
- 8001a84:	4a44      	ldr	r2, [pc, #272]	; (8001b98 <BMS+0x244>)
- 8001a86:	8812      	ldrh	r2, [r2, #0]
- 8001a88:	4293      	cmp	r3, r2
- 8001a8a:	dd1b      	ble.n	8001ac4 <BMS+0x170>
- 8001a8c:	79fa      	ldrb	r2, [r7, #7]
- 8001a8e:	493f      	ldr	r1, [pc, #252]	; (8001b8c <BMS+0x238>)
- 8001a90:	4613      	mov	r3, r2
- 8001a92:	005b      	lsls	r3, r3, #1
- 8001a94:	4413      	add	r3, r2
+ 8001a74:	79fa      	ldrb	r2, [r7, #7]
+ 8001a76:	797b      	ldrb	r3, [r7, #5]
+ 8001a78:	4413      	add	r3, r2
+ 8001a7a:	3308      	adds	r3, #8
+ 8001a7c:	4a46      	ldr	r2, [pc, #280]	; (8001b98 <BMS+0x240>)
+ 8001a7e:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
+ 8001a82:	f5a3 4318 	sub.w	r3, r3, #38912	; 0x9800
+ 8001a86:	3b58      	subs	r3, #88	; 0x58
+ 8001a88:	4a44      	ldr	r2, [pc, #272]	; (8001b9c <BMS+0x244>)
+ 8001a8a:	8812      	ldrh	r2, [r2, #0]
+ 8001a8c:	4293      	cmp	r3, r2
+ 8001a8e:	dd1b      	ble.n	8001ac8 <BMS+0x170>
+ 8001a90:	79fa      	ldrb	r2, [r7, #7]
+ 8001a92:	493f      	ldr	r1, [pc, #252]	; (8001b90 <BMS+0x238>)
+ 8001a94:	4613      	mov	r3, r2
  8001a96:	005b      	lsls	r3, r3, #1
- 8001a98:	440b      	add	r3, r1
- 8001a9a:	3305      	adds	r3, #5
- 8001a9c:	781b      	ldrb	r3, [r3, #0]
- 8001a9e:	b25a      	sxtb	r2, r3
- 8001aa0:	797b      	ldrb	r3, [r7, #5]
- 8001aa2:	2101      	movs	r1, #1
- 8001aa4:	fa01 f303 	lsl.w	r3, r1, r3
- 8001aa8:	b25b      	sxtb	r3, r3
- 8001aaa:	4313      	orrs	r3, r2
+ 8001a98:	4413      	add	r3, r2
+ 8001a9a:	005b      	lsls	r3, r3, #1
+ 8001a9c:	440b      	add	r3, r1
+ 8001a9e:	3305      	adds	r3, #5
+ 8001aa0:	781b      	ldrb	r3, [r3, #0]
+ 8001aa2:	b25a      	sxtb	r2, r3
+ 8001aa4:	797b      	ldrb	r3, [r7, #5]
+ 8001aa6:	2101      	movs	r1, #1
+ 8001aa8:	fa01 f303 	lsl.w	r3, r1, r3
  8001aac:	b25b      	sxtb	r3, r3
- 8001aae:	79fa      	ldrb	r2, [r7, #7]
- 8001ab0:	b2d8      	uxtb	r0, r3
- 8001ab2:	4936      	ldr	r1, [pc, #216]	; (8001b8c <BMS+0x238>)
- 8001ab4:	4613      	mov	r3, r2
- 8001ab6:	005b      	lsls	r3, r3, #1
- 8001ab8:	4413      	add	r3, r2
+ 8001aae:	4313      	orrs	r3, r2
+ 8001ab0:	b25b      	sxtb	r3, r3
+ 8001ab2:	79fa      	ldrb	r2, [r7, #7]
+ 8001ab4:	b2d8      	uxtb	r0, r3
+ 8001ab6:	4936      	ldr	r1, [pc, #216]	; (8001b90 <BMS+0x238>)
+ 8001ab8:	4613      	mov	r3, r2
  8001aba:	005b      	lsls	r3, r3, #1
- 8001abc:	440b      	add	r3, r1
- 8001abe:	3305      	adds	r3, #5
- 8001ac0:	4602      	mov	r2, r0
- 8001ac2:	701a      	strb	r2, [r3, #0]
+ 8001abc:	4413      	add	r3, r2
+ 8001abe:	005b      	lsls	r3, r3, #1
+ 8001ac0:	440b      	add	r3, r1
+ 8001ac2:	3305      	adds	r3, #5
+ 8001ac4:	4602      	mov	r2, r0
+ 8001ac6:	701a      	strb	r2, [r3, #0]
 				for(uint8_t j = 0; j < 3; j++)
- 8001ac4:	797b      	ldrb	r3, [r7, #5]
- 8001ac6:	3301      	adds	r3, #1
- 8001ac8:	717b      	strb	r3, [r7, #5]
- 8001aca:	797b      	ldrb	r3, [r7, #5]
- 8001acc:	2b02      	cmp	r3, #2
- 8001ace:	d9cf      	bls.n	8001a70 <BMS+0x11c>
+ 8001ac8:	797b      	ldrb	r3, [r7, #5]
+ 8001aca:	3301      	adds	r3, #1
+ 8001acc:	717b      	strb	r3, [r7, #5]
+ 8001ace:	797b      	ldrb	r3, [r7, #5]
+ 8001ad0:	2b02      	cmp	r3, #2
+ 8001ad2:	d9cf      	bls.n	8001a74 <BMS+0x11c>
 	for (uint8_t i = 0; i < NUM_STACK; i++)
- 8001ad0:	79fb      	ldrb	r3, [r7, #7]
- 8001ad2:	3301      	adds	r3, #1
- 8001ad4:	71fb      	strb	r3, [r7, #7]
- 8001ad6:	79fb      	ldrb	r3, [r7, #7]
- 8001ad8:	2b00      	cmp	r3, #0
- 8001ada:	f43f af49 	beq.w	8001970 <BMS+0x1c>
+ 8001ad4:	79fb      	ldrb	r3, [r7, #7]
+ 8001ad6:	3301      	adds	r3, #1
+ 8001ad8:	71fb      	strb	r3, [r7, #7]
+ 8001ada:	79fb      	ldrb	r3, [r7, #7]
+ 8001adc:	2b00      	cmp	r3, #0
+ 8001ade:	f43f af49 	beq.w	8001974 <BMS+0x1c>
 	/*
 	LTC6811_clrstat();
 	HAL_Delay(3);
 */
 
 	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
- 8001ade:	492b      	ldr	r1, [pc, #172]	; (8001b8c <BMS+0x238>)
- 8001ae0:	2001      	movs	r0, #1
- 8001ae2:	f7ff fadd 	bl	80010a0 <LTC6811_wrcfg>
+ 8001ae2:	492b      	ldr	r1, [pc, #172]	; (8001b90 <BMS+0x238>)
+ 8001ae4:	2001      	movs	r0, #1
+ 8001ae6:	f7ff fadb 	bl	80010a0 <LTC6811_wrcfg>
 	HAL_Delay(3);
- 8001ae6:	2003      	movs	r0, #3
- 8001ae8:	f001 f900 	bl	8002cec <HAL_Delay>
+ 8001aea:	2003      	movs	r0, #3
+ 8001aec:	f001 f8fe 	bl	8002cec <HAL_Delay>
 
 	//wakeup_idle();									// read config
 	//LTC6811_rdcfg();
 	//HAL_Delay(3);
 
 	LTC6811_adcv();										// measure voltages
- 8001aec:	f7ff fa54 	bl	8000f98 <LTC6811_adcv>
+ 8001af0:	f7ff fa52 	bl	8000f98 <LTC6811_adcv>
 	HAL_Delay(3);
- 8001af0:	2003      	movs	r0, #3
- 8001af2:	f001 f8fb 	bl	8002cec <HAL_Delay>
+ 8001af4:	2003      	movs	r0, #3
+ 8001af6:	f001 f8f9 	bl	8002cec <HAL_Delay>
 
 	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);	//read voltages
- 8001af6:	4a27      	ldr	r2, [pc, #156]	; (8001b94 <BMS+0x240>)
- 8001af8:	2101      	movs	r1, #1
- 8001afa:	2000      	movs	r0, #0
- 8001afc:	f7ff fb86 	bl	800120c <LTC6811_rdcv>
- 8001b00:	4603      	mov	r3, r0
- 8001b02:	461a      	mov	r2, r3
- 8001b04:	793b      	ldrb	r3, [r7, #4]
- 8001b06:	4413      	add	r3, r2
- 8001b08:	713b      	strb	r3, [r7, #4]
+ 8001afa:	4a27      	ldr	r2, [pc, #156]	; (8001b98 <BMS+0x240>)
+ 8001afc:	2101      	movs	r1, #1
+ 8001afe:	2000      	movs	r0, #0
+ 8001b00:	f7ff fb86 	bl	8001210 <LTC6811_rdcv>
+ 8001b04:	4603      	mov	r3, r0
+ 8001b06:	461a      	mov	r2, r3
+ 8001b08:	793b      	ldrb	r3, [r7, #4]
+ 8001b0a:	4413      	add	r3, r2
+ 8001b0c:	713b      	strb	r3, [r7, #4]
 	HAL_Delay(3);
- 8001b0a:	2003      	movs	r0, #3
- 8001b0c:	f001 f8ee 	bl	8002cec <HAL_Delay>
+ 8001b0e:	2003      	movs	r0, #3
+ 8001b10:	f001 f8ec 	bl	8002cec <HAL_Delay>
 
 	LTC6811_adax();										// measure 3 celltemp
- 8001b10:	f7ff fa84 	bl	800101c <LTC6811_adax>
+ 8001b14:	f7ff fa82 	bl	800101c <LTC6811_adax>
 	HAL_Delay(3);
- 8001b14:	2003      	movs	r0, #3
- 8001b16:	f001 f8e9 	bl	8002cec <HAL_Delay>
+ 8001b18:	2003      	movs	r0, #3
+ 8001b1a:	f001 f8e7 	bl	8002cec <HAL_Delay>
 
 	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
- 8001b1a:	4a20      	ldr	r2, [pc, #128]	; (8001b9c <BMS+0x248>)
- 8001b1c:	2101      	movs	r1, #1
- 8001b1e:	2000      	movs	r0, #0
- 8001b20:	f7ff fc6a 	bl	80013f8 <LTC6811_rdaux>
- 8001b24:	4603      	mov	r3, r0
- 8001b26:	b2da      	uxtb	r2, r3
- 8001b28:	793b      	ldrb	r3, [r7, #4]
- 8001b2a:	4413      	add	r3, r2
- 8001b2c:	713b      	strb	r3, [r7, #4]
+ 8001b1e:	4a20      	ldr	r2, [pc, #128]	; (8001ba0 <BMS+0x248>)
+ 8001b20:	2101      	movs	r1, #1
+ 8001b22:	2000      	movs	r0, #0
+ 8001b24:	f7ff fc6a 	bl	80013fc <LTC6811_rdaux>
+ 8001b28:	4603      	mov	r3, r0
+ 8001b2a:	b2da      	uxtb	r2, r3
+ 8001b2c:	793b      	ldrb	r3, [r7, #4]
+ 8001b2e:	4413      	add	r3, r2
+ 8001b30:	713b      	strb	r3, [r7, #4]
 	HAL_Delay(3);
- 8001b2e:	2003      	movs	r0, #3
- 8001b30:	f001 f8dc 	bl	8002cec <HAL_Delay>
+ 8001b32:	2003      	movs	r0, #3
+ 8001b34:	f001 f8da 	bl	8002cec <HAL_Delay>
 
 
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
- 8001b34:	4b1a      	ldr	r3, [pc, #104]	; (8001ba0 <BMS+0x24c>)
- 8001b36:	4a1b      	ldr	r2, [pc, #108]	; (8001ba4 <BMS+0x250>)
- 8001b38:	491b      	ldr	r1, [pc, #108]	; (8001ba8 <BMS+0x254>)
- 8001b3a:	2001      	movs	r0, #1
- 8001b3c:	f7ff fd44 	bl	80015c8 <LTC6811_rdstatb>
- 8001b40:	4603      	mov	r3, r0
- 8001b42:	b2da      	uxtb	r2, r3
- 8001b44:	793b      	ldrb	r3, [r7, #4]
- 8001b46:	4413      	add	r3, r2
- 8001b48:	713b      	strb	r3, [r7, #4]
+ 8001b38:	4b1a      	ldr	r3, [pc, #104]	; (8001ba4 <BMS+0x24c>)
+ 8001b3a:	4a1b      	ldr	r2, [pc, #108]	; (8001ba8 <BMS+0x250>)
+ 8001b3c:	491b      	ldr	r1, [pc, #108]	; (8001bac <BMS+0x254>)
+ 8001b3e:	2001      	movs	r0, #1
+ 8001b40:	f7ff fd44 	bl	80015cc <LTC6811_rdstatb>
+ 8001b44:	4603      	mov	r3, r0
+ 8001b46:	b2da      	uxtb	r2, r3
+ 8001b48:	793b      	ldrb	r3, [r7, #4]
+ 8001b4a:	4413      	add	r3, r2
+ 8001b4c:	713b      	strb	r3, [r7, #4]
 	HAL_Delay(3);
- 8001b4a:	2003      	movs	r0, #3
- 8001b4c:	f001 f8ce 	bl	8002cec <HAL_Delay>
+ 8001b4e:	2003      	movs	r0, #3
+ 8001b50:	f001 f8cc 	bl	8002cec <HAL_Delay>
 
 
 	convertVoltage();
- 8001b50:	f000 f82e 	bl	8001bb0 <convertVoltage>
+ 8001b54:	f000 f82c 	bl	8001bb0 <convertVoltage>
 
 	convertTemperature(selTemp);
- 8001b54:	4b0c      	ldr	r3, [pc, #48]	; (8001b88 <BMS+0x234>)
- 8001b56:	781b      	ldrb	r3, [r3, #0]
- 8001b58:	4618      	mov	r0, r3
- 8001b5a:	f000 f93d 	bl	8001dd8 <convertTemperature>
+ 8001b58:	4b0c      	ldr	r3, [pc, #48]	; (8001b8c <BMS+0x234>)
+ 8001b5a:	781b      	ldrb	r3, [r3, #0]
+ 8001b5c:	4618      	mov	r0, r3
+ 8001b5e:	f000 f93b 	bl	8001dd8 <convertTemperature>
 
 	wakeup_idle();
 	LTC6811_rdstat();
 */
 
 	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
- 8001b5e:	4b0a      	ldr	r3, [pc, #40]	; (8001b88 <BMS+0x234>)
- 8001b60:	781b      	ldrb	r3, [r3, #0]
- 8001b62:	2b02      	cmp	r3, #2
- 8001b64:	d806      	bhi.n	8001b74 <BMS+0x220>
+ 8001b62:	4b0a      	ldr	r3, [pc, #40]	; (8001b8c <BMS+0x234>)
+ 8001b64:	781b      	ldrb	r3, [r3, #0]
+ 8001b66:	2b02      	cmp	r3, #2
+ 8001b68:	d806      	bhi.n	8001b78 <BMS+0x220>
 		selTemp++;
- 8001b66:	4b08      	ldr	r3, [pc, #32]	; (8001b88 <BMS+0x234>)
- 8001b68:	781b      	ldrb	r3, [r3, #0]
- 8001b6a:	3301      	adds	r3, #1
- 8001b6c:	b2da      	uxtb	r2, r3
- 8001b6e:	4b06      	ldr	r3, [pc, #24]	; (8001b88 <BMS+0x234>)
- 8001b70:	701a      	strb	r2, [r3, #0]
- 8001b72:	e002      	b.n	8001b7a <BMS+0x226>
+ 8001b6a:	4b08      	ldr	r3, [pc, #32]	; (8001b8c <BMS+0x234>)
+ 8001b6c:	781b      	ldrb	r3, [r3, #0]
+ 8001b6e:	3301      	adds	r3, #1
+ 8001b70:	b2da      	uxtb	r2, r3
+ 8001b72:	4b06      	ldr	r3, [pc, #24]	; (8001b8c <BMS+0x234>)
+ 8001b74:	701a      	strb	r2, [r3, #0]
+ 8001b76:	e002      	b.n	8001b7e <BMS+0x226>
 	else
 		selTemp = 0;
- 8001b74:	4b04      	ldr	r3, [pc, #16]	; (8001b88 <BMS+0x234>)
- 8001b76:	2200      	movs	r2, #0
- 8001b78:	701a      	strb	r2, [r3, #0]
+ 8001b78:	4b04      	ldr	r3, [pc, #16]	; (8001b8c <BMS+0x234>)
+ 8001b7a:	2200      	movs	r2, #0
+ 8001b7c:	701a      	strb	r2, [r3, #0]
 
 	HAL_Delay(10);
- 8001b7a:	200a      	movs	r0, #10
- 8001b7c:	f001 f8b6 	bl	8002cec <HAL_Delay>
+ 8001b7e:	200a      	movs	r0, #10
+ 8001b80:	f001 f8b4 	bl	8002cec <HAL_Delay>
 
 }
- 8001b80:	bf00      	nop
- 8001b82:	3708      	adds	r7, #8
- 8001b84:	46bd      	mov	sp, r7
- 8001b86:	bd80      	pop	{r7, pc}
- 8001b88:	200002d0 	.word	0x200002d0
- 8001b8c:	20000274 	.word	0x20000274
- 8001b90:	20000000 	.word	0x20000000
- 8001b94:	2000025c 	.word	0x2000025c
- 8001b98:	20000002 	.word	0x20000002
- 8001b9c:	2000027c 	.word	0x2000027c
- 8001ba0:	200002c8 	.word	0x200002c8
- 8001ba4:	200002c4 	.word	0x200002c4
- 8001ba8:	200002c0 	.word	0x200002c0
- 8001bac:	00000000 	.word	0x00000000
+ 8001b84:	bf00      	nop
+ 8001b86:	3708      	adds	r7, #8
+ 8001b88:	46bd      	mov	sp, r7
+ 8001b8a:	bd80      	pop	{r7, pc}
+ 8001b8c:	200002d0 	.word	0x200002d0
+ 8001b90:	20000274 	.word	0x20000274
+ 8001b94:	20000000 	.word	0x20000000
+ 8001b98:	2000025c 	.word	0x2000025c
+ 8001b9c:	20000002 	.word	0x20000002
+ 8001ba0:	2000027c 	.word	0x2000027c
+ 8001ba4:	200002c8 	.word	0x200002c8
+ 8001ba8:	200002c4 	.word	0x200002c4
+ 8001bac:	200002c0 	.word	0x200002c0
 
 08001bb0 <convertVoltage>:
 
@@ -3367,10 +3369,8 @@ void convertVoltage()		//convert and sort Voltages
  8001d0c:	08008f28 	.word	0x08008f28
 
 08001d10 <calculateTemperature>:
-	return(1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15);
 
-}
-*/
+
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
  8001d10:	b580      	push	{r7, lr}
@@ -3585,10 +3585,9 @@ void convertTemperature(uint8_t selTemp)		// sort temp
  8001ea6:	7d7b      	ldrb	r3, [r7, #21]
  8001ea8:	2b00      	cmp	r3, #0
  8001eaa:	d0e4      	beq.n	8001e76 <convertTemperature+0x9e>
-				printf(" Stack %d Temperature %d = %.4f degC \r\n", k, 8, calc_temp[k][11]);
+			}
 		}
 	}
-	*/
 
 }
  8001eac:	bf00      	nop
@@ -4614,7 +4613,7 @@ int main(void)
  800254e:	4809      	ldr	r0, [pc, #36]	; (8002574 <main+0x50>)
  8002550:	f000 fceb 	bl	8002f2a <HAL_CAN_Start>
   BMS_init();
- 8002554:	f7ff f9f8 	bl	8001948 <BMS_init>
+ 8002554:	f7ff f9fa 	bl	800194c <BMS_init>
 
 
 
@@ -4636,7 +4635,7 @@ int main(void)
   while (1)
   {
 	 BMS();
- 800256a:	f7ff f9f3 	bl	8001954 <BMS>
+ 800256a:	f7ff f9f5 	bl	8001958 <BMS>
  800256e:	e7fc      	b.n	800256a <main+0x46>
  8002570:	200003ac 	.word	0x200003ac
  8002574:	200002f8 	.word	0x200002f8
@@ -7833,7 +7832,7 @@ void HAL_CAN_IRQHandler(CAN_HandleTypeDef *hcan)
       /* Call weak (surcharged) callback */
       HAL_CAN_RxFifo0MsgPendingCallback(hcan);
  800357a:	6878      	ldr	r0, [r7, #4]
- 800357c:	f7fe f9cc 	bl	8001918 <HAL_CAN_RxFifo0MsgPendingCallback>
+ 800357c:	f7fe f9ce 	bl	800191c <HAL_CAN_RxFifo0MsgPendingCallback>
 #endif /* USE_HAL_CAN_REGISTER_CALLBACKS */
     }
   }
@@ -13684,7 +13683,7 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
 #else
       HAL_TIM_PeriodElapsedCallback(htim);
  80055fa:	6878      	ldr	r0, [r7, #4]
- 80055fc:	f7fc f94e 	bl	800189c <HAL_TIM_PeriodElapsedCallback>
+ 80055fc:	f7fc f950 	bl	80018a0 <HAL_TIM_PeriodElapsedCallback>
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
     }
   }
