@@ -183,19 +183,14 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
 
-	/*
+
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	HAL_Delay(3);
-*/
+
 
 	convertVoltage();
 
 	convertTemperature(selTemp);
-
-
-
-
-
 
 
 /*
@@ -237,18 +232,17 @@ void convertVoltage()		//convert and sort Voltages
 
 }
 
-/*
-uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
-{
-	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-	return(1/((1/298.15)-(log(10000/convert_R)/3435)) - 273.15);
 
-}
-*/
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
-	uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-	return 1.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273.15;
+	if(referenceCode - voltageCode != 0)
+	{
+		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+		return 1.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273.15;
+	}
+	else
+		return 0x00;
+
 
 }
 

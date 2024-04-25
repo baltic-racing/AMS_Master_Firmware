@@ -2,6 +2,6 @@
 ../Core/Src/bms.c:104:6:HAL_CAN_RxFifo0MsgPendingCallback	56	static
 ../Core/Src/bms.c:110:6:BMS_init	8	static
 ../Core/Src/bms.c:115:6:BMS	16	static
-../Core/Src/bms.c:219:6:convertVoltage	128	static
-../Core/Src/bms.c:248:10:calculateTemperature	24	static
-../Core/Src/bms.c:255:6:convertTemperature	40	static
+../Core/Src/bms.c:214:6:convertVoltage	128	static
+../Core/Src/bms.c:243:10:calculateTemperature	24	static
+../Core/Src/bms.c:256:6:convertTemperature	40	static
