@@ -32,11 +32,11 @@
 
 //Der folgende Block kann gelöscht werden wenn kein printf über SWV mehr gewollt ist
 //Beginn:
-
+/*
 //Debug Exception and Monitor Control Register base address
 #define DEMCR        			*((volatile uint32_t*) 0xE000EDFCU )
 
-/* ITM register addresses */
+/* ITM register addresses
 #define ITM_STIMULUS_PORT0   	*((volatile uint32_t*) 0xE0000000 )
 #define ITM_TRACE_EN          	*((volatile uint32_t*) 0xE0000E00 )
 
@@ -56,6 +56,7 @@ void ITM_SendChar(uint8_t ch)
 	ITM_STIMULUS_PORT0 = ch;
 }
 
+*/
 //Ende!
 
 /* Variables */
@@ -111,8 +112,8 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
 
   for (DataIdx = 0; DataIdx < len; DataIdx++)
   {
-    //__io_putchar(*ptr++);
-    ITM_SendChar(*ptr++); //Diese Zeile kann gelöscht werden wenn kein printf über SWV mehr gewollt ist
+    __io_putchar(*ptr++);
+    //ITM_SendChar(*ptr++); //Diese Zeile kann gelöscht werden wenn kein printf über SWV mehr gewollt ist
   }
   return len;
 }

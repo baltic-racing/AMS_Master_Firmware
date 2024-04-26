@@ -73,33 +73,20 @@ uint16_t OV_flag[NUM_STACK];
 uint16_t UV_flag[NUM_STACK];
 uint8_t r_statb[NUM_STACK][6];
 
-uint8_t can_cnt = 0; //can counter to adjust timings
-uint8_t last10 =0;
+uint32_t can_cnt = 0; //can counter to adjust timings
+uint64_t last10 =0;
+uint64_t last100;
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
  */
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
-
-	can_cnt++;
-
-	if (can_cnt == (last10 + 10))
-		{
-			CAN_100();				//CAN Messages transmitted with 100 Hz
-			last10 = can_cnt;
-		}
-
-	if (can_cnt == 100)
-		{
-			CAN_10(AMS2_databytes[8]);				//CAN Messages transmitted with 10 Hz
-			can_cnt = 0;
-			last10 = 0;
-			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
-			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
-		}
+CAN_interrupt();
 }
+
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
    {
@@ -175,12 +162,15 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);	//read voltages
 	HAL_Delay(3);
 
+	//CAN_interrupt();
+
 	LTC6811_adax();										// measure 3 celltemp
 	HAL_Delay(3);
 
 	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
 
+	//CAN_interrupt();
 
 	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	HAL_Delay(3);
@@ -201,11 +191,17 @@ void BMS()		// Battery Management System function for main loop.
 */
 
 	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
+	{
 		selTemp++;
+
+		//CAN_interrupt();
+	}
+
+
 	else
 		selTemp = 0;
 
-	HAL_Delay(10);
+
 
 }
 
@@ -224,7 +220,7 @@ void convertVoltage()		//convert and sort Voltages
 			else if(cellVoltages[i + k * 12] < cell_min) cell_min = cellVoltages[i + k * 12];
 
 			voltage[i + k * 12] = (double)cellVoltages[i + k * 12]/10000;
-			printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
+			//printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
 		}
 	}
 
@@ -243,6 +239,26 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 
 
 }
+
+void CAN_interrupt()
+{
+can_cnt++;
+if (can_cnt>= last10 + 10)
+		{
+			CAN_100();
+			last10 = can_cnt;
+
+		}
+if (HAL_GetTick()>= last100 + 100)
+		{
+			CAN_10(AMS2_databytes[8]);
+
+			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
+			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
+			last100 = HAL_GetTick();
+		}
+	}
+
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
@@ -270,7 +286,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		{
 			for(uint8_t i = 0; i < NUM_CELLS; i++)
 			{
-				printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
+				//printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
 			}
 		}
 	}
