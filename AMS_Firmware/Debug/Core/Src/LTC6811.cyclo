@@ -11,5 +11,5 @@
 ../Core/Src/LTC6811.c:284:8:LTC6811_rdaux	5
 ../Core/Src/LTC6811.c:326:6:LTC6811_rdaux_reg	4
 ../Core/Src/LTC6811.c:353:8:LTC6811_rdstatb	7
-../Core/Src/LTC6811.c:424:6:LTC6811_clrstat	1
-../Core/Src/LTC6811.c:495:10:pec15_calc	2
+../Core/Src/LTC6811.c:425:6:LTC6811_clrstat	1
+../Core/Src/LTC6811.c:496:10:pec15_calc	2

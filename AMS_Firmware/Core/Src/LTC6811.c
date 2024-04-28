@@ -381,6 +381,7 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
   for (uint8_t current_ic = 0; current_ic < total_ic; current_ic++) //executes for each LTC6804 in the stack
   {
 	  uint8_t i =0;
+	  OV_flag[current_ic] = 0;
 	  /*
 	  for (uint8_t byte = 2; byte < 5; byte++)
 	  {

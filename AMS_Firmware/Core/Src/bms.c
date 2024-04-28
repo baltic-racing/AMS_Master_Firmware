@@ -112,17 +112,17 @@ void BMS()		// Battery Management System function for main loop.
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
 		//Balancing with flags
-		/*
+
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00 | VUV;
 		cfg[i][2] = 0x00 | (VOV<<4) | (VUV>>4);
 		cfg[i][3] = 0x00 | (VOV>>4);
 		cfg[i][4] = 0x00 | OV_flag[i];
 		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
-		*/
+
 
 		//Balancing without flags
-
+/*
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00;
 		cfg[i][2] = 0x00;
@@ -144,6 +144,7 @@ void BMS()		// Battery Management System function for main loop.
 				}
 			}
 		}
+		*/
 	}
 
 	/*
@@ -243,11 +244,11 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 
 void CAN_interrupt()
 {
-	can_cnt++;
-	if (can_cnt>= last10 + 10)
+
+	if (HAL_GetTick()>= last10 + 10)
 	{
 		CAN_100();
-		last10 = can_cnt;
+		last10 = HAL_GetTick();
 
 	}
 	if (HAL_GetTick()>= last100 + 100)
