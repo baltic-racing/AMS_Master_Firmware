@@ -11,6 +11,8 @@
 #include "stdlib.h"
 #include "math.h"
 #include "can.h"
+#include "usbd_cdc_if.h"
+#include "string.h"
 
 
 #define NUM_STACK 1						 //total slaves
@@ -201,8 +203,7 @@ void BMS()		// Battery Management System function for main loop.
 	else
 		selTemp = 0;
 
-
-
+	send_usb();
 }
 
 void convertVoltage()		//convert and sort Voltages
@@ -242,22 +243,22 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 
 void CAN_interrupt()
 {
-can_cnt++;
-if (can_cnt>= last10 + 10)
-		{
-			CAN_100();
-			last10 = can_cnt;
+	can_cnt++;
+	if (can_cnt>= last10 + 10)
+	{
+		CAN_100();
+		last10 = can_cnt;
 
-		}
-if (HAL_GetTick()>= last100 + 100)
-		{
-			CAN_10(AMS2_databytes[8]);
-
-			HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
-			HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
-			last100 = HAL_GetTick();
-		}
 	}
+	if (HAL_GetTick()>= last100 + 100)
+	{
+		CAN_10(AMS2_databytes[8]);
+
+		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
+		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
+		last100 = HAL_GetTick();
+	}
+}
 
 
 void convertTemperature(uint8_t selTemp)		// sort temp
@@ -293,4 +294,16 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 }
 
+void send_usb()
+{
+	uint8_t usb_voltages[NUM_CELLS] = {0};
+
+	for(uint8_t i = 0; i < NUM_CELLS; i++)
+	{
+		usb_voltages[i] = cellVoltages[i]/1000;
+	}
+
+	CDC_Transmit_FS(usb_voltages, NUM_CELLS);
+
+}
 

@@ -21,7 +21,7 @@
 #include "can.h"
 #include "spi.h"
 #include "tim.h"
-#include "usb_otg.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -98,26 +98,17 @@ int main(void)
   MX_TIM2_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
-  MX_USB_OTG_FS_PCD_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   // Start timer
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_CAN_Start(&hcan1);
   BMS_init();
 
-
-
-
-
-
-
-
-
     if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
     {
   	  Error_Handler();
     }
-
 
   /* USER CODE END 2 */
 
@@ -128,8 +119,6 @@ int main(void)
 	 BMS();
 
   }
-
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

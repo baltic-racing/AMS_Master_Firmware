@@ -26,6 +26,7 @@ void BMS_init(void);
 void convertVoltage(void);
 void convertTemperature(uint8_t selTemp);
 void CAN_interrupt(void);
+void send_usb(void);
 
 
 #endif /* INC_BMS_H_ */

@@ -1,32 +1,50 @@
-13:57:41 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+14:18:40 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j12 all 
-arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
+arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
 ../Core/Src/bms.c: In function 'BMS':
-../Core/Src/bms.c:107:18: warning: unused variable 'VUV' [-Wunused-variable]
-  107 |         uint16_t VUV = (MIN_VOLTAGE/16)-1;
+../Core/Src/bms.c:109:18: warning: unused variable 'VUV' [-Wunused-variable]
+  109 |         uint16_t VUV = (MIN_VOLTAGE/16)-1;
       |                  ^~~
-../Core/Src/bms.c:106:18: warning: unused variable 'VOV' [-Wunused-variable]
-  106 |         uint16_t VOV = MAX_VOLTAGE/16;                                  // Formeln aus Datenblatt S.65
+../Core/Src/bms.c:108:18: warning: unused variable 'VOV' [-Wunused-variable]
+  108 |         uint16_t VOV = MAX_VOLTAGE/16;                                  // Formeln aus Datenblatt S.65
       |                  ^~~
 ../Core/Src/bms.c: In function 'convertVoltage':
-../Core/Src/bms.c:210:16: warning: variable 'voltage' set but not used [-Wunused-but-set-variable]
-  210 |         double voltage[NUM_CELLS];
+../Core/Src/bms.c:211:16: warning: variable 'voltage' set but not used [-Wunused-but-set-variable]
+  211 |         double voltage[NUM_CELLS];
       |                ^~~~~~~
-arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\Maximus\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: AMS_Firmware.elf
  
 arm-none-eabi-size  AMS_Firmware.elf 
 arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  38476	    568	   3616	  42660	   a6a4	AMS_Firmware.elf
+  55712	    936	   6896	  63544	   f838	AMS_Firmware.elf
 Finished building: default.size.stdout
  
 Finished building: AMS_Firmware.list
  
-13:57:44 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+14:20:31 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j12 all 
+arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
+../Core/Src/bms.c: In function 'BMS':
+../Core/Src/bms.c:109:18: warning: unused variable 'VUV' [-Wunused-variable]
+  109 |         uint16_t VUV = (MIN_VOLTAGE/16)-1;
+      |                  ^~~
+../Core/Src/bms.c:108:18: warning: unused variable 'VOV' [-Wunused-variable]
+  108 |         uint16_t VOV = MAX_VOLTAGE/16;                                  // Formeln aus Datenblatt S.65
+      |                  ^~~
+../Core/Src/bms.c: In function 'convertVoltage':
+../Core/Src/bms.c:211:16: warning: variable 'voltage' set but not used [-Wunused-but-set-variable]
+  211 |         double voltage[NUM_CELLS];
+      |                ^~~~~~~
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AMS_Firmware.elf
+ 
 arm-none-eabi-size  AMS_Firmware.elf 
+arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  38476	    568	   3616	  42660	   a6a4	AMS_Firmware.elf
+  55712	    936	   6896	  63544	   f838	AMS_Firmware.elf
 Finished building: default.size.stdout
+ 
+Finished building: AMS_Firmware.list
  
