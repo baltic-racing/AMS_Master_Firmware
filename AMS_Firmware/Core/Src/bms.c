@@ -72,7 +72,7 @@ uint8_t usb_data[NUM_CELLS*2 + 1] = {0};
 uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
 uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
-uint8_t* AMS2_databytes[8];
+uint8_t AMS2_databytes[8] ;
 
 
 uint16_t OV_flag[NUM_STACK];
@@ -221,7 +221,7 @@ void convertVoltage()		//convert and sort Voltages
 		usb_voltages[i] = cellVoltages[i]/1000;
 	}
 
-	/*
+
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
@@ -233,7 +233,12 @@ void convertVoltage()		//convert and sort Voltages
 			//printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
 		}
 	}
-	*/
+	AMS2_databytes[0] = cell_min;
+	AMS2_databytes[1] = (cell_min >> 8);
+	AMS2_databytes[2] = cell_max;
+	AMS2_databytes[3] = (cell_max >> 8);
+
+
 
 }
 
@@ -262,7 +267,7 @@ void CAN_interrupt()
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
-		CAN_10(AMS2_databytes[8]);
+		CAN_10(AMS2_databytes);
 
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
 		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
