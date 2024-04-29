@@ -15,7 +15,7 @@
 #include "string.h"
 
 
-#define NUM_STACK 1						 //total slaves
+#define NUM_STACK 2						 //total slaves
 #define NUM_CELLS_STACK 12					 //Cells per stack Attention LTC6811 CH all modus
 #define NUM_GPIO_STACK 6					 //GPIOs per slave
 #define NUM_CELLS NUM_CELLS_STACK *NUM_STACK //Cells per accu container
@@ -68,7 +68,9 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 uint16_t temperature[NUM_CELLS] = {0};
 
-uint8_t usb_voltages[NUM_CELLS + 1] = {0};
+uint8_t usb_data[NUM_CELLS*2 + 1] = {0};
+uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
+uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
 uint8_t* AMS2_databytes[8];
 
@@ -114,7 +116,7 @@ void BMS()		// Battery Management System function for main loop.
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
 		//Balancing with flags
-
+/*
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00 | VUV;
 		cfg[i][2] = 0x00 | (VOV<<4) | (VUV>>4);
@@ -122,9 +124,8 @@ void BMS()		// Battery Management System function for main loop.
 		cfg[i][4] = 0x00 | OV_flag[i];
 		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
 
-
+*/
 		//Balancing without flags
-/*
 		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
 		cfg[i][1] = 0x00;
 		cfg[i][2] = 0x00;
@@ -146,7 +147,7 @@ void BMS()		// Battery Management System function for main loop.
 				}
 			}
 		}
-		*/
+
 	}
 
 	/*
@@ -177,8 +178,8 @@ void BMS()		// Battery Management System function for main loop.
 
 	//CAN_interrupt();
 
-	pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
-	HAL_Delay(3);
+	//pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
+	//HAL_Delay(3);
 
 
 	convertVoltage();
@@ -214,7 +215,6 @@ void convertVoltage()		//convert and sort Voltages
 	//double voltage[NUM_CELLS];
 	uint16_t cell_max = cellVoltages[0];
 	uint16_t cell_min = cellVoltages[0];
-	usb_voltages[NUM_CELLS] = 0xff;
 
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
@@ -243,7 +243,7 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 	if(referenceCode - voltageCode != 0)
 	{
 		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-		return 1.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273.15;
+		return 100.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 27315.0;
 	}
 	else
 		return 0x00;
@@ -293,6 +293,13 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 	if(selTemp == 3)
 	{
+		for(uint8_t i = 0; i < NUM_CELLS; i++)
+		{
+			usb_temperatures[i] = temperature[i]/100;
+		}
+
+
+		/*
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 		{
 			for(uint8_t i = 0; i < NUM_CELLS; i++)
@@ -300,14 +307,23 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				//printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
 			}
 		}
+		*/
 	}
 
 }
 
 void send_usb()
 {
+	usb_data[NUM_CELLS * 2] = 0xff;
+	for(uint8_t i = 0; i < NUM_CELLS; i++)
+	{
+		usb_data[i] = usb_voltages[i];
+		usb_data[NUM_CELLS + i] = usb_temperatures[i];
 
-	CDC_Transmit_FS(usb_voltages, NUM_CELLS + 1);
+	}
+
+	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 1);
+	//CDC_Transmit_FS(usb_voltages, NUM_CELLS + 1);
 
 }
 

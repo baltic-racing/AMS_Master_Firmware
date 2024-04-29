@@ -1,9 +1,9 @@
-../Core/Src/bms.c:88:6:HAL_TIM_PeriodElapsedCallback	1
-../Core/Src/bms.c:95:6:HAL_CAN_RxFifo0MsgPendingCallback	1
-../Core/Src/bms.c:101:6:BMS_init	1
-../Core/Src/bms.c:106:6:BMS	3
-../Core/Src/bms.c:212:6:convertVoltage	2
+../Core/Src/bms.c:90:6:HAL_TIM_PeriodElapsedCallback	1
+../Core/Src/bms.c:97:6:HAL_CAN_RxFifo0MsgPendingCallback	1
+../Core/Src/bms.c:103:6:BMS_init	1
+../Core/Src/bms.c:108:6:BMS	9
+../Core/Src/bms.c:213:6:convertVoltage	2
 ../Core/Src/bms.c:241:10:calculateTemperature	2
 ../Core/Src/bms.c:254:6:CAN_interrupt	3
-../Core/Src/bms.c:274:6:convertTemperature	6
-../Core/Src/bms.c:307:6:send_usb	1
+../Core/Src/bms.c:274:6:convertTemperature	5
+../Core/Src/bms.c:315:6:send_usb	2
