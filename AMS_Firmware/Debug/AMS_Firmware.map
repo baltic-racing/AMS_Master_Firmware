@@ -6695,13 +6695,10 @@ LOAD C:/ST/STM32CubeIDE_1.15.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x20000000                        _sdata = .
  *(.data)
  *(.data*)
- .data.balancing
-                0x20000000        0x1 ./Core/Src/bms.o
-                0x20000000                balancing
- *fill*         0x20000001        0x1 
  .data.balanceMargin
-                0x20000002        0x2 ./Core/Src/bms.o
-                0x20000002                balanceMargin
+                0x20000000        0x2 ./Core/Src/bms.o
+                0x20000000                balanceMargin
+ *fill*         0x20000002        0x2 
  .data.AMS0_header
                 0x20000004       0x18 ./Core/Src/can.o
                 0x20000004                AMS0_header
@@ -6791,7 +6788,9 @@ LOAD C:/ST/STM32CubeIDE_1.15.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x200003c8                ADAX
  .bss.wakeup    0x200003ca        0x1 ./Core/Src/LTC6811.o
                 0x200003ca                wakeup
- *fill*         0x200003cb        0x1 
+ .bss.balancing
+                0x200003cb        0x1 ./Core/Src/bms.o
+                0x200003cb                balancing
  .bss.cellVoltages
                 0x200003cc       0x30 ./Core/Src/bms.o
                 0x200003cc                cellVoltages

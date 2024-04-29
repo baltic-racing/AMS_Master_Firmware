@@ -247,3 +247,45 @@ arm-none-eabi-size  AMS_Firmware.elf
   54856	    936	   7040	  62832	   f570	AMS_Firmware.elf
 Finished building: default.size.stdout
  
+17:02:22 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+make -j12 all 
+arm-none-eabi-size  AMS_Firmware.elf 
+   text	   data	    bss	    dec	    hex	filename
+  54856	    936	   7040	  62832	   f570	AMS_Firmware.elf
+Finished building: default.size.stdout
+ 
+17:03:18 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
+../Core/Src/bms.c: In function 'BMS':
+../Core/Src/bms.c:113:18: warning: unused variable 'VUV' [-Wunused-variable]
+  113 |         uint16_t VUV = (MIN_VOLTAGE/16)-1;
+      |                  ^~~
+../Core/Src/bms.c:112:18: warning: unused variable 'VOV' [-Wunused-variable]
+  112 |         uint16_t VOV = MAX_VOLTAGE/16;                                  // Formeln aus Datenblatt S.65
+      |                  ^~~
+../Core/Src/bms.c: In function 'convertVoltage':
+../Core/Src/bms.c:217:18: warning: unused variable 'cell_min' [-Wunused-variable]
+  217 |         uint16_t cell_min = cellVoltages[0];
+      |                  ^~~~~~~~
+../Core/Src/bms.c:216:18: warning: unused variable 'cell_max' [-Wunused-variable]
+  216 |         uint16_t cell_max = cellVoltages[0];
+      |                  ^~~~~~~~
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AMS_Firmware.elf
+ 
+arm-none-eabi-size  AMS_Firmware.elf 
+arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
+   text	   data	    bss	    dec	    hex	filename
+  54856	    936	   7040	  62832	   f570	AMS_Firmware.elf
+Finished building: default.size.stdout
+ 
+Finished building: AMS_Firmware.list
+ 
+17:06:03 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+make -j12 all 
+arm-none-eabi-size  AMS_Firmware.elf 
+   text	   data	    bss	    dec	    hex	filename
+  54856	    936	   7040	  62832	   f570	AMS_Firmware.elf
+Finished building: default.size.stdout
+ 
