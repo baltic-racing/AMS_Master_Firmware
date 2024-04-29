@@ -58,7 +58,7 @@
 
 uint8_t failureState = 0;
 
-bool balancing = true;
+bool balancing = false;
 uint16_t balanceMargin = 500; //in 0.1mV
 
 
