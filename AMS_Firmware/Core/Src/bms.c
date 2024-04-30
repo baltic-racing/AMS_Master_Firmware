@@ -15,7 +15,7 @@
 #include "string.h"
 
 
-#define NUM_STACK 2						 //total slaves
+#define NUM_STACK 1						 //total slaves
 #define NUM_CELLS_STACK 12					 //Cells per stack Attention LTC6811 CH all modus
 #define NUM_GPIO_STACK 6					 //GPIOs per slave
 #define NUM_CELLS NUM_CELLS_STACK *NUM_STACK //Cells per accu container
@@ -213,15 +213,18 @@ void BMS()		// Battery Management System function for main loop.
 void convertVoltage()		//convert and sort Voltages
 {
 	//double voltage[NUM_CELLS];
-	uint16_t cell_max = cellVoltages[0];
-	uint16_t cell_min = cellVoltages[0];
+
 
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
 	}
 
+	//uint16_t cell_max = 42890;
+	//uint16_t cell_min = 37789;
 
+	uint16_t cell_max = cellVoltages[0];
+	uint16_t cell_min = cellVoltages[0];
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
@@ -233,6 +236,7 @@ void convertVoltage()		//convert and sort Voltages
 			//printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
 		}
 	}
+
 	AMS2_databytes[0] = cell_min;
 	AMS2_databytes[1] = (cell_min >> 8);
 	AMS2_databytes[2] = cell_max;
@@ -248,7 +252,7 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 	if(referenceCode - voltageCode != 0)
 	{
 		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
-		return 100.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 27315.0;
+		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
 	}
 	else
 		return 0x00;
@@ -295,26 +299,45 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 			}
 	}
+	/*
+			for(uint8_t k = 0; k < NUM_STACK; k++)
+			{
+				for(uint8_t i = 0; i < NUM_CELLS; i++)
+				{
+					//printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
+				}
+			}
+			*/
+		//USB STUFF
 
 	if(selTemp == 3)
 	{
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
-			usb_temperatures[i] = temperature[i]/100;
+			usb_temperatures[i] = temperature[i]/1000;
 		}
 
+		//CAN stuff
 
-		/*
+
+		uint16_t temp_min = temperature[0];
+			uint16_t temp_max = temperature[0];
 		for(uint8_t k = 0; k < NUM_STACK; k++)
-		{
-			for(uint8_t i = 0; i < NUM_CELLS; i++)
 			{
-				//printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
-			}
-		}
-		*/
-	}
+				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
+				{
+					if(temperature[i + k * 12] > temp_max) temp_max = temperature[i + k * 12];
+					else if(temperature[i + k * 12] < temp_min) temp_min = temperature[i + k * 12];
+				}
 
+		AMS2_databytes[4] = temp_min;
+		AMS2_databytes[5] = (temp_min >> 8);
+		AMS2_databytes[6] = temp_max;
+		AMS2_databytes[7] = (temp_max >> 8);
+
+
+			}
+	}
 }
 
 void send_usb()
