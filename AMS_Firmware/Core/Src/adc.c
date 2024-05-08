@@ -211,4 +211,16 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 
+uint16_t adc_accu_volt = 0;
+
+void ADC_TS_Voltage()
+{
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, 100); // poll for conversion
+	adc_accu_volt = HAL_ADC_GetValue(&hadc1); // get the adc value
+	HAL_ADC_Stop(&hadc1); // stop adc
+	HAL_Delay (500); // wait for 500ms
+
+}
+
 /* USER CODE END 1 */

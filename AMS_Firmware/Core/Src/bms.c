@@ -11,6 +11,7 @@
 #include "stdlib.h"
 #include "math.h"
 #include "can.h"
+#include "adc.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
 
@@ -109,9 +110,10 @@ void BMS()		// Battery Management System function for main loop.
 {
 	uint8_t pec = 0;
 	static uint8_t selTemp = 0;
-	uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
-	uint16_t VUV = (MIN_VOLTAGE/16)-1;
+	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
+	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
+	ADC_TS_Voltage();
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -206,6 +208,7 @@ void BMS()		// Battery Management System function for main loop.
 
 	else
 		selTemp = 0;
+
 
 	send_usb();
 }
