@@ -107,14 +107,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PCPin PCPin PCPin PCPin
-                           PCPin PCPin */
-  GPIO_InitStruct.Pin = V_VEHI_Pin|V_ACCU_Pin|SC_CLOSING_Pin|SC_STATE_Pin
-                          |AIR_N_ACT_Pin|AIR_N_INT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
   /*Configure GPIO pins : PAPin PAPin PAPin */
   GPIO_InitStruct.Pin = IMD_STATE_Pin|IMD_SAFE_Pin|SC_OPENING_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -127,6 +119,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PCPin PCPin PCPin PCPin */
+  GPIO_InitStruct.Pin = SC_CLOSING_Pin|SC_STATE_Pin|AIR_N_ACT_Pin|AIR_N_INT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = TS_ACTIVATE_Pin;

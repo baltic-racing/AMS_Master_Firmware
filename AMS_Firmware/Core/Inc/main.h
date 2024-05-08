@@ -63,10 +63,6 @@ void Error_Handler(void);
 #define LED_YW_GPIO_Port GPIOC
 #define LED_RD_Pin GPIO_PIN_15
 #define LED_RD_GPIO_Port GPIOC
-#define V_VEHI_Pin GPIO_PIN_0
-#define V_VEHI_GPIO_Port GPIOC
-#define V_ACCU_Pin GPIO_PIN_1
-#define V_ACCU_GPIO_Port GPIOC
 #define IMD_STATE_Pin GPIO_PIN_3
 #define IMD_STATE_GPIO_Port GPIOA
 #define WDI_Pin GPIO_PIN_4

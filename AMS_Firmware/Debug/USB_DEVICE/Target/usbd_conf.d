@@ -19,6 +19,8 @@ USB_DEVICE/Target/usbd_conf.o: ../USB_DEVICE/Target/usbd_conf.c \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_dma.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_dma_ex.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_cortex.h \
+ ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_adc.h \
+ ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_adc_ex.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_can.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_flash.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_flash_ex.h \
@@ -57,6 +59,8 @@ USB_DEVICE/Target/usbd_conf.o: ../USB_DEVICE/Target/usbd_conf.c \
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_dma.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_dma_ex.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_cortex.h:
+../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_adc.h:
+../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_adc_ex.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_can.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_flash.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_flash_ex.h:
