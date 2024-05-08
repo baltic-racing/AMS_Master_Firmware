@@ -24,7 +24,9 @@
 
 #include "gpio.h"
 
-uint8_t AMS0_databytes[8], AMS3_databytes[8], AMS1_databytes[8], DIC0_databytes[8] ;
+uint8_t AMS0_databytes[8], DIC0_databytes[8] ;
+
+uint8_t ts_ready = 0;
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -46,8 +48,6 @@ uint8_t AMS0_databytes[8], AMS3_databytes[8], AMS1_databytes[8], DIC0_databytes[
 // Header from DBC
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-CAN_TxHeaderTypeDef AMS2_header = {0x202, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
-CAN_TxHeaderTypeDef AMS3_header = {0x203, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 
 
 uint32_t RxFifo;
@@ -80,7 +80,8 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 		DIC0_databytes[8] = RxData[8];
 
-		AIR_Logic(DIC0_databytes[0], AMS3_databytes[0], DIC0_databytes[1]);
+		AIR_Logic(DIC0_databytes[0], ts_ready, DIC0_databytes[1]);
+		AMS0_databytes[6]|= (ts_ready << 3);
 
 	}
 
@@ -99,9 +100,7 @@ void CAN_100()		// CAN Messages transmitted with 100 Hz
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
-	CAN_TX(hcan1, AMS1_header, AMS1_databytes);
-	CAN_TX(hcan1, AMS2_header, bms_data);
-	CAN_TX(hcan1, AMS3_header, AMS3_databytes);
+	CAN_TX(hcan1, AMS1_header, bms_data);
 }
 /* USER CODE END 0 */
 
@@ -113,14 +112,6 @@ void MX_CAN1_Init(void)
 {
 
   /* USER CODE BEGIN CAN1_Init 0 */
-AMS3_databytes[0]=0;
-AMS3_databytes[1]=0;
-AMS3_databytes[2]=0;
-AMS3_databytes[3]=0;
-AMS3_databytes[4]=0;
-AMS3_databytes[5]=0;
-AMS3_databytes[6]=0;
-AMS3_databytes[7]=0;
 
 
   /* USER CODE END CAN1_Init 0 */
