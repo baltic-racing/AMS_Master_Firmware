@@ -211,14 +211,26 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 
-uint16_t adc_accu_volt = 0;
+uint16_t raw_adc_accu_volt;
+uint16_t adc_accu_volt;
+uint16_t raw_adc_vehic_volt;
+uint16_t adc_vehic_volt;
 
 void ADC_TS_Voltage()
 {
+	//Vehicle side
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, 100); // poll for conversion
-	adc_accu_volt = HAL_ADC_GetValue(&hadc1); // get the adc value
+	raw_adc_vehic_volt = HAL_ADC_GetValue(&hadc1); // get the adc value
 	HAL_ADC_Stop(&hadc1); // stop adc
+	//Accu side
+	HAL_ADC_Start(&hadc2);
+	HAL_ADC_PollForConversion(&hadc2, 100); // poll for conversion
+	raw_adc_accu_volt = HAL_ADC_GetValue(&hadc2); // get the adc value
+	HAL_ADC_Stop(&hadc2); // stop adc
+
+	adc_accu_volt = (3.3/4095.0)* raw_adc_accu_volt * 175.5;
+	adc_vehic_volt = (3.3/4095.0)* raw_adc_vehic_volt * 175.5;
 	HAL_Delay (500); // wait for 500ms
 
 }

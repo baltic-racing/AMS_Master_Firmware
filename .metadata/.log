@@ -844,3 +844,22 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 C:\Users\shoot\Documen
 
 !ENTRY org.eclipse.cdt.core 1 0 2024-05-08 13:28:21.015
 !MESSAGE Indexed 'AMS_Firmware' (42 sources, 138 headers) in 8.26 sec: 13,329 declarations; 71,815 references; 2 unresolved inclusions; 29 syntax errors; 147 unresolved names (0.17%)
+!SESSION 2024-05-09 10:59:04.495 -----------------------------------------------
+eclipse.buildId=Version 1.15.1
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_DE
+Framework arguments:  C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\.project
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\.project
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-05-09 11:00:04.832
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-05-09 11:00:04.839
+!MESSAGE Log4j2 initialized with config file C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-05-09 11:00:12.511
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-05-09 11:00:17.431
+!MESSAGE Indexed 'AMS_Firmware' (42 sources, 138 headers) in 4.41 sec: 13,328 declarations; 71,804 references; 2 unresolved inclusions; 29 syntax errors; 147 unresolved names (0.17%)
