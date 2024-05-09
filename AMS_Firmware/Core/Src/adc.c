@@ -215,8 +215,10 @@ uint16_t raw_adc_accu_volt;
 uint16_t adc_accu_volt;
 uint16_t raw_adc_vehic_volt;
 uint16_t adc_vehic_volt;
+uint16_t diff_volt;
+uint8_t pre = 0;
 
-void ADC_TS_Voltage()
+uint8_t ADC_TS_Voltage(uint16_t MAX_TS_VOLTAGE)
 {
 	//Vehicle side
 	HAL_ADC_Start(&hadc1);
@@ -231,8 +233,15 @@ void ADC_TS_Voltage()
 
 	adc_accu_volt = (3.3/4095.0)* raw_adc_accu_volt * 175.5;
 	adc_vehic_volt = (3.3/4095.0)* raw_adc_vehic_volt * 175.5;
-	HAL_Delay (500); // wait for 500ms
+	diff_volt = adc_accu_volt - adc_vehic_volt;
 
+	if(diff_volt >= 0.1 * MAX_TS_VOLTAGE)
+		pre = 1;
+	else
+		pre = 0;
+
+
+	return pre;
 }
 
 /* USER CODE END 1 */

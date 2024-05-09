@@ -42,6 +42,7 @@ extern ADC_HandleTypeDef hadc2;
 
 void MX_ADC1_Init(void);
 void MX_ADC2_Init(void);
+uint8_t ADC_TS_Voltage(uint16_t MAX_TS_VOLTAGE);
 
 /* USER CODE BEGIN Prototypes */
 

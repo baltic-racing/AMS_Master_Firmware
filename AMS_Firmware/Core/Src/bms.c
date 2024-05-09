@@ -25,6 +25,9 @@
 
 #define MAX_VOLTAGE 39000					// Wert in 0,1 mV
 #define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
+
+#define MAX_TS_VOLTAGE 554
+#define MIN_TS_VOLTAGE 343
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
 
@@ -58,6 +61,8 @@
 #define FAIL_UT (1 << 7)
 
 uint8_t failureState = 0;
+
+uint8_t precharge = 0;
 
 bool balancing = false;
 uint16_t balanceMargin = 500; //in 0.1mV
@@ -113,7 +118,7 @@ void BMS()		// Battery Management System function for main loop.
 	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
 	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
-	ADC_TS_Voltage();
+	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE);
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
