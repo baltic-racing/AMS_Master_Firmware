@@ -1,5 +1,5 @@
 ../Core/Src/gpio.c:32:6:open_sdc	8	static
 ../Core/Src/gpio.c:38:6:close_sdc	8	static
 ../Core/Src/gpio.c:44:9:read_sdc	8	static
-../Core/Src/gpio.c:51:6:AIR_Logic	16	static
-../Core/Src/gpio.c:79:6:MX_GPIO_Init	48	static
+../Core/Src/gpio.c:51:9:AIR_Logic	16	static
+../Core/Src/gpio.c:80:6:MX_GPIO_Init	48	static

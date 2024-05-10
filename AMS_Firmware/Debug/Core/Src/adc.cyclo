@@ -2,4 +2,4 @@
 ../Core/Src/adc.c:78:6:MX_ADC2_Init	3
 ../Core/Src/adc.c:125:6:HAL_ADC_MspInit	3
 ../Core/Src/adc.c:173:6:HAL_ADC_MspDeInit	3
-../Core/Src/adc.c:221:9:ADC_TS_Voltage	1
+../Core/Src/adc.c:221:9:ADC_TS_Voltage	4

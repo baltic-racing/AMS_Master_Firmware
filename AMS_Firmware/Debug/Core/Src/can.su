@@ -1,8 +1,8 @@
 ../Core/Src/can.c:59:6:CAN_TX	80	static
 ../Core/Src/can.c:69:6:CAN_RX	48	static
-../Core/Src/can.c:95:6:CAN_100	88	static
-../Core/Src/can.c:101:6:CAN_10	88	static
-../Core/Src/can.c:111:6:MX_CAN1_Init	48	static
-../Core/Src/can.c:158:6:MX_CAN2_Init	8	static
-../Core/Src/can.c:192:6:HAL_CAN_MspInit	56	static
-../Core/Src/can.c:261:6:HAL_CAN_MspDeInit	16	static
+../Core/Src/can.c:99:6:CAN_100	88	static
+../Core/Src/can.c:105:6:CAN_10	88	static
+../Core/Src/can.c:115:6:MX_CAN1_Init	48	static
+../Core/Src/can.c:162:6:MX_CAN2_Init	8	static
+../Core/Src/can.c:196:6:HAL_CAN_MspInit	56	static
+../Core/Src/can.c:265:6:HAL_CAN_MspDeInit	16	static

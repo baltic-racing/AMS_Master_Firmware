@@ -235,14 +235,13 @@ uint8_t ADC_TS_Voltage(uint16_t MAX_TS_VOLTAGE, uint16_t MIN_TS_VOLTAGE)
 	adc_vehic_volt = (3.3/4095.0)* raw_adc_vehic_volt * 175.5;
 	diff_volt = adc_accu_volt - adc_vehic_volt;
 
-	/*
-	if(diff_volt >= 0.1 * MAX_TS_VOLTAGE && MIN_TS_VOLTAGE > adc_accu_volt)
+	if(adc_accu_volt - adc_vehic_volt < 1) diff_volt = 0;
+
+	if(diff_volt <= 0.1 * MAX_TS_VOLTAGE && MIN_TS_VOLTAGE < adc_accu_volt)
 		pre = 1;
 	else
 		pre = 0;
 
-	*/
-	pre = 1;
 	return pre;
 }
 

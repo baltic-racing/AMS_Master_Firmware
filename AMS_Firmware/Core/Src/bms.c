@@ -60,8 +60,6 @@
 #define FAIL_OT (1 << 6)
 #define FAIL_UT (1 << 7)
 
-extern uint8_t ts_ready;
-
 uint8_t failureState = 0;
 
 uint8_t precharge = 0;
@@ -277,7 +275,7 @@ void CAN_interrupt()
 	if (HAL_GetTick()>= last10 + 10)
 	{
 
-		AMS0_databytes[6] = (precharge << 4);
+		AMS0_databytes[6] |= (precharge << 4);
 
 		CAN_100(AMS0_databytes);
 		last10 = HAL_GetTick();
