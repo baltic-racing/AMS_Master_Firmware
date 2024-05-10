@@ -19,12 +19,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "bms.h"
 
 /* USER CODE BEGIN 0 */
 
 #include "gpio.h"
 
-uint8_t AMS0_databytes[8], DIC0_databytes[8] ;
+extern uint8_t AMS0_databytes[8];
+extern uint8_t AMS1_databytes[8];
+uint8_t DIC0_databytes[8];
 
 uint8_t ts_ready = 0;
 
@@ -99,17 +102,15 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 }
 
 
-
-
-void CAN_100()		// CAN Messages transmitted with 100 Hz
+void CAN_100(uint8_t AMS0_databytes[])		// CAN Messages transmitted with 100 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, AMS0_databytes);
 }
 
-void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
+void CAN_10(uint8_t AMS1_databytes[])		// CAN Messages transmitted with 10 Hz
 {
-	CAN_TX(hcan1, AMS1_header, bms_data);
+	CAN_TX(hcan1, AMS1_header, AMS1_databytes);
 }
 /* USER CODE END 0 */
 
