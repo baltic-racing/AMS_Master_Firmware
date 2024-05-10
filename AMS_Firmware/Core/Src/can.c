@@ -46,8 +46,17 @@ uint8_t ts_ready = 0;
 
  */
 // Header from DBC
+
+CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan2;
+
+
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+
+CAN_RxHeaderTypeDef RxHeader;
+
+
 
 
 uint32_t RxFifo;
@@ -66,19 +75,19 @@ void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxDat
 void CAN_RX(CAN_HandleTypeDef hcan)
 {
 
-	CAN_RxHeaderTypeDef RxHeader;
+
 	uint8_t RxData[8];
 
 
-	if (HAL_CAN_GetRxMessage(&hcan, RxFifo, &RxHeader, RxData) != HAL_OK)
+	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
-
+		Error_Handler();
 	}
 
-	if( RxHeader.StdId == 0x500)
+	if(RxHeader.StdId == 0x500)
 	{
 
-		DIC0_databytes[8] = RxData[8];
+		AMS0_databytes[0] = RxData[4];
 
 		AIR_Logic(DIC0_databytes[0], ts_ready, DIC0_databytes[1]);
 		AMS0_databytes[6]|= (ts_ready << 3);
@@ -104,14 +113,15 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 }
 /* USER CODE END 0 */
 
-CAN_HandleTypeDef hcan1;
-CAN_HandleTypeDef hcan2;
-
 /* CAN1 init function */
 void MX_CAN1_Init(void)
 {
 
   /* USER CODE BEGIN CAN1_Init 0 */
+
+
+
+
 
 
   /* USER CODE END CAN1_Init 0 */
@@ -137,10 +147,21 @@ void MX_CAN1_Init(void)
   }
   /* USER CODE BEGIN CAN1_Init 2 */
 
-  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-    {
-  	  Error_Handler();
-    }
+
+	CAN_FilterTypeDef canfilterconfig;
+
+	  canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
+	  canfilterconfig.FilterBank = 18;  // which filter bank to use from the assigned ones
+	  canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+	  canfilterconfig.FilterIdHigh = 0x500<<5;
+	  canfilterconfig.FilterIdLow = 0;
+	  canfilterconfig.FilterMaskIdHigh = 0x7FF<<5;
+	  canfilterconfig.FilterMaskIdLow = 0x0000;
+	  canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	  canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
+	  canfilterconfig.SlaveStartFilterBank = 20;  // how many filters to assign to the CAN1 (master can)
+
+	  HAL_CAN_ConfigFilter(&hcan1, &canfilterconfig);
   /* USER CODE END CAN1_Init 2 */
 
 }
