@@ -219,6 +219,7 @@ void BMS()		// Battery Management System function for main loop.
 
 
 	send_usb();
+	CAN_put_data();
 }
 
 void convertVoltage()		//convert and sort Voltages

@@ -48,6 +48,7 @@ void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t *TxDat
 void CAN_RX(CAN_HandleTypeDef hcan);
 void CAN_100(uint8_t AMS0_databytes[]);
 void CAN_10(uint8_t AMS1_databytes[]);
+void CAN_put_data(void);
 
 /* USER CODE END Prototypes */
 
