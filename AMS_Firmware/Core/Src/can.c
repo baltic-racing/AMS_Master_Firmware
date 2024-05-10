@@ -19,15 +19,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-#include "bms.h"
 
 /* USER CODE BEGIN 0 */
 
 #include "gpio.h"
 
-extern uint8_t AMS0_databytes[8];
-extern uint8_t AMS1_databytes[8];
-uint8_t DIC0_databytes[8];
+uint8_t AMS0_databytes[8], DIC0_databytes[8] ;
 
 uint8_t ts_ready = 0;
 
@@ -57,7 +54,7 @@ CAN_HandleTypeDef hcan2;
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 
-CAN_RxHeaderTypeDef RxHeader;
+
 
 
 
@@ -90,10 +87,8 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	if(RxHeader.StdId == 0x500)
 	{
 
-		AMS0_databytes[0] = RxData[4];
+		AIR_Logic(RxData[0], ts_ready, DIC0_databytes[1]);
 
-		AIR_Logic(DIC0_databytes[0], ts_ready, DIC0_databytes[1]);
-		AMS0_databytes[6]|= (ts_ready << 3);
 
 	}
 
@@ -101,16 +96,23 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 }
 
+void CAN_put_data()
+{
+	AMS0_databytes[6]|= (ts_ready << 3);
+	AMS0_databytes[0] = DIC0_databytes[4];
+}
 
-void CAN_100(uint8_t AMS0_databytes[])		// CAN Messages transmitted with 100 Hz
+
+
+void CAN_100()		// CAN Messages transmitted with 100 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, AMS0_databytes);
 }
 
-void CAN_10(uint8_t AMS1_databytes[])		// CAN Messages transmitted with 10 Hz
+void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
-	CAN_TX(hcan1, AMS1_header, AMS1_databytes);
+	CAN_TX(hcan1, AMS1_header, bms_data);
 }
 /* USER CODE END 0 */
 
