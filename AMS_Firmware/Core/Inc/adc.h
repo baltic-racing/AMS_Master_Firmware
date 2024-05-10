@@ -42,10 +42,7 @@ extern ADC_HandleTypeDef hadc2;
 
 void MX_ADC1_Init(void);
 void MX_ADC2_Init(void);
-<<<<<<< HEAD
-=======
-uint8_t ADC_TS_Voltage(uint16_t MAX_TS_VOLTAGE);
->>>>>>> parent of d51258e (cleaning CAN)
+uint8_t ADC_TS_Voltage(uint16_t MAX_TS_VOLTAGE, uint16_t MIN_TS_VOLTAGE);
 
 /* USER CODE BEGIN Prototypes */
 

@@ -53,7 +53,7 @@ void AIR_Logic(uint8_t ts_on, uint8_t ts_ready, uint8_t ts_start)
 
 	 if (error == 0)
 	 {
-		 if (ts_on >= 1)
+		 if (ts_on>= 1)
 		 {
 
 			 HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
