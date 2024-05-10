@@ -72,7 +72,11 @@ uint8_t usb_data[NUM_CELLS*2 + 1] = {0};
 uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
 uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
+<<<<<<< HEAD
 uint8_t AMS1_databytes[8] ;
+=======
+uint8_t AMS2_databytes[8] ;
+>>>>>>> parent of d51258e (cleaning CAN)
 
 
 uint16_t OV_flag[NUM_STACK];
@@ -112,6 +116,10 @@ void BMS()		// Battery Management System function for main loop.
 	uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
 	uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
+<<<<<<< HEAD
+=======
+	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE);
+>>>>>>> parent of d51258e (cleaning CAN)
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -237,10 +245,10 @@ void convertVoltage()		//convert and sort Voltages
 		}
 	}
 
-	AMS1_databytes[0] = cell_min;
-	AMS1_databytes[1] = (cell_min >> 8);
-	AMS1_databytes[2] = cell_max;
-	AMS1_databytes[3] = (cell_max >> 8);
+	AMS2_databytes[0] = cell_min;
+	AMS2_databytes[1] = (cell_min >> 8);
+	AMS2_databytes[2] = cell_max;
+	AMS2_databytes[3] = (cell_max >> 8);
 
 
 
@@ -271,7 +279,7 @@ void CAN_interrupt()
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
-		CAN_10(AMS1_databytes);
+		CAN_10(AMS2_databytes);
 
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
 		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
@@ -330,10 +338,17 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 					else if(temperature[i + k * 12] < temp_min) temp_min = temperature[i + k * 12];
 				}
 
+<<<<<<< HEAD
 		AMS1_databytes[4] = temp_min;
 		AMS1_databytes[5] = (temp_min >> 8);
 		AMS1_databytes[6] = temp_max;
 		AMS1_databytes[7] = (temp_max >> 8);
+=======
+		AMS2_databytes[4] = temp_min;
+		AMS2_databytes[5] = (temp_min >> 8);
+		AMS2_databytes[6] = temp_max;
+		AMS2_databytes[7] = (temp_max >> 8);
+>>>>>>> parent of d51258e (cleaning CAN)
 
 
 			}

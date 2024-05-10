@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ../Core/Src/bms.c:90:6:HAL_TIM_PeriodElapsedCallback	1
 ../Core/Src/bms.c:97:6:HAL_CAN_RxFifo0MsgPendingCallback	1
 ../Core/Src/bms.c:103:6:BMS_init	1
@@ -7,3 +8,14 @@
 ../Core/Src/bms.c:263:6:CAN_interrupt	3
 ../Core/Src/bms.c:283:6:convertTemperature	9
 ../Core/Src/bms.c:343:6:send_usb	2
+=======
+../Core/Src/bms.c:96:6:HAL_TIM_PeriodElapsedCallback	1
+../Core/Src/bms.c:103:6:HAL_CAN_RxFifo0MsgPendingCallback	1
+../Core/Src/bms.c:109:6:BMS_init	1
+../Core/Src/bms.c:114:6:BMS	9
+../Core/Src/bms.c:221:6:convertVoltage	6
+../Core/Src/bms.c:258:10:calculateTemperature	2
+../Core/Src/bms.c:271:6:CAN_interrupt	3
+../Core/Src/bms.c:291:6:convertTemperature	9
+../Core/Src/bms.c:351:6:send_usb	2
+>>>>>>> parent of d51258e (cleaning CAN)
