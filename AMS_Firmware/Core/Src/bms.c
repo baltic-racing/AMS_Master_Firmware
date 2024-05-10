@@ -11,7 +11,6 @@
 #include "stdlib.h"
 #include "math.h"
 #include "can.h"
-#include "adc.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
 
@@ -25,9 +24,6 @@
 
 #define MAX_VOLTAGE 39000					// Wert in 0,1 mV
 #define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
-
-#define MAX_TS_VOLTAGE 554
-#define MIN_TS_VOLTAGE 343
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
 
@@ -60,14 +56,9 @@
 #define FAIL_OT (1 << 6)
 #define FAIL_UT (1 << 7)
 
-extern uint8_t ts_ready;
-
 uint8_t failureState = 0;
 
-uint8_t precharge = 0;
-
 bool balancing = false;
-
 uint16_t balanceMargin = 500; //in 0.1mV
 
 
@@ -81,8 +72,7 @@ uint8_t usb_data[NUM_CELLS*2 + 1] = {0};
 uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
 uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
-uint8_t AMS0_databytes[8];
-uint8_t AMS1_databytes[8];
+uint8_t AMS1_databytes[8] ;
 
 
 uint16_t OV_flag[NUM_STACK];
@@ -119,11 +109,9 @@ void BMS()		// Battery Management System function for main loop.
 {
 	uint8_t pec = 0;
 	static uint8_t selTemp = 0;
-	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
-	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
+	uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
+	uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
-	//precharge = 1 when complete and 0 when still charging
-	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -180,6 +168,8 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);	//read voltages
 	HAL_Delay(3);
 
+	//CAN_interrupt();
+
 	LTC6811_adax();										// measure 3 celltemp
 	HAL_Delay(3);
 
@@ -216,7 +206,6 @@ void BMS()		// Battery Management System function for main loop.
 
 	else
 		selTemp = 0;
-
 
 	send_usb();
 }
@@ -276,10 +265,7 @@ void CAN_interrupt()
 
 	if (HAL_GetTick()>= last10 + 10)
 	{
-
-		AMS0_databytes[6] = (precharge << 4);
-
-		CAN_100(AMS0_databytes);
+		CAN_100();
 		last10 = HAL_GetTick();
 
 	}
@@ -296,6 +282,14 @@ void CAN_interrupt()
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
+
+	/*
+	uint16_t temp_max = slaveGPIOs[0];
+	uint16_t temp_min = slaveGPIOs[0];
+*/
+
+	//min und max Werte noch finden
+
 
 	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
@@ -336,10 +330,12 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 					else if(temperature[i + k * 12] < temp_min) temp_min = temperature[i + k * 12];
 				}
 
-				AMS1_databytes[4] = temp_min;
-				AMS1_databytes[5] = (temp_min >> 8);
-				AMS1_databytes[6] = temp_max;
-				AMS1_databytes[7] = (temp_max >> 8);
+		AMS1_databytes[4] = temp_min;
+		AMS1_databytes[5] = (temp_min >> 8);
+		AMS1_databytes[6] = temp_max;
+		AMS1_databytes[7] = (temp_max >> 8);
+
+
 			}
 	}
 }
@@ -355,5 +351,7 @@ void send_usb()
 	}
 
 	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 1);
+	//CDC_Transmit_FS(usb_voltages, NUM_CELLS + 1);
+
 }
 
