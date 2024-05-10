@@ -81,9 +81,8 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	if( RxHeader.StdId == 0x500)
 	{
 
-		DIC0_databytes[8] = RxData[8];
 
-		AIR_Logic(DIC0_databytes[0], ts_ready, DIC0_databytes[1]);
+		AIR_Logic(RxData[0], ts_ready, RxData[1]);
 		AMS0_databytes[6]|= (ts_ready << 3);
 
 	}
@@ -93,15 +92,15 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 }
 
 
-void CAN_100(uint8_t AMS0_databytes[])		// CAN Messages transmitted with 100 Hz
+void CAN_100(uint8_t precharge_data[])		// CAN Messages transmitted with 100 Hz
 {
 
-	CAN_TX(hcan1, AMS0_header, AMS0_databytes);
+	CAN_TX(hcan1, AMS0_header, precharge_data);
 }
 
-void CAN_10(uint8_t AMS1_databytes[])		// CAN Messages transmitted with 10 Hz
+void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
-	CAN_TX(hcan1, AMS1_header, AMS1_databytes);
+	CAN_TX(hcan1, AMS1_header, bms_data);
 }
 /* USER CODE END 0 */
 
