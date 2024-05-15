@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-#include "bms.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -29,7 +28,10 @@ extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
 uint8_t DIC0_databytes[8];
 uint8_t ts_ready = 0;
-uint8_t test = 0;
+uint8_t test[8];
+uint32_t current_data = 0;
+uint16_t current = 0;
+
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -52,8 +54,8 @@ uint8_t test = 0;
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 
+CAN_TxHeaderTypeDef test_header = {0x069, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
 
-uint32_t RxFifo;
 
 	// transmit CAN Message
 void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxData)
@@ -65,6 +67,15 @@ void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxDat
 	}
 }
 
+void CAN_TX_IVT(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxData)
+{
+	uint32_t TxMailbox2;
+	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox2) != HAL_OK)
+	{
+		CAN_TX_IVT(hcan, TxHeader, TxData);		//retry when failed
+	}
+}
+
 	// receive CAN Message
 void CAN_RX(CAN_HandleTypeDef hcan)
 {
@@ -73,7 +84,7 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	uint8_t RxData[8];
 
 
-	if (HAL_CAN_GetRxMessage(&hcan, RxFifo, &RxHeader, RxData) != HAL_OK)
+	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
 
 	}
@@ -85,6 +96,8 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 		{
 			ts_ready = 1;
 		}
+
+
 		*/
 
 		AMS0_databytes[6]|= (AIR_Logic(RxData[0], ts_ready, RxData[1]) << 3);
@@ -95,16 +108,52 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 }
 
+void CAN_RX_IVT(CAN_HandleTypeDef hcan)
+{
+	CAN_RxHeaderTypeDef RxHeader;
+	uint8_t RxData[6];
 
-void CAN_100(uint8_t precharge_data[])		// CAN Messages transmitted with 100 Hz
+	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+	{
+
+	}
+	current_data = 0;
+
+	if(RxHeader.StdId == 0x521)
+	{
+
+		//hier muss Strom ausgewertet werden
+/*
+		for(uint8_t i = 0; i < 5; i++)
+		{
+			current_data |= (RxData[5-i] << (i*8));
+		}
+*/
+		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
+
+		current = current_data/100;
+
+		AMS0_databytes[2] = current;
+		AMS0_databytes[3] = (current>>8);
+	}
+
+
+}
+
+void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
+	test[0] = 1;
+	CAN_TX_IVT(hcan2,test_header, test);
+
+	//CAN_TX(hcan2, test_header, precharge_data);
 }
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
+	//CAN_TX_IVT(hcan2, test_header, bms_data);
 }
 /* USER CODE END 0 */
 
@@ -144,7 +193,7 @@ void MX_CAN1_Init(void)
   CAN_FilterTypeDef canfilterconfig;
 
   canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
-  canfilterconfig.FilterBank = 18;  // which filter bank to use from the assigned ones
+  canfilterconfig.FilterBank = 0;  // which filter bank to use from the assigned ones
   canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
   canfilterconfig.FilterIdHigh = 0x500<<5;
   canfilterconfig.FilterIdLow = 0;
@@ -152,7 +201,7 @@ void MX_CAN1_Init(void)
   canfilterconfig.FilterMaskIdLow = 0x0000;
   canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
   canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  canfilterconfig.SlaveStartFilterBank = 20;  // how many filters to assign to the CAN1 (master can)
+  canfilterconfig.SlaveStartFilterBank = 14;  // how many filters to assign to the CAN1 (master can)
 
   HAL_CAN_ConfigFilter(&hcan1, &canfilterconfig);
   /* USER CODE END CAN1_Init 2 */
@@ -170,7 +219,7 @@ void MX_CAN2_Init(void)
 
   /* USER CODE END CAN2_Init 1 */
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 4;
+  hcan2.Init.Prescaler = 8;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan2.Init.TimeSeg1 = CAN_BS1_3TQ;
@@ -187,6 +236,20 @@ void MX_CAN2_Init(void)
   }
   /* USER CODE BEGIN CAN2_Init 2 */
 
+  CAN_FilterTypeDef canfilterconfig_ivt;
+
+  canfilterconfig_ivt.FilterActivation = CAN_FILTER_ENABLE;
+  canfilterconfig_ivt.FilterBank = 14;  // which filter bank to use from the assigned ones
+  canfilterconfig_ivt.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+  canfilterconfig_ivt.FilterIdHigh = 0x521<<5;
+  canfilterconfig_ivt.FilterIdLow = 0;
+  canfilterconfig_ivt.FilterMaskIdHigh = 0x7FF<<5;
+  canfilterconfig_ivt.FilterMaskIdLow = 0x0000;
+  canfilterconfig_ivt.FilterMode = CAN_FILTERMODE_IDMASK;
+  canfilterconfig_ivt.FilterScale = CAN_FILTERSCALE_32BIT;
+  canfilterconfig_ivt.SlaveStartFilterBank = 14;  // how many filters to assign to the CAN1 (master can)
+
+  HAL_CAN_ConfigFilter(&hcan2, &canfilterconfig_ivt);
   /* USER CODE END CAN2_Init 2 */
 
 }
@@ -254,6 +317,8 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* CAN2 interrupt Init */
+    HAL_NVIC_SetPriority(CAN2_TX_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(CAN2_TX_IRQn);
     HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
   /* USER CODE BEGIN CAN2_MspInit 1 */
@@ -308,6 +373,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
 
     /* CAN2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(CAN2_TX_IRQn);
     HAL_NVIC_DisableIRQ(CAN2_RX0_IRQn);
   /* USER CODE BEGIN CAN2_MspDeInit 1 */
 

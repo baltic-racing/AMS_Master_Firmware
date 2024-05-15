@@ -88,7 +88,7 @@ uint16_t UV_flag[NUM_STACK];
 uint8_t r_statb[NUM_STACK][6];
 
 uint32_t can_cnt = 0; //can counter to adjust timings
-uint64_t last10 =0;
+uint64_t last20 =0;
 uint64_t last100;
 /* 1 ms interrupt
  * HLCK 96 MHz
@@ -105,8 +105,14 @@ CAN_interrupt();
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
    {
     CAN_RX(hcan1);
+    CAN_RX_IVT(hcan2);
    }
 
+/*void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	CAN_RX_IVT(hcan2);
+}
+*/
 
 void BMS_init()
 {
@@ -272,13 +278,13 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 void CAN_interrupt()
 {
 
-	if (HAL_GetTick()>= last10 + 10)
+	if (HAL_GetTick()>= last20 + 20)
 	{
 
 		AMS0_databytes[6] |= (precharge << 4);
 
-		CAN_100(AMS0_databytes);
-		last10 = HAL_GetTick();
+		CAN_50(AMS0_databytes);
+		last20 = HAL_GetTick();
 
 	}
 	if (HAL_GetTick()>= last100 + 100)
