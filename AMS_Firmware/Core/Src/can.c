@@ -27,7 +27,6 @@
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
 uint8_t DIC0_databytes[8];
-uint8_t ts_ready = 0;
 uint8_t test[8];
 uint32_t current_data = 0;
 uint16_t current = 0;
@@ -97,10 +96,9 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 			ts_ready = 1;
 		}
 
-
 		*/
-
-		AMS0_databytes[6]|= (AIR_Logic(RxData[0], ts_ready, RxData[1]) << 3);
+		AIR_Logic(RxData[0], RxData[1]);
+		//AMS0_databytes[6]|= (AIR_Logic(RxData[0], ts_ready, RxData[1]) << 3);
 		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
 
@@ -144,16 +142,12 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
-	test[0] = 1;
 	CAN_TX_IVT(hcan2,test_header, test);
-
-	//CAN_TX(hcan2, test_header, precharge_data);
 }
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
-	//CAN_TX_IVT(hcan2, test_header, bms_data);
 }
 /* USER CODE END 0 */
 

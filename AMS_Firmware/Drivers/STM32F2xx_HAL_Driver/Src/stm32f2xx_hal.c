@@ -397,6 +397,9 @@ __weak void HAL_Delay(__IO uint32_t Delay)
   }
 }
 
+
+
+
 /**
   * @brief Suspend Tick increment.
   * @note In the default implementation , SysTick timer is the source of time base. It is
