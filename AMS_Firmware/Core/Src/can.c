@@ -23,13 +23,19 @@
 /* USER CODE BEGIN 0 */
 
 #include "gpio.h"
+#include "adc.h"
 
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
+extern uint8_t precharge;
+extern  uint16_t adc_vehic_volt;
 uint8_t DIC0_databytes[8];
 uint8_t test[8];
 uint32_t current_data = 0;
 uint16_t current = 0;
+uint8_t ts_on = 0;
+uint8_t ts_start = 0;
+
 
 
 
@@ -90,20 +96,38 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 	if( RxHeader.StdId == 0x500)
 	{
-		/*
-		if(RxData[0] > 0)
+		if(RxData[0] == 1)
 		{
-			ts_ready = 1;
+			if(read_sdc() == 1)
+			{
+				ts_on = 1;
+			}
+			else
+			{
+				ts_on = 0;
+			}
+			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+			ts_start = RxData[1];
 		}
 
-		*/
-		AIR_Logic(RxData[0], RxData[1]);
-		//AMS0_databytes[6]|= (AIR_Logic(RxData[0], ts_ready, RxData[1]) << 3);
+
+
+
 		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
 
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
 
+}
+
+
+void can_put_data()
+{
+	AMS0_databytes[0] = adc_vehic_volt;
+	AMS0_databytes[1] = (adc_vehic_volt >> 8);
+	AMS0_databytes[2] = current;
+	AMS0_databytes[3] = (current >> 8);
+	AMS0_databytes[6] =  0 | (get_ts_ready(ts_on, ts_start) << 3) | (precharge << 4);
 }
 
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)
@@ -131,8 +155,7 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 
 		current = current_data/100;
 
-		AMS0_databytes[2] = current;
-		AMS0_databytes[3] = (current>>8);
+
 	}
 
 

@@ -23,14 +23,19 @@
 /* USER CODE BEGIN 0 */
 
 #include "gpio.h"
+#include "adc.h""
 
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
+extern uint8_t precharge;
+extern adc_vehic_volt;
 uint8_t DIC0_databytes[8];
-uint8_t ts_ready = 0;
 uint8_t test[8];
 uint32_t current_data = 0;
 uint16_t current = 0;
+uint8_t ts_on = 0;
+uint8_t ts_start = 0;
+
 
 
 
@@ -54,7 +59,7 @@ uint16_t current = 0;
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 
-CAN_TxHeaderTypeDef test_header = {0x69, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef test_header = {0x069, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
 
 
 	// transmit CAN Message
@@ -64,6 +69,15 @@ void CAN_TX(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxDat
 	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	{
 		CAN_TX(hcan, TxHeader, TxData);		//retry when failed
+	}
+}
+
+void CAN_TX_IVT(CAN_HandleTypeDef hcan, CAN_TxHeaderTypeDef TxHeader, uint8_t* TxData)
+{
+	uint32_t TxMailbox2;
+	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox2) != HAL_OK)
+	{
+		CAN_TX_IVT(hcan, TxHeader, TxData);		//retry when failed
 	}
 }
 
@@ -82,16 +96,26 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 	if( RxHeader.StdId == 0x500)
 	{
-		/*
-		if(RxData[0] > 0)
+		if(RxData[0] == 1)
 		{
-			ts_ready = 1;
+			if(read_sdc() == 1)
+			{
+				ts_on = 1;
+			}
+			else
+			{
+				ts_on = 0;
+			}
+
+
+
+			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+			ts_start = RxData[1];
 		}
 
 
-		*/
 
-		AMS0_databytes[6]|= (AIR_Logic(RxData[0], ts_ready, RxData[1]) << 3);
+
 		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
 
@@ -99,44 +123,52 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 }
 
-void CAN_RX_IVT(CAN_HandleTypeDef hcan2)
+
+void can_put_data()
+{
+	AMS0_databytes[0] = adc_vehic_volt;
+	AMS0_databytes[1] (adc_vehic_volt >> 8);
+	AMS0_databytes[2] = current;
+	AMS0_databytes[3] = (current >> 8);
+	AMS0_databytes[6] =  0 | (get_ts_ready(ts_on, ts_start) << 3) | (precharge << 4);
+}
+
+void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 {
 	CAN_RxHeaderTypeDef RxHeader;
 	uint8_t RxData[6];
 
-	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
 
 	}
 	current_data = 0;
-/*
+
 	if(RxHeader.StdId == 0x521)
 	{
-	*/
-		//hier muss Strom ausgewertet werden
 
+		//hier muss Strom ausgewertet werden
+/*
 		for(uint8_t i = 0; i < 5; i++)
 		{
 			current_data |= (RxData[5-i] << (i*8));
 		}
+*/
+		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
 		current = current_data/100;
 
-		AMS0_databytes[2] = current;
-		AMS0_databytes[3] = (current>>8);
-	//}
+
+	}
+
 
 }
 
-
-
-void CAN_100(uint8_t precharge_data[])		// CAN Messages transmitted with 100 Hz
+void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
-
-	test[0] = 1;
-	CAN_TX(hcan2, test);
+	CAN_TX_IVT(hcan2,test_header, test);
 }
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
@@ -181,7 +213,7 @@ void MX_CAN1_Init(void)
   CAN_FilterTypeDef canfilterconfig;
 
   canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
-  canfilterconfig.FilterBank = 13;  // which filter bank to use from the assigned ones
+  canfilterconfig.FilterBank = 0;  // which filter bank to use from the assigned ones
   canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
   canfilterconfig.FilterIdHigh = 0x500<<5;
   canfilterconfig.FilterIdLow = 0;
@@ -235,6 +267,7 @@ void MX_CAN2_Init(void)
   canfilterconfig_ivt.FilterMaskIdLow = 0x0000;
   canfilterconfig_ivt.FilterMode = CAN_FILTERMODE_IDMASK;
   canfilterconfig_ivt.FilterScale = CAN_FILTERSCALE_32BIT;
+  canfilterconfig_ivt.SlaveStartFilterBank = 14;  // how many filters to assign to the CAN1 (master can)
 
   HAL_CAN_ConfigFilter(&hcan2, &canfilterconfig_ivt);
   /* USER CODE END CAN2_Init 2 */

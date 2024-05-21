@@ -20,13 +20,16 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "bms.h"
 
 /* USER CODE BEGIN 0 */
+extern uint8_t precharge;
 uint8_t error = 0;
 uint8_t AIR_N_act = 0;
-uint8_t AIR_N_init = 0; // SC END
+uint8_t AIR_N_int = 0; // SC END
 uint8_t AIR_P_act = 0;
-uint8_t AIR_P_init = 0; //AIR P Power
+uint8_t AIR_P_int = 0; //AIR P Power
+uint8_t AIR_OK = 0;
 uint8_t ts_ready = 0;
 
 /* USER CODE END 0 */
@@ -54,21 +57,30 @@ uint8_t read_sdc()
 	return HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin);
 }
 
-uint8_t AIR_Logic(uint8_t ts_on, uint8_t ts_start)
+uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 {
+
 
 	// 1 if high and 0 if low
 	// high = switched
 
-	AIR_N_init = HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin);
+	AIR_N_int = HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin);
 	AIR_N_act = HAL_GPIO_ReadPin(GPIOC, AIR_N_ACT_Pin);
 
-	AIR_P_init = HAL_GPIO_ReadPin(GPIOB, AIR_P_INT_Pin);
+	AIR_P_int = HAL_GPIO_ReadPin(GPIOB, AIR_P_INT_Pin);
 	AIR_P_act = HAL_GPIO_ReadPin(GPIOB, AIR_P_ACT_Pin);
 
+	if (AIR_N_int == AIR_N_act && AIR_P_int == AIR_P_act)
+	{
+		AIR_OK = 1;
+	}
+	else
+	{
+		AIR_OK = 0;
+	}
 
 	//if(ts_start > 0 && ts_on == 0) ts_start = 0;
-
+/*
 		 if (ts_on > 0)
 		 {
 
@@ -82,9 +94,31 @@ uint8_t AIR_Logic(uint8_t ts_on, uint8_t ts_start)
 			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
 			 HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
 		 }
+*/
 
+	 return AIR_OK;
+}
+uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start)
+{
+	if(check_AIRs() && read_sdc() )//&& precharge)
+	{
+		if(ts_on)
+		{
+			 ts_ready = 1;
+			 HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
 
-	 return ts_ready;
+			 if(ts_start)
+			 		{
+			 			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+			 		}
+		}
+	}
+	else
+	{
+		ts_ready = 0;
+	}
+
+	return ts_ready;
 }
 /* USER CODE END 1 */
 
