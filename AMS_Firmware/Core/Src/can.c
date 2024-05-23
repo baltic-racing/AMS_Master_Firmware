@@ -88,6 +88,13 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	CAN_RxHeaderTypeDef RxHeader;
 	uint8_t RxData[8];
 
+	if(read_sdc() == 0)
+			{
+				ts_on = 0;
+				ts_start = 0;
+				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+			}
 
 	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
@@ -98,18 +105,29 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	{
 		if(RxData[0] == 1)
 		{
-			if(read_sdc() == 1)
-			{
-				ts_on = 1;
-			}
-			else
-			{
-				ts_on = 0;
-			}
+
 			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
-			ts_start = RxData[1];
+			ts_on = 1;
 		}
 
+
+
+		if(read_sdc() == 1)
+		{
+			ts_on = 1;
+
+			if(RxData[1] == 1)
+					{
+						ts_start = 1;
+					}
+		}
+
+
+		if(RxData[1] == 1)
+		{
+			ts_start = 1;
+		}
+		get_ts_ready(ts_on, ts_start);
 
 
 

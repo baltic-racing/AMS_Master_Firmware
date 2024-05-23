@@ -3,4 +3,4 @@
 ../Core/Src/gpio.c:53:9:read_sdc	8	static
 ../Core/Src/gpio.c:60:9:check_AIRs	8	static
 ../Core/Src/gpio.c:101:9:get_ts_ready	16	static
-../Core/Src/gpio.c:132:6:MX_GPIO_Init	48	static
+../Core/Src/gpio.c:140:6:MX_GPIO_Init	48	static

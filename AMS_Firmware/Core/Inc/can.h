@@ -50,6 +50,7 @@ void CAN_RX(CAN_HandleTypeDef hcan);
 void CAN_RX_IVT(CAN_HandleTypeDef hcan);
 void CAN_50(uint8_t AMS0_databytes[]);
 void CAN_10(uint8_t AMS1_databytes[]);
+void can_put_data(void);
 
 
 /* USER CODE END Prototypes */

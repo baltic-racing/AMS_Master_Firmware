@@ -100,6 +100,8 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 }
 uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start)
 {
+
+
 	if(check_AIRs() && read_sdc() )//&& precharge)
 	{
 		if(ts_on)
@@ -110,12 +112,18 @@ uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start)
 			 if(ts_start)
 			 		{
 			 			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+			 			HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
 			 		}
 		}
 	}
+
 	else
 	{
 		ts_ready = 0;
+		 //HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
+			//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+
+
 	}
 
 	return ts_ready;
