@@ -127,7 +127,7 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 		{
 			ts_start = 1;
 		}
-		get_ts_ready(ts_on, ts_start);
+		//get_ts_ready(ts_on, ts_start);
 
 
 

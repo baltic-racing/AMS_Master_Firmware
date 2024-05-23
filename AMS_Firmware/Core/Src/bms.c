@@ -221,6 +221,7 @@ void BMS()		// Battery Management System function for main loop.
 	else
 		selTemp = 0;
 
+	can_put_data();
 
 	send_usb();
 }
