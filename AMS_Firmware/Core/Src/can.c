@@ -145,7 +145,8 @@ void can_put_data()
 	AMS0_databytes[1] = (adc_vehic_volt >> 8);
 	AMS0_databytes[2] = current;
 	AMS0_databytes[3] = (current >> 8);
-	AMS0_databytes[6] =  0 | (get_ts_ready(ts_on, ts_start) << 3) | (precharge << 4);
+	AMS0_databytes[6] =  0 |
+			HAL_GPIO_ReadPin(SC_STATE_GPIO_Port, SC_STATE_Pin) |(HAL_GPIO_ReadPin(IMD_STATE_GPIO_Port, IMD_STATE_Pin)<<1) | (HAL_GPIO_ReadPin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin)<<2) | (get_ts_ready(ts_on, ts_start) << 3) | (precharge << 4);
 }
 
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)

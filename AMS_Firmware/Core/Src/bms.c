@@ -16,7 +16,7 @@
 #include "string.h"
 
 
-#define NUM_STACK 1						 //total slaves
+#define NUM_STACK 12						 //total slaves
 #define NUM_CELLS_STACK 12					 //Cells per stack Attention LTC6811 CH all modus
 #define NUM_GPIO_STACK 6					 //GPIOs per slave
 #define NUM_CELLS NUM_CELLS_STACK *NUM_STACK //Cells per accu container
