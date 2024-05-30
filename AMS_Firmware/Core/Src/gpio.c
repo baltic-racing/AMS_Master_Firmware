@@ -21,9 +21,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 #include "bms.h"
+#include "can.h"
+
 
 /* USER CODE BEGIN 0 */
 extern uint8_t precharge;
+extern uint8_t ts_on;
+extern uint8_t ts_start;
 uint8_t error = 0;
 uint8_t AIR_N_act = 0;
 uint8_t AIR_N_int = 0; // SC END
@@ -31,6 +35,8 @@ uint8_t AIR_P_act = 0;
 uint8_t AIR_P_int = 0; //AIR P Power
 uint8_t AIR_OK = 0;
 uint8_t ts_ready = 0;
+uint8_t sc_closed = 0;
+
 
 /* USER CODE END 0 */
 
@@ -56,6 +62,8 @@ uint8_t read_sdc()
 	// returns 0 if open
 	return HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin);
 }
+
+
 
 uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 {
@@ -98,19 +106,22 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 
 	 return AIR_OK;
 }
-uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start)
+void get_ts_ready()
 {
 
 
-	if(check_AIRs() && read_sdc() )//&& precharge)
+	if(read_sdc())//&& precharge)
 	{
+
 		if(ts_on)
 		{
-			 ts_ready = 1;
+
 			 HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
 
 			 if(ts_start)
 			 		{
+				 sc_closed  = 1;
+				 ts_ready = 1;
 			 			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
 			 			HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
 			 		}
@@ -120,13 +131,22 @@ uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start)
 	else
 	{
 		ts_ready = 0;
+		ts_on = 0;
+			if (sc_closed ==1)
+			{
+				ts_on = 0;
+				ts_start = 0;
+				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+
+				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+				sc_closed = 0;
+			}
 		 //HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
 			//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 
 
 	}
 
-	return ts_ready;
 }
 /* USER CODE END 1 */
 

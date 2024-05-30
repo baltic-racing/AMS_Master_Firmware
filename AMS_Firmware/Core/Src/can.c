@@ -28,7 +28,7 @@
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
 extern uint8_t precharge;
-extern  uint16_t adc_vehic_volt;
+extern  uint16_t adc_accu_volt;
 uint8_t DIC0_databytes[8];
 uint8_t test[8];
 uint32_t current_data = 0;
@@ -36,7 +36,7 @@ uint16_t current = 0;
 uint8_t ts_on = 0;
 uint8_t ts_start = 0;
 
-
+extern uint8_t ts_ready ;
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -88,13 +88,6 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	CAN_RxHeaderTypeDef RxHeader;
 	uint8_t RxData[8];
 
-	if(read_sdc() == 0)
-			{
-				ts_on = 0;
-				ts_start = 0;
-				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-			}
 
 	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
@@ -108,10 +101,21 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
 			ts_on = 1;
+
 		}
+		if(ts_on)							// verhindert das Drücken in falscher Reihenfolge
+		{
 
-
-
+			if(RxData[1] == 1)
+				{
+					ts_start = 1;
+				}
+		}
+		else
+		{
+			ts_start = 0;
+		}
+/*
 		if(read_sdc() == 1)
 		{
 			ts_on = 1;
@@ -122,11 +126,8 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 					}
 		}
 
+*/
 
-		if(RxData[1] == 1)
-		{
-			ts_start = 1;
-		}
 		//get_ts_ready(ts_on, ts_start);
 
 
@@ -141,12 +142,13 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 void can_put_data()
 {
-	AMS0_databytes[0] = adc_vehic_volt;
-	AMS0_databytes[1] = (adc_vehic_volt >> 8);
+
+
+	AMS0_databytes[0] = adc_accu_volt;
+	AMS0_databytes[1] = (adc_accu_volt >> 8);
 	AMS0_databytes[2] = current;
 	AMS0_databytes[3] = (current >> 8);
-	AMS0_databytes[6] =  0 |
-			HAL_GPIO_ReadPin(SC_STATE_GPIO_Port, SC_STATE_Pin) |(HAL_GPIO_ReadPin(IMD_STATE_GPIO_Port, IMD_STATE_Pin)<<1) | (HAL_GPIO_ReadPin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin)<<2) | (get_ts_ready(ts_on, ts_start) << 3) | (precharge << 4);
+	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4);
 }
 
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)
@@ -190,6 +192,24 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
+
+	 get_ts_ready();
+/*
+	if (read_sdc()==1)
+	{
+		sc_closed = 1;
+	}
+
+	if(sc_closed == 1 && read_sdc() == 0)
+			{
+				ts_on = 0;
+				ts_start = 0;
+				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+
+				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+				sc_closed = 0;
+			}
+			*/
 }
 /* USER CODE END 0 */
 

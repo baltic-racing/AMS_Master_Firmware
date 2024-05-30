@@ -43,7 +43,7 @@ void open_sdc(void);
 void close_sdc(void);
 uint8_t read_sdc(void);
 uint8_t check_AIRs(void);
-uint8_t get_ts_ready(uint8_t ts_on, uint8_t ts_start);
+void get_ts_ready(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

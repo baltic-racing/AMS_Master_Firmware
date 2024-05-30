@@ -89,7 +89,7 @@ uint8_t r_statb[NUM_STACK][6];
 
 uint32_t can_cnt = 0; //can counter to adjust timings
 uint64_t last20 =0;
-uint64_t last100;
+uint64_t last100 =0;
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
