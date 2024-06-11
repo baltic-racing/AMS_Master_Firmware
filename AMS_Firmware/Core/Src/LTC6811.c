@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <main.h>
 #include <math.h>
+#include "define.h"
 /*@brief 6811 conversion command variables
 
 */
@@ -142,21 +143,16 @@ void LTC6811_adax()
 }
 
 
-void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
+void LTC6811_wrcfg(uint8_t config [][6])
 
 {
-	const uint8_t BYTES_IN_REG = 6;
-	const uint8_t CMD_LEN = 4 + (8 * nIC);
-
 	uint16_t temp_pec;
 	uint8_t current_ic;
 	uint8_t WRCFG_index = 4;
-	uint8_t *WRCFG;
 
+	uint8_t WRCFG[CMD_LEN];
 
-	WRCFG = (uint8_t *)malloc(CMD_LEN * sizeof(uint8_t));
-
-	for(current_ic = 0; current_ic < nIC; current_ic++)
+	for(current_ic = 0; current_ic < NUM_STACK; current_ic++)
 	{
 		for(uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
 		{
@@ -172,7 +168,7 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 
 	wakeup_idle();
 
-	for(current_ic = 0; current_ic < nIC; current_ic++)
+	for(current_ic = 0; current_ic < NUM_STACK; current_ic++)
 	{
 	    WRCFG[0] = 0x80 + (current_ic << 3); //Setting address
 	    WRCFG[1] = 0x01;
@@ -189,8 +185,6 @@ void LTC6811_wrcfg(uint8_t nIC, uint8_t config [][6])
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 
 	}
-
-	free(WRCFG);
 }
 
 
@@ -213,25 +207,21 @@ void LTC6811_rdcfg()
 }
 */
 
-uint8_t LTC6811_rdcv(uint8_t reg, uint8_t nIC, uint16_t cell_codes[][12])
+uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 {
-	const uint8_t NUM_RX_BYT = 8;
-	const uint8_t BYT_IN_REG = 6;
-	const uint8_t CELL_IN_REG = 3;
-
 	uint8_t pec_error = 0; //pec Error wenn -1
 	uint16_t received_pec;
 	uint16_t data_pec;
 	uint8_t data_counter = 0;
-	uint8_t *cell_data;
-	cell_data = (uint8_t *)malloc((NUM_RX_BYT * nIC) * sizeof(uint8_t));
+
+	uint8_t cell_data[NUM_RX_BYT * NUM_STACK];
 
 	for(uint8_t cell_reg = 1; cell_reg < 5; cell_reg++)	//executes once for each of the LTC6804 cell voltage registers
 	{
 		data_counter = 0;
-		LTC6811_rdcv_reg(cell_reg, nIC, cell_data);
+		LTC6811_rdcv_reg(cell_reg, NUM_STACK, cell_data);
 
-		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
+		for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)	// executes for every LTC6804 in the stack.
 		{
 			 // current_ic is used as an IC counter
 			for(uint8_t current_cell = 0; current_cell < CELL_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
@@ -241,7 +231,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint8_t nIC, uint16_t cell_codes[][12])
 				data_counter = data_counter + 2;
 			}
 			received_pec = (cell_data[data_counter] << 8) + cell_data[data_counter + 1];
-			data_pec = pec15_calc(BYT_IN_REG, &cell_data[current_ic * NUM_RX_BYT]);
+			data_pec = pec15_calc(BYTES_IN_REG, &cell_data[current_ic * BYTES_IN_REG]);
 			if (received_pec != data_pec)
 			{
 			  pec_error = -1;
@@ -249,8 +239,6 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint8_t nIC, uint16_t cell_codes[][12])
 			data_counter = data_counter + 2;
 		}
 	}
-
-	free(cell_data);
 	return(pec_error);
 }
 
@@ -281,26 +269,21 @@ void LTC6811_rdcv_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
     }
 }
 
-int8_t LTC6811_rdaux(uint8_t reg, uint8_t nIC, uint16_t aux_codes[][6])
+int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 {
-	const uint8_t NUM_RX_BYT = 8;
-	const uint8_t BYT_IN_REG = 6;
-	const uint8_t AUX_IN_REG = 3;
-
 	uint8_t pec_error = 0; //pec Error wenn -1
 	uint16_t received_pec;
 	uint16_t data_pec;
 	uint8_t data_counter = 0;
-	uint8_t *aux_data;
 
-	aux_data = (uint8_t *)malloc((NUM_RX_BYT * nIC) * sizeof(uint8_t));
+	uint8_t aux_data[NUM_RX_BYT * NUM_STACK];
 
 	for(uint8_t aux_reg = 1; aux_reg < AUX_IN_REG; aux_reg++)	//executes once for each of the LTC6804 cell voltage registers
 	{
 		data_counter = 0;
-		LTC6811_rdaux_reg(aux_reg, nIC, aux_data);
+		LTC6811_rdaux_reg(aux_reg, NUM_STACK, aux_data);
 
-		for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)	// executes for every LTC6804 in the stack.
+		for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)	// executes for every LTC6804 in the stack.
 		{
 			 // current_ic is used as an IC counter
 			for(uint8_t current_cell = 0; current_cell < AUX_IN_REG; current_cell++)	// This loop parses the read back data. Loops once for each cell voltages in the register
@@ -310,7 +293,7 @@ int8_t LTC6811_rdaux(uint8_t reg, uint8_t nIC, uint16_t aux_codes[][6])
 				data_counter += 2;
 			}
 			received_pec = (aux_data[data_counter] << 8) + aux_data[data_counter + 1];
-			data_pec = pec15_calc(BYT_IN_REG, &aux_data[current_ic * NUM_RX_BYT]);
+			data_pec = pec15_calc(BYTES_IN_REG, &aux_data[current_ic * NUM_RX_BYT]);
 			if (received_pec != data_pec)
 			{
 			  pec_error = -1;
@@ -318,8 +301,6 @@ int8_t LTC6811_rdaux(uint8_t reg, uint8_t nIC, uint16_t aux_codes[][6])
 			data_counter += 2;
 		}
 	}
-
-	free(aux_data);
 	return(pec_error);
 }
 
@@ -349,7 +330,7 @@ void LTC6811_rdaux_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
 }
 
 
-
+/*
 int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[], uint8_t r_statb[][6])
 {
   const uint8_t BYTES_IN_REG = 8;
@@ -392,7 +373,7 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
 			  i++;
 		  }
 	  }
-*/
+
 
     //4.a
     for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
@@ -421,6 +402,7 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
   //5
   return (pec_error);
 }
+*/
 
 void LTC6811_clrstat()
 {
@@ -446,6 +428,8 @@ void LTC6811_clrstat()
   HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
   HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 }
+
+
 /*
 void LTC6811_adstat()
 {

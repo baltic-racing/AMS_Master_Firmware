@@ -1,10 +1,21 @@
-07:10:54 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+11:20:49 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j12 all 
+arm-none-eabi-gcc "../Core/Src/LTC6811.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/LTC6811.d" -MT"Core/Src/LTC6811.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/LTC6811.o"
+arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
+../Core/Src/LTC6811.c:366:11: warning: "/*" within comment [-Wcomment]
+  366 |           /*
+      |            
+arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AMS_Firmware.elf
+ 
 arm-none-eabi-size  AMS_Firmware.elf 
+arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  59424	    912	   7056	  67392	  10740	AMS_Firmware.elf
+  59160	    912	   7056	  67128	  10638	AMS_Firmware.elf
 Finished building: default.size.stdout
  
+Finished building: AMS_Firmware.list
+ 
 
-07:10:55 Build Finished. 0 errors, 0 warnings. (took 495ms)
+11:20:51 Build Finished. 0 errors, 1 warnings. (took 1s.860ms)
 

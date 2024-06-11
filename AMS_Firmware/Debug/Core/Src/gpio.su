@@ -1,6 +1,6 @@
-../Core/Src/gpio.c:47:6:open_sdc	8	static
-../Core/Src/gpio.c:53:6:close_sdc	8	static
-../Core/Src/gpio.c:59:9:read_sdc	8	static
-../Core/Src/gpio.c:68:9:check_AIRs	8	static
-../Core/Src/gpio.c:109:6:get_ts_ready	8	static
-../Core/Src/gpio.c:160:6:MX_GPIO_Init	48	static
+../Core/Src/gpio.c:44:6:open_sdc	8	static
+../Core/Src/gpio.c:50:6:close_sdc	8	static
+../Core/Src/gpio.c:56:9:read_sdc	8	static
+../Core/Src/gpio.c:65:9:check_AIRs	8	static
+../Core/Src/gpio.c:106:6:get_ts_ready	8	static
+../Core/Src/gpio.c:157:6:MX_GPIO_Init	48	static

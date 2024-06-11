@@ -115,35 +115,15 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 		{
 			ts_start = 0;
 		}
-/*
-		if(read_sdc() == 1)
-		{
-			ts_on = 1;
-
-			if(RxData[1] == 1)
-					{
-						ts_start = 1;
-					}
-		}
-
-*/
-
-		//get_ts_ready(ts_on, ts_start);
-
-
 
 		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
-
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
-
 }
 
 
 void can_put_data()
 {
-
-
 	AMS0_databytes[0] = adc_accu_volt;
 	AMS0_databytes[1] = (adc_accu_volt >> 8);
 	AMS0_databytes[2] = current;
@@ -164,21 +144,9 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 
 	if(RxHeader.StdId == 0x521)
 	{
-
-		//hier muss Strom ausgewertet werden
-/*
-		for(uint8_t i = 0; i < 5; i++)
-		{
-			current_data |= (RxData[5-i] << (i*8));
-		}
-*/
 		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
-
 		current = current_data/100;
-
-
 	}
-
 
 }
 
@@ -194,22 +162,6 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 	CAN_TX(hcan1, AMS1_header, bms_data);
 
 	 get_ts_ready();
-/*
-	if (read_sdc()==1)
-	{
-		sc_closed = 1;
-	}
-
-	if(sc_closed == 1 && read_sdc() == 0)
-			{
-				ts_on = 0;
-				ts_start = 0;
-				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-
-				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-				sc_closed = 0;
-			}
-			*/
 }
 /* USER CODE END 0 */
 

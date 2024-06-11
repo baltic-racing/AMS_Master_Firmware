@@ -14,53 +14,7 @@
 #include "adc.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
-
-
-#define NUM_STACK 12						 //total slaves
-#define NUM_CELLS_STACK 12					 //Cells per stack Attention LTC6811 CH all modus
-#define NUM_GPIO_STACK 6					 //GPIOs per slave
-#define NUM_CELLS NUM_CELLS_STACK *NUM_STACK //Cells per accu container
-#define NUM_GPIO NUM_GPIO_STACK *NUM_STACK   //GPIOs per slave
-
-
-#define MAX_VOLTAGE 39000					// Wert in 0,1 mV
-#define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
-
-#define MAX_TS_VOLTAGE 554
-#define MIN_TS_VOLTAGE 343
-/*
-#define CYCLE_PERIOD 30 //bms cycle period in ms
-
-//Timeouts in ms
-#define VOLT_TIMEOUT (500 - CYCLE_PERIOD)
-#define CUR_TIMEOUT (500 - CYCLE_PERIOD)
-#define TEMP_TIMEOUT (1000 - CYCLE_PERIOD)
-#define LTC_TIMEOUT (100 - CYCLE_PERIOD)
-#define ISA_TIMEOUT (100 - CYCLE_PERIOD)
-
-//Cell limits
-#define CELL_TEMP_MIN_CHARGE 0			//in [°C]
-#define CELL_TEMP_MIN_DISCHARGE -10		//in [°C]
-#define CELL_TEMP_MAX_CHARGE 43			//in [°C]
-#define CELL_TEMP_MAX_DISCHARGE 57		//in [°C]
-#define CELL_VOLT_MIN 3100 * 10			//in 0.1[mV]
-#define CELL_VOLT_MAX 42000 * 10		//in 0.1[mV]
-#define ACCU_CUR_DIS_MAX 70 * 2 * 1000  //in [mA]
-#define ACCU_CUR_CHG_MAX 139 * 2 * 1000 //in [mA]
-
-*/
-
-
-#define FAIL_TIMEOUT_ISA (1 << 0)
-#define FAIL_TIMEOUT_LTC (1 << 1)
-#define FAIL_OV (1 << 2)
-#define FAIL_UV (1 << 3)
-#define FAIL_OCD (1 << 4)
-#define FAIL_OCC (1 << 5)
-#define FAIL_OT (1 << 6)
-#define FAIL_UT (1 << 7)
-
-uint8_t failureState = 0;
+#include "define.h"
 
 uint8_t precharge = 0;
 
@@ -90,29 +44,22 @@ uint8_t r_statb[NUM_STACK][6];
 uint32_t can_cnt = 0; //can counter to adjust timings
 uint64_t last20 =0;
 uint64_t last100 =0;
+
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
  */
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-
-CAN_interrupt();
+	CAN_interrupt();
 }
 
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-   {
+{
     CAN_RX(hcan1);
     CAN_RX_IVT(hcan2);
-   }
-
-/*void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
-	CAN_RX_IVT(hcan2);
 }
-*/
 
 void BMS_init()
 {
@@ -171,7 +118,7 @@ void BMS()		// Battery Management System function for main loop.
 	HAL_Delay(3);
 */
 
-	LTC6811_wrcfg(NUM_STACK, (uint8_t(*)[6])cfg);		// Write config
+	LTC6811_wrcfg((uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
 
 	//wakeup_idle();									// read config
@@ -181,16 +128,14 @@ void BMS()		// Battery Management System function for main loop.
 	LTC6811_adcv();										// measure voltages
 	HAL_Delay(3);
 
-	pec += LTC6811_rdcv(0, NUM_STACK, (uint16_t(*)[12])cellVoltages);	//read voltages
+	pec += LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
 	HAL_Delay(3);
 
 	LTC6811_adax();										// measure 3 celltemp
 	HAL_Delay(3);
 
-	pec += LTC6811_rdaux(0, NUM_STACK, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
+	pec += LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
-
-	//CAN_interrupt();
 
 	//pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
 	//HAL_Delay(3);
@@ -213,11 +158,7 @@ void BMS()		// Battery Management System function for main loop.
 	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
 	{
 		selTemp++;
-
-		//CAN_interrupt();
 	}
-
-
 	else
 		selTemp = 0;
 
@@ -228,16 +169,11 @@ void BMS()		// Battery Management System function for main loop.
 
 void convertVoltage()		//convert and sort Voltages
 {
-	//double voltage[NUM_CELLS];
-
 
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
 	}
-
-	//uint16_t cell_max = 42890;
-	//uint16_t cell_min = 37789;
 
 	uint16_t cell_max = cellVoltages[0];
 	uint16_t cell_min = cellVoltages[0];
@@ -247,9 +183,6 @@ void convertVoltage()		//convert and sort Voltages
 		{
 			if(cellVoltages[i + k * 12] > cell_max) cell_max = cellVoltages[i + k * 12];
 			else if(cellVoltages[i + k * 12] < cell_min) cell_min = cellVoltages[i + k * 12];
-
-			//voltage[i + k * 12] = (double)cellVoltages[i + k * 12]/10000;
-			//printf(" Stack %d Cell %d = %.4f V \r\n", k, i, voltage[i + k * 12]);
 		}
 	}
 
@@ -257,9 +190,6 @@ void convertVoltage()		//convert and sort Voltages
 	AMS1_databytes[1] = (cell_min >> 8);
 	AMS1_databytes[2] = cell_max;
 	AMS1_databytes[3] = (cell_max >> 8);
-
-
-
 }
 
 
@@ -272,8 +202,6 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 	}
 	else
 		return 0x00;
-
-
 }
 
 void CAN_interrupt()
@@ -310,27 +238,14 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 			}
 	}
-	/*
-			for(uint8_t k = 0; k < NUM_STACK; k++)
-			{
-				for(uint8_t i = 0; i < NUM_CELLS; i++)
-				{
-					//printf(" Stack %d Temperature %d = %d degC \r\n", k, i, temperature[k * NUM_STACK + i]);
-				}
-			}
-			*/
 		//USB STUFF
-
 	if(selTemp == 3)
 	{
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;
 		}
-
 		//CAN stuff
-
-
 		uint16_t temp_min = temperature[0];
 			uint16_t temp_max = temperature[0];
 		for(uint8_t k = 0; k < NUM_STACK; k++)
@@ -356,7 +271,6 @@ void send_usb()
 	{
 		usb_data[i] = usb_voltages[i];
 		usb_data[NUM_CELLS + i] = usb_temperatures[i];
-
 	}
 
 	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 1);

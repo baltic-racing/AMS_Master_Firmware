@@ -32,7 +32,7 @@ Core/Src/LTC6811.o: ../Core/Src/LTC6811.c ../Core/Inc/LTC6811.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_ll_usb.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h \
- ../Core/Inc/main.h
+ ../Core/Inc/main.h ../Core/Inc/define.h
 ../Core/Inc/LTC6811.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h:
@@ -69,3 +69,4 @@ Core/Src/LTC6811.o: ../Core/Src/LTC6811.c ../Core/Inc/LTC6811.h \
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_ll_usb.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h:
 ../Core/Inc/main.h:
+../Core/Inc/define.h:
