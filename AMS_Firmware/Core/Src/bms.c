@@ -21,7 +21,11 @@ uint8_t precharge = 0;
 bool balancing = false;
 
 uint16_t balanceMargin = 500; //in 0.1mV
+uint8_t volt_stamp = 0;
+uint8_t temp_stamp = 0;
 
+extern uint8_t ts_on;
+extern uint8_t ts_start;
 
 uint16_t cellVoltages[NUM_CELLS] = {0};	//cell voltages in 0.1[mV]
 int16_t cellTemperatures[NUM_CELLS] = {0}; //cell temperatures in 0.1[°C]
@@ -173,6 +177,14 @@ void convertVoltage()		//convert and sort Voltages
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
+		if(cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE)
+		{
+				ts_on = 0;
+				ts_start = 0;
+				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+		}
 	}
 
 	uint16_t cell_max = cellVoltages[0];
@@ -236,6 +248,14 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 			for(uint8_t j = 0; j < 3; j++)
 			{
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
+				if(temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] < MIN_Temp || temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] > MAX_Temp)
+				{
+					ts_on = 0;
+					ts_start = 0;
+					HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+				}
 			}
 	}
 		//USB STUFF

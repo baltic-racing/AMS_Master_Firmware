@@ -21,6 +21,9 @@
 #define MAX_TS_VOLTAGE 554
 #define MIN_TS_VOLTAGE 343
 
+#define MAX_Temp 58611
+#define MIN_Temp 0
+
 
 #define BYTES_IN_REG 6
 #define CMD_LEN 4 + (8 * NUM_STACK)
