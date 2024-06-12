@@ -231,7 +231,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 				data_counter = data_counter + 2;
 			}
 			received_pec = (cell_data[data_counter] << 8) + cell_data[data_counter + 1];
-			data_pec = pec15_calc(BYTES_IN_REG, &cell_data[current_ic * BYTES_IN_REG]);
+			data_pec = pec15_calc(BYTES_IN_REG, &cell_data[current_ic * NUM_RX_BYT]);
 			if (received_pec != data_pec)
 			{
 			  pec_error = -1;
