@@ -173,19 +173,31 @@ void BMS()		// Battery Management System function for main loop.
 
 void convertVoltage()		//convert and sort Voltages
 {
-
+	uint8_t volt_error_set = 0;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
-		if(cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE)
+		if(((cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE) && (i+1)%12 != 0) && volt_error_set == 0)
 		{
-				ts_on = 0;
-				ts_start = 0;
-				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+			volt_error_set = 1;
+			volt_stamp++;
 		}
 	}
+
+	if(volt_error_set == 0)
+	{
+		volt_stamp = 0;
+	}
+
+	if(volt_stamp > error_max)
+	{
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+	}
+
 
 	uint16_t cell_max = cellVoltages[0];
 	uint16_t cell_min = cellVoltages[0];
@@ -241,22 +253,39 @@ void CAN_interrupt()
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
+	uint8_t temp_error_set = 0;
+
 
 	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 			for(uint8_t j = 0; j < 3; j++)
 			{
-				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
-				if(temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] < MIN_Temp || temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] > MAX_Temp)
+				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
+				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
+
+				if((curr_temp < MIN_Temp || curr_temp > MAX_Temp) && indexOffset[j + selTemp * 3] != 11 && temp_error_set == 0)
 				{
-					ts_on = 0;
-					ts_start = 0;
-					HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+					temp_error_set = 1;
+					temp_stamp++;
 				}
+
 			}
+	}
+
+	if(temp_error_set == 0)
+	{
+		temp_stamp = 0;
+	}
+
+	if(temp_stamp > error_max)
+	{
+
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
 		//USB STUFF
 	if(selTemp == 3)

@@ -3,7 +3,7 @@
 ../Core/Src/bms.c:68:6:BMS_init	8	static
 ../Core/Src/bms.c:73:6:BMS	16	static
 ../Core/Src/bms.c:174:6:convertVoltage	16	static
-../Core/Src/bms.c:208:10:calculateTemperature	24	static
-../Core/Src/bms.c:219:6:CAN_interrupt	56	static
-../Core/Src/bms.c:242:6:convertTemperature	48	static
-../Core/Src/bms.c:287:6:send_usb	16	static
+../Core/Src/bms.c:220:10:calculateTemperature	24	static
+../Core/Src/bms.c:231:6:CAN_interrupt	56	static
+../Core/Src/bms.c:254:6:convertTemperature	40	static
+../Core/Src/bms.c:316:6:send_usb	16	static

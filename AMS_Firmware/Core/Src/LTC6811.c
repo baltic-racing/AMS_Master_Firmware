@@ -219,7 +219,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 	for(uint8_t cell_reg = 1; cell_reg < 5; cell_reg++)	//executes once for each of the LTC6804 cell voltage registers
 	{
 		data_counter = 0;
-		LTC6811_rdcv_reg(cell_reg, NUM_STACK, cell_data);
+		LTC6811_rdcv_reg(cell_reg, cell_data);
 
 		for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)	// executes for every LTC6804 in the stack.
 		{
@@ -242,7 +242,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 	return(pec_error);
 }
 
-void LTC6811_rdcv_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
+void LTC6811_rdcv_reg(uint8_t reg, uint8_t *data)
 {
 	uint8_t RDCV[4];
 	uint16_t temp_pec;
@@ -257,7 +257,7 @@ void LTC6811_rdcv_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
 	wakeup_idle();
 
     //Register A-D = reg 1-4
-    for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
+    for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)
     {
     	RDCV[0] = 0x80 + (current_ic << 3);
         temp_pec = pec15_calc(2, RDCV);
@@ -281,7 +281,7 @@ int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 	for(uint8_t aux_reg = 1; aux_reg < AUX_IN_REG; aux_reg++)	//executes once for each of the LTC6804 cell voltage registers
 	{
 		data_counter = 0;
-		LTC6811_rdaux_reg(aux_reg, NUM_STACK, aux_data);
+		LTC6811_rdaux_reg(aux_reg, aux_data);
 
 		for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)	// executes for every LTC6804 in the stack.
 		{
@@ -304,7 +304,7 @@ int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 	return(pec_error);
 }
 
-void LTC6811_rdaux_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
+void LTC6811_rdaux_reg(uint8_t reg, uint8_t *data)
 {
 	uint8_t RDAUX[4];
 	uint16_t temp_pec;
@@ -317,7 +317,7 @@ void LTC6811_rdaux_reg(uint8_t reg, uint8_t nIC, uint8_t *data)
 	wakeup_idle();
 
     //Register A-D = reg 1-4
-    for(uint8_t current_ic = 0; current_ic < nIC; current_ic++)
+    for(uint8_t current_ic = 0; current_ic < NUM_STACK; current_ic++)
     {
     	RDAUX[0] = 0x80 + (current_ic << 3);
         temp_pec = pec15_calc(2, RDAUX);

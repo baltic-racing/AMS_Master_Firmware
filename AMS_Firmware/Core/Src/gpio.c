@@ -41,11 +41,13 @@ uint8_t sc_closed = 0;
 /* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
+/*
 void open_sdc()
 {
 	HAL_GPIO_WritePin(SC_OPEN_GPIO_Port, SC_OPEN_Pin, GPIO_PIN_RESET);
 
 }
+*/
 
 void close_sdc()
 {

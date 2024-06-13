@@ -15,14 +15,14 @@
 #define NUM_GPIO NUM_GPIO_STACK *NUM_STACK   //GPIOs per slave
 
 
-#define MAX_VOLTAGE 39000					// Wert in 0,1 mV
-#define MIN_VOLTAGE 30000					// es gehen nur Vielfache von 16
+#define MAX_VOLTAGE 42000					// Wert in 0,1 mV
+#define MIN_VOLTAGE 26000					// es gehen nur Vielfache von 16
 
 #define MAX_TS_VOLTAGE 554
 #define MIN_TS_VOLTAGE 343
 
 #define MAX_Temp 58611
-#define MIN_Temp 0
+#define MIN_Temp 1
 
 
 #define BYTES_IN_REG 6
@@ -31,6 +31,8 @@
 #define NUM_RX_BYT 8
 #define CELL_IN_REG 3
 #define AUX_IN_REG 3
+
+#define error_max 5
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
 
