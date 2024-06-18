@@ -63,8 +63,6 @@ void Error_Handler(void);
 #define LED_YW_GPIO_Port GPIOC
 #define LED_RD_Pin GPIO_PIN_15
 #define LED_RD_GPIO_Port GPIOC
-#define IMD_STATE_Pin GPIO_PIN_3
-#define IMD_STATE_GPIO_Port GPIOA
 #define WDI_Pin GPIO_PIN_4
 #define WDI_GPIO_Port GPIOA
 #define IMD_SAFE_Pin GPIO_PIN_5

@@ -27,6 +27,7 @@ void convertVoltage(void);
 void convertTemperature(uint8_t selTemp);
 void CAN_interrupt(void);
 void send_usb(void);
+void checkIMD(void);
 
 
 #endif /* INC_BMS_H_ */

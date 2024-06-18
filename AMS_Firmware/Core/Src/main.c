@@ -63,7 +63,6 @@ void SystemClock_Config(void);
 
 
 
-
 /* USER CODE END 0 */
 
 /**
@@ -102,6 +101,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
   // Start timer
   HAL_TIM_Base_Start_IT(&htim2);
@@ -119,6 +119,9 @@ int main(void)
   	  Error_Handler();
     }
 
+	//Start input-capture for IMD PWM signal
+    HAL_TIM_IC_Start_IT(&htim9, TIM_CHANNEL_2);   // main channel
+    HAL_TIM_IC_Start(&htim9, TIM_CHANNEL_1);   // indirect channel
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,6 +129,8 @@ int main(void)
   while (1)
   {
 	 BMS();
+
+
 
   }
     /* USER CODE END WHILE */

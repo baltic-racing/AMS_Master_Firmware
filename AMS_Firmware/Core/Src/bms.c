@@ -18,14 +18,24 @@
 
 uint8_t precharge = 0;
 
-bool balancing = false;
+extern uint8_t charging;
+
+uint16_t ts_volt_can = 0;
 
 uint16_t balanceMargin = 500; //in 0.1mV
 uint8_t volt_stamp = 0;
 uint8_t temp_stamp = 0;
+uint8_t imd_stamp = 0;
+
+uint8_t IMD_ERROR = 0;
+uint8_t AMS_ERROR = 0;
 
 extern uint8_t ts_on;
 extern uint8_t ts_start;
+
+uint32_t ICValue = 0;
+float Duty = 0;
+uint16_t imdStatValue = 0;
 
 uint16_t cellVoltages[NUM_CELLS] = {0};	//cell voltages in 0.1[mV]
 int16_t cellTemperatures[NUM_CELLS] = {0}; //cell temperatures in 0.1[°C]
@@ -65,6 +75,25 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     CAN_RX_IVT(hcan2);
 }
 
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // If the interrupt is triggered by channel 1
+	{
+		// Read the IC value
+		ICValue = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+
+		if (ICValue != 0)
+		{
+			// calculate the Duty Cycle
+			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue;
+
+		}
+	}
+
+	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
+}
+
 void BMS_init()
 {
 	LTC6811_initialize();
@@ -100,7 +129,7 @@ void BMS()		// Battery Management System function for main loop.
 		cfg[i][4] = 0x00;
 		cfg[i][5] = 0x00;
 
-		if(balancing)
+		if(charging == 1)
 		{
 			if(selTemp < 3)
 			{
@@ -149,6 +178,7 @@ void BMS()		// Battery Management System function for main loop.
 
 	convertTemperature(selTemp);
 
+	checkIMD();
 
 /*
 	wakeup_idle();
@@ -169,11 +199,14 @@ void BMS()		// Battery Management System function for main loop.
 	can_put_data();
 
 	send_usb();
+
+	HAL_Delay(100);
 }
 
 void convertVoltage()		//convert and sort Voltages
 {
 	uint8_t volt_error_set = 0;
+	ts_volt_can = 0;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
@@ -182,6 +215,7 @@ void convertVoltage()		//convert and sort Voltages
 			volt_error_set = 1;
 			volt_stamp++;
 		}
+		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
 
 	if(volt_error_set == 0)
@@ -191,6 +225,7 @@ void convertVoltage()		//convert and sort Voltages
 
 	if(volt_stamp > error_max)
 	{
+		AMS_ERROR = 1;
 		ts_on = 0;
 		ts_start = 0;
 		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
@@ -264,12 +299,12 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
 
+
 				if((curr_temp < MIN_Temp || curr_temp > MAX_Temp) && indexOffset[j + selTemp * 3] != 11 && temp_error_set == 0)
 				{
 					temp_error_set = 1;
 					temp_stamp++;
 				}
-
 			}
 	}
 
@@ -280,13 +315,14 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 	if(temp_stamp > error_max)
 	{
-
+		AMS_ERROR = 1;
 		ts_on = 0;
 		ts_start = 0;
 		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
+
 		//USB STUFF
 	if(selTemp == 3)
 	{
@@ -310,6 +346,32 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				AMS1_databytes[6] = temp_max;
 				AMS1_databytes[7] = (temp_max >> 8);
 			}
+	}
+}
+
+void checkIMD()
+{
+	uint8_t imd_error_set = 0;
+
+	if(imdStatValue < MIN_IMD_RES && imd_error_set == 0 && imdStatValue != 0)
+	{
+		imd_error_set = 1;
+		imd_stamp++;
+	}
+
+	if(imd_error_set == 0)
+	{
+		imd_stamp = 0;
+	}
+
+	if(imd_stamp > error_max)
+	{
+		IMD_ERROR = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
 }
 

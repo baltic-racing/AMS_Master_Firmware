@@ -5,10 +5,10 @@
 ../Core/Src/LTC6811.c:55:6:set_adc	24	static
 ../Core/Src/LTC6811.c:89:6:LTC6811_adcv	16	static
 ../Core/Src/LTC6811.c:122:6:LTC6811_adax	16	static
-../Core/Src/LTC6811.c:146:6:LTC6811_wrcfg	40	static
-../Core/Src/LTC6811.c:210:9:LTC6811_rdcv	40	static
+../Core/Src/LTC6811.c:146:6:LTC6811_wrcfg	128	static
+../Core/Src/LTC6811.c:210:9:LTC6811_rdcv	128	static
 ../Core/Src/LTC6811.c:245:6:LTC6811_rdcv_reg	24	static
-../Core/Src/LTC6811.c:272:8:LTC6811_rdaux	40	static
+../Core/Src/LTC6811.c:272:8:LTC6811_rdaux	128	static
 ../Core/Src/LTC6811.c:307:6:LTC6811_rdaux_reg	24	static
 ../Core/Src/LTC6811.c:407:6:LTC6811_clrstat	16	static
 ../Core/Src/LTC6811.c:480:10:pec15_calc	32	static

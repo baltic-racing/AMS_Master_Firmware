@@ -35,8 +35,15 @@ uint32_t current_data = 0;
 uint16_t current = 0;
 uint8_t ts_on = 0;
 uint8_t ts_start = 0;
+uint8_t charging = 0;
+uint8_t ams_status = 0;
+
+extern uint16_t ts_volt_can;
+
 
 extern uint8_t ts_ready ;
+extern uint8_t IMD_ERROR;
+extern uint8_t AMS_ERROR;
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -116,6 +123,12 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 			ts_start = 0;
 		}
 
+		if(RxData[7] == 1)
+		{
+			charging = 1;
+			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+		}
 		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
@@ -124,11 +137,12 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 void can_put_data()
 {
-	AMS0_databytes[0] = adc_accu_volt;
-	AMS0_databytes[1] = (adc_accu_volt >> 8);
+	AMS0_databytes[0] = ts_volt_can;
+	AMS0_databytes[1] = (ts_volt_can >> 8);
 	AMS0_databytes[2] = current;
 	AMS0_databytes[3] = (current >> 8);
-	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4);
+	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4) | (IMD_ERROR << 6) | (AMS_ERROR << 7);
+	AMS0_databytes[7] = ams_status;
 }
 
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)
@@ -155,6 +169,13 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
 	CAN_TX_IVT(hcan2,test_header, test);
+
+	ams_status++;
+
+	if(ams_status == 255)
+	{
+		ams_status = 0;
+	}
 }
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
