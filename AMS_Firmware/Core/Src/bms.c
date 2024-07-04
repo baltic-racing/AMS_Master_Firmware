@@ -106,6 +106,9 @@ void BMS()		// Battery Management System function for main loop.
 	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
 	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
+
+	get_ts_ready();
+
 	//precharge = 1 when complete and 0 when still charging
 	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
@@ -226,11 +229,11 @@ void convertVoltage()		//convert and sort Voltages
 	if(volt_stamp > error_max)
 	{
 		AMS_ERROR = 1;
-		ts_on = 0;
-		ts_start = 0;
-		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+		//ts_on = 0;
+		//ts_start = 0;
+		//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		//HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
 
 
@@ -316,11 +319,11 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 	if(temp_stamp > error_max)
 	{
 		AMS_ERROR = 1;
-		ts_on = 0;
-		ts_start = 0;
-		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+		//ts_on = 0;
+		//ts_start = 0;
+		//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		//HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
 
 		//USB STUFF
@@ -367,8 +370,8 @@ void checkIMD()
 	if(imd_stamp > error_max)
 	{
 		IMD_ERROR = 1;
-		ts_on = 0;
-		ts_start = 0;
+		//ts_on = 0;
+		//ts_start = 0;
 		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);

@@ -105,18 +105,12 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	{
 		if(RxData[0] == 1)
 		{
-
-			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
 			ts_on = 1;
-
 		}
-		if(ts_on)							// verhindert das Drücken in falscher Reihenfolge
+		// verhindert das Drücken in falscher Reihenfolge
+		if(RxData[1] == 1 && ts_on == 1)
 		{
-
-			if(RxData[1] == 1)
-				{
-					ts_start = 1;
-				}
+			ts_start = 1;
 		}
 		else
 		{
@@ -129,7 +123,6 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
 		}
-		//AMS0_databytes[6]|= (ts_ready << 3);
 	}
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
 }
@@ -182,7 +175,7 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
 
-	 get_ts_ready();
+	//get_ts_ready();
 }
 /* USER CODE END 0 */
 

@@ -3,9 +3,9 @@
 ../Core/Src/bms.c:79:6:HAL_TIM_IC_CaptureCallback	24	static
 ../Core/Src/bms.c:97:6:BMS_init	8	static
 ../Core/Src/bms.c:102:6:BMS	16	static
-../Core/Src/bms.c:206:6:convertVoltage	16	static
-../Core/Src/bms.c:255:10:calculateTemperature	24	static
-../Core/Src/bms.c:266:6:CAN_interrupt	56	static
-../Core/Src/bms.c:289:6:convertTemperature	40	static
-../Core/Src/bms.c:352:6:checkIMD	16	static
-../Core/Src/bms.c:378:6:send_usb	16	static
+../Core/Src/bms.c:209:6:convertVoltage	16	static
+../Core/Src/bms.c:258:10:calculateTemperature	24	static
+../Core/Src/bms.c:269:6:CAN_interrupt	56	static
+../Core/Src/bms.c:292:6:convertTemperature	40	static
+../Core/Src/bms.c:355:6:checkIMD	16	static
+../Core/Src/bms.c:381:6:send_usb	16	static

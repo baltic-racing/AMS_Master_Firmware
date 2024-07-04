@@ -32,7 +32,6 @@ uint8_t AIR_P_act = 0;
 uint8_t AIR_P_int = 0; //AIR P Power
 uint8_t AIR_OK = 0;
 uint8_t ts_ready = 0;
-uint8_t sc_closed = 0;
 
 
 /* USER CODE END 0 */
@@ -66,8 +65,6 @@ uint8_t read_sdc()
 
 uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 {
-
-
 	// 1 if high and 0 if low
 	// high = switched
 
@@ -86,63 +83,35 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 		AIR_OK = 0;
 	}
 
-	//if(ts_start > 0 && ts_on == 0) ts_start = 0;
-/*
-		 if (ts_on > 0)
-		 {
-
-			 HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
-			 ts_ready = 1;
-			 HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
-		 }
-
-		 if (ts_ready > 0 && ts_start > 0)
-		 {
-			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-			 HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-		 }
-*/
-
 	 return AIR_OK;
 }
 void get_ts_ready()
 {
 
-
-	if(read_sdc())//&& precharge)
+	if(ts_on == 1 && check_AIRs() == 1)
 	{
+		HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+		HAL_Delay(100);
 
-		if(ts_on)
+		if(read_sdc() == 1)//&& precharge)
 		{
 
-			 HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
-
-			 if(ts_start)
-			 		{
-				 sc_closed  = 1;
-				 ts_ready = 1;
-			 			 HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-			 			HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-			 		}
+				if(ts_start == 1)
+				{
+					ts_ready = 1;
+					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				}
 		}
-	}
-
-	else
-	{
-		ts_ready = 0;
-		ts_on = 0;
-			if (sc_closed ==1)
-			{
-				ts_on = 0;
-				ts_start = 0;
-				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-
-				HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-				sc_closed = 0;
-			}
-		 //HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
-			//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-
+		else
+		{
+			ts_ready = 0;
+			ts_on = 0;
+			ts_start = 0;
+			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		}
 
 	}
 

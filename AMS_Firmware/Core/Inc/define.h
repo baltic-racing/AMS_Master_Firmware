@@ -35,6 +35,8 @@
 #define error_max 5
 
 #define MIN_IMD_RES 400
+
+
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
 
