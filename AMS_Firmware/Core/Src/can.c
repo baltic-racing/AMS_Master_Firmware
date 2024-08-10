@@ -37,6 +37,7 @@ uint8_t ts_on = 0;
 uint8_t ts_start = 0;
 uint8_t charging = 0;
 uint8_t ams_status = 0;
+uint8_t switch_on = 0;
 
 extern uint16_t ts_volt_can;
 
@@ -44,6 +45,8 @@ extern uint16_t ts_volt_can;
 extern uint8_t ts_ready ;
 extern uint8_t IMD_ERROR;
 extern uint8_t AMS_ERROR;
+
+uint32_t ivt_error_time = 0;
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -106,6 +109,7 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 		if(RxData[0] == 1)
 		{
 			ts_on = 1;
+			switch_on = 1;
 		}
 		// verhindert das Drücken in falscher Reihenfolge
 		if(RxData[1] == 1 && ts_on == 1)
@@ -117,11 +121,13 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 			ts_start = 0;
 		}
 
-		if(RxData[7] == 1)
+		if(RxData[5] == 1)
 		{
 			charging = 1;
-			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+			ts_on = 1;
+			switch_on = 1;
+			//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+			//HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
 		}
 	}
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
@@ -152,7 +158,19 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 	if(RxHeader.StdId == 0x521)
 	{
 		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
-		current = current_data/100;
+
+		if(RxData[5] >> 7 == 0)
+		{
+			//current = (current_data << 1 >> 1)/100;
+			current = current_data/100;
+		}
+		else
+		{
+			current = (current_data << 1 >> 1)/100;
+		}
+		//current = current_data/100;
+
+		ivt_error_time = HAL_GetTick();
 	}
 
 }
@@ -195,10 +213,10 @@ void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 4;
+  hcan1.Init.Prescaler = 3;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_3TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
@@ -241,10 +259,10 @@ void MX_CAN2_Init(void)
 
   /* USER CODE END CAN2_Init 1 */
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 8;
+  hcan2.Init.Prescaler = 3;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_3TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
   hcan2.Init.AutoBusOff = DISABLE;

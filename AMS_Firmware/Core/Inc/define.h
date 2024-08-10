@@ -34,6 +34,9 @@
 
 #define error_max 5
 
+#define volt_detect_time 750	//nicht regelkonform
+#define temp_detect_time 1200
+
 #define MIN_IMD_RES 400
 
 

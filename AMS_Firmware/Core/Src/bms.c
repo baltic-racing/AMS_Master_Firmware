@@ -32,6 +32,8 @@ uint8_t AMS_ERROR = 0;
 
 extern uint8_t ts_on;
 extern uint8_t ts_start;
+extern uint8_t sc_state;
+extern uint16_t current;
 
 uint32_t ICValue = 0;
 float Duty = 0;
@@ -43,7 +45,7 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 uint16_t temperature[NUM_CELLS] = {0};
 
-uint8_t usb_data[NUM_CELLS*2 + 1] = {0};
+uint8_t usb_data[NUM_CELLS*2 + 2 + 1] = {0};
 uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
 uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
@@ -58,6 +60,15 @@ uint8_t r_statb[NUM_STACK][6];
 uint32_t can_cnt = 0; //can counter to adjust timings
 uint64_t last20 =0;
 uint64_t last100 =0;
+uint64_t last500 = 0;
+uint32_t volt_error_time = 0;
+uint32_t temp_error_time = 0;
+extern uint32_t ivt_error_time;
+
+uint8_t temp_error = 0;
+uint8_t count_selTemp = 0;
+
+uint32_t current_time = 0;
 
 /* 1 ms interrupt
  * HLCK 96 MHz
@@ -105,8 +116,6 @@ void BMS()		// Battery Management System function for main loop.
 	static uint8_t selTemp = 0;
 	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
 	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
-
-
 	get_ts_ready();
 
 	//precharge = 1 when complete and 0 when still charging
@@ -149,17 +158,8 @@ void BMS()		// Battery Management System function for main loop.
 
 	}
 
-	/*
-	LTC6811_clrstat();
-	HAL_Delay(3);
-*/
-
 	LTC6811_wrcfg((uint8_t(*)[6])cfg);		// Write config
 	HAL_Delay(3);
-
-	//wakeup_idle();									// read config
-	//LTC6811_rdcfg();
-	//HAL_Delay(3);
 
 	LTC6811_adcv();										// measure voltages
 	HAL_Delay(3);
@@ -173,24 +173,20 @@ void BMS()		// Battery Management System function for main loop.
 	pec += LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
 	HAL_Delay(3);
 
-	//pec += LTC6811_rdstatb(NUM_STACK, OV_flag, UV_flag, r_statb);
-	//HAL_Delay(3);
-
-
 	convertVoltage();
 
-	convertTemperature(selTemp);
+	if(pec == 0)
+	{
+		convertTemperature(selTemp);
+	}
+	//convertTemperature(selTemp);
 
 	checkIMD();
 
-/*
-	wakeup_idle();
-	LTC6811_adstat();
-	HAL_Delay(3);
-
-	wakeup_idle();
-	LTC6811_rdstat();
-*/
+	if(HAL_GetTick() - ivt_error_time >= volt_detect_time)
+	{
+		AMS_ERROR = 1;
+	}
 
 	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
 	{
@@ -199,27 +195,50 @@ void BMS()		// Battery Management System function for main loop.
 	else
 		selTemp = 0;
 
+	if(AMS_ERROR == 1 || IMD_ERROR == 1)
+	{
+		sc_state = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+	}
+
 	can_put_data();
 
 	send_usb();
-
-	HAL_Delay(100);
 }
 
 void convertVoltage()		//convert and sort Voltages
 {
-	uint8_t volt_error_set = 0;
+	//uint8_t volt_error_set = 0;
 	ts_volt_can = 0;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
-		if(((cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE) && (i+1)%12 != 0) && volt_error_set == 0)
+		/*
+		//if(((cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE) && (i+1)%12 != 0) && volt_error_set == 0)
+		if(!(cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE))
 		{
-			volt_error_set = 1;
-			volt_stamp++;
+//
+			//volt_error_set = 1;
+			//volt_stamp++;
+			volt_error_time = HAL_GetTick();
+			//volt_error_time = HAL_GetTick();
 		}
+		*/
+
 		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
+
+	/*
+	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+	{
+		AMS_ERROR = 1;
+	}
+*/
+	/*
 
 	if(volt_error_set == 0)
 	{
@@ -229,13 +248,14 @@ void convertVoltage()		//convert and sort Voltages
 	if(volt_stamp > error_max)
 	{
 		AMS_ERROR = 1;
-		//ts_on = 0;
-		//ts_start = 0;
-		//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		//HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+		sc_state = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
 	}
-
+*/
 
 	uint16_t cell_max = cellVoltages[0];
 	uint16_t cell_min = cellVoltages[0];
@@ -243,10 +263,22 @@ void convertVoltage()		//convert and sort Voltages
 	{
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
-			if(cellVoltages[i + k * 12] > cell_max) cell_max = cellVoltages[i + k * 12];
-			else if(cellVoltages[i + k * 12] < cell_min) cell_min = cellVoltages[i + k * 12];
+			if(cellVoltages[i + k * 12] > cell_max && (i+1)%12 != 0) cell_max = cellVoltages[i + k * 12];
+			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0) cell_min = cellVoltages[i + k * 12];
 		}
 	}
+
+	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
+	{
+		volt_error_time = HAL_GetTick();
+	}
+
+if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+{
+	//AMS_ERROR = 1;
+}
+
+
 
 	AMS1_databytes[0] = cell_min;
 	AMS1_databytes[1] = (cell_min >> 8);
@@ -263,7 +295,7 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
 	}
 	else
-		return 0x00;
+		return 0xFFFE;
 }
 
 void CAN_interrupt()
@@ -291,10 +323,11 @@ void CAN_interrupt()
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
-	uint8_t temp_error_set = 0;
+	//uint8_t temp_error_set = 0;
 
 
-	uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
+	//uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
+	uint8_t indexOffset[12] = {11, 4, 1, 9, 6, 3, 0, 5, 10, 2, 7, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 			for(uint8_t j = 0; j < 3; j++)
@@ -302,54 +335,92 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
 
-
+				/*
 				if((curr_temp < MIN_Temp || curr_temp > MAX_Temp) && indexOffset[j + selTemp * 3] != 11 && temp_error_set == 0)
 				{
 					temp_error_set = 1;
 					temp_stamp++;
+
 				}
+				*/
 			}
 	}
 
+/*
 	if(temp_error_set == 0)
 	{
 		temp_stamp = 0;
 	}
-
-	if(temp_stamp > error_max)
+	else
 	{
-		AMS_ERROR = 1;
-		//ts_on = 0;
-		//ts_start = 0;
-		//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		//HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+		temp_error++;
 	}
 
+	if(temp_stamp > error_max || temp_error > 1)
+	{
+		//AMS_ERROR = 1;
+		sc_state = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		temp_error = 0;
+		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+	}
+*/
 		//USB STUFF
 	if(selTemp == 3)
 	{
+		/*
+		count_selTemp++;
+
+		if(count_selTemp == 5)
+		{
+			temp_error = 0;
+		}
+		*/
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;
 		}
 		//CAN stuff
 		uint16_t temp_min = temperature[0];
-			uint16_t temp_max = temperature[0];
+		uint16_t temp_max = temperature[0];
+
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 			{
 				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 				{
-					if(temperature[i + k * 12] > temp_max) temp_max = temperature[i + k * 12];
-					else if(temperature[i + k * 12] < temp_min) temp_min = temperature[i + k * 12];
+					if(temperature[i + k * 12] > temp_max && (i+1)%12 != 0) temp_max = temperature[i + k * 12];
+					else if(temperature[i + k * 12] < temp_min && (i+1)%12 != 0) temp_min = temperature[i + k * 12];
 				}
 
+				/*
 				AMS1_databytes[4] = temp_min;
 				AMS1_databytes[5] = (temp_min >> 8);
 				AMS1_databytes[6] = temp_max;
 				AMS1_databytes[7] = (temp_max >> 8);
+				*/
 			}
+
+		//if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		if(!(temp_max > MAX_Temp))
+		{
+			temp_error_time = HAL_GetTick();
+		}
+
+		if(HAL_GetTick() - temp_error_time >= temp_detect_time)
+		{
+			AMS_ERROR = 1;
+		}
+
+		AMS1_databytes[4] = temp_min;
+		AMS1_databytes[5] = (temp_min >> 8);
+		AMS1_databytes[6] = temp_max;
+		AMS1_databytes[7] = (temp_max >> 8);
 	}
+
 }
 
 void checkIMD()
@@ -370,23 +441,20 @@ void checkIMD()
 	if(imd_stamp > error_max)
 	{
 		IMD_ERROR = 1;
-		//ts_on = 0;
-		//ts_start = 0;
-		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
 	}
 }
 
 void send_usb()
 {
-	usb_data[NUM_CELLS * 2] = 0xff;
+	usb_data[NUM_CELLS * 2 + 2] = 0xff;
+	usb_data[NUM_CELLS * 2] = current >> 8;
+	usb_data[NUM_CELLS + 1] = current;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_data[i] = usb_voltages[i];
 		usb_data[NUM_CELLS + i] = usb_temperatures[i];
 	}
 
-	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 1);
+	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 2 + 1);
 }
 
