@@ -159,18 +159,24 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 	{
 		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
-		if(RxData[5] >> 7 == 0)
+		if(RxData[2] >> 7 == 0)
 		{
 			//current = (current_data << 1 >> 1)/100;
 			current = current_data/100;
 		}
 		else
 		{
-			current = (current_data << 1 >> 1)/100;
+			current = ~current_data/100;
 		}
 		//current = current_data/100;
 
 		ivt_error_time = HAL_GetTick();
+
+		test[2] = RxData[2];
+		test[3] = RxData[3];
+		test[4] = RxData[4];
+		test[5] = RxData[5];
+
 	}
 
 }
@@ -179,7 +185,7 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
-	CAN_TX_IVT(hcan2,test_header, test);
+	//CAN_TX_IVT(hcan2,test_header, test);
 
 	ams_status++;
 
@@ -192,6 +198,7 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
+	CAN_TX(hcan1, test_header, test);
 
 	//get_ts_ready();
 }

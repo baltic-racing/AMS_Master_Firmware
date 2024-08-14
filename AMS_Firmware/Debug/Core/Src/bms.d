@@ -41,7 +41,7 @@ Core/Src/bms.o: ../Core/Src/bms.c ../Core/Inc/bms.h ../Core/Inc/main.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
- ../Core/Inc/define.h
+ ../Core/Inc/define.h ../Core/Inc/gpio.h
 ../Core/Inc/bms.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h:
@@ -90,3 +90,4 @@ Core/Src/bms.o: ../Core/Src/bms.c ../Core/Inc/bms.h ../Core/Inc/main.h \
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
 ../Core/Inc/define.h:
+../Core/Inc/gpio.h:
