@@ -23,7 +23,7 @@ extern uint8_t charging;
 
 uint16_t ts_volt_can = 0;
 
-uint16_t balanceMargin = 500; //in 0.1mV
+uint16_t balanceMargin = 100; //in 0.1mV
 uint8_t volt_stamp = 0;
 uint8_t temp_stamp = 0;
 uint8_t imd_stamp = 0;
@@ -73,7 +73,9 @@ uint32_t current_time = 0;
 
 uint8_t index_i = 0;
 uint8_t index_k = 0;
-uint8_t cell_number = 0;
+uint8_t cell_number_temp_min = 0;
+uint8_t cell_number_temp_max = 0;
+uint8_t cell_number_volt_min = 0;
 
 extern uint8_t test[8];
 
@@ -126,7 +128,7 @@ void BMS()		// Battery Management System function for main loop.
 	get_ts_ready();
 
 	//precharge = 1 when complete and 0 when still charging
-	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
+	precharge |= ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -150,15 +152,15 @@ void BMS()		// Battery Management System function for main loop.
 
 		if(charging == 1)
 		{
-			if(selTemp < 3)
+			if(selTemp < 5)
 			{
 				for(uint8_t j = 0; j < 8; j++)
 				{
-					if(cellVoltages[i * NUM_STACK + j] - MAX_VOLTAGE > balanceMargin)cfg[i][4] |= 1 << j;
+					if(cellVoltages[i * NUM_STACK + j] - blancing_Voltage > balanceMargin)cfg[i][4] |= 1 << j;
 				}
 				for(uint8_t j = 0; j < 3; j++)
 				{
-					if(cellVoltages[i * NUM_STACK + j + 8] - MAX_VOLTAGE > balanceMargin)cfg[i][5] |= 1 << j;
+					if(cellVoltages[i * NUM_STACK + j + 8] - blancing_Voltage > balanceMargin)cfg[i][5] |= 1 << j;
 				}
 			}
 		}
@@ -215,8 +217,6 @@ void BMS()		// Battery Management System function for main loop.
 	can_put_data();
 
 	send_usb();
-
-	HAL_Delay(10);
 }
 
 void convertVoltage()		//convert and sort Voltages
@@ -273,7 +273,12 @@ void convertVoltage()		//convert and sort Voltages
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
 			if(cellVoltages[i + k * 12] > cell_max && (i+1)%12 != 0) cell_max = cellVoltages[i + k * 12];
-			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0) cell_min = cellVoltages[i + k * 12];
+			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0)
+				{
+					cell_min = cellVoltages[i + k * 12];
+					cell_number_volt_min = i + k * 12;
+					test[0] = cell_number_volt_min;
+				}
 		}
 	}
 
@@ -321,13 +326,8 @@ void CAN_interrupt()
 
 	if (HAL_GetTick()>= last20 + 20)
 	{
-
-		AMS0_databytes[6] |= (precharge << 4);
-
 		CAN_50(AMS0_databytes);
 		last20 = HAL_GetTick();
-
-
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
@@ -411,7 +411,12 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 			{
 				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 				{
-					if(temperature[i + k * 12] > temp_max && (i+1)%12 != 0) temp_max = temperature[i + k * 12];
+					if(temperature[i + k * 12] > temp_max && (i+1)%12 != 0)
+						{
+							temp_max = temperature[i + k * 12];
+							cell_number_temp_max = i + k * 12;
+							test[2] = cell_number_temp_max;
+						}
 					else if(temperature[i + k * 12] < temp_min && i != 11)
 
 					//else if(temperature[i + k * 12] < temp_min && (i+1)%12 != 0 && i + k * 12 != 33 &&  i + k * 12 != 24 && i + k * 12 != 69 && i + k * 12 != 60 && i + k * 12 != 105 && i + k * 12 != 96)
@@ -419,8 +424,8 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						temp_min = temperature[i + k * 12];
 						index_i = i;
 						index_k = k;
-						cell_number = i + k * 12;
-						test[0] = cell_number;
+						cell_number_temp_min = i + k * 12;
+						test[1] = cell_number_temp_min;
 					}
 
 				}
@@ -433,8 +438,8 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				*/
 			}
 
-		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
-		//if(!(temp_max > MAX_Temp))
+		//if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		if(!(temp_max > MAX_Temp))
 		{
 			temp_error_time = HAL_GetTick();
 		}

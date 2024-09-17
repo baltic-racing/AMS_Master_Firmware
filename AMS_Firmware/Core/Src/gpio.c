@@ -81,7 +81,7 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 	AIR_P_int = HAL_GPIO_ReadPin(GPIOB, AIR_P_INT_Pin);
 	AIR_P_act = HAL_GPIO_ReadPin(GPIOB, AIR_P_ACT_Pin);
 
-	test[1] = AIR_P_act;
+	test[3] = AIR_P_act;
 
 	if (AIR_N_int == AIR_N_act && AIR_P_int == AIR_P_act)
 	{
@@ -120,7 +120,7 @@ void get_ts_ready()
 			ts_start = 0;
 		}
 
-		if(precharge_check == 1)//&& precharge)
+		if(precharge_check == 1 && precharge == 1)//&& precharge)
 		{
 			if(read_sdc() == 0)
 			{

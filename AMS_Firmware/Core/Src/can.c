@@ -69,7 +69,7 @@ uint32_t ivt_error_time = 0;
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 
-CAN_TxHeaderTypeDef test_header = {0x069, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef test_header = {0x210, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
 
 
 	// transmit CAN Message
@@ -172,10 +172,10 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 
 		ivt_error_time = HAL_GetTick();
 
-		test[2] = RxData[2];
-		test[3] = RxData[3];
-		test[4] = RxData[4];
-		test[5] = RxData[5];
+		test[4] = RxData[2];
+		test[5] = RxData[3];
+		test[6] = RxData[4];
+		test[7] = RxData[5];
 
 	}
 

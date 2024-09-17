@@ -81,7 +81,7 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 	AIR_P_int = HAL_GPIO_ReadPin(GPIOB, AIR_P_INT_Pin);
 	AIR_P_act = HAL_GPIO_ReadPin(GPIOB, AIR_P_ACT_Pin);
 
-	test[1] = AIR_P_act;
+	test[3] = AIR_P_act;
 
 	if (AIR_N_int == AIR_N_act && AIR_P_int == AIR_P_act)
 	{
@@ -115,41 +115,39 @@ void get_ts_ready()
 			switch_on = 0;
 		}
 
-		//time for AIRs to switch
-		if(HAL_GetTick() - precharge_time >= switch_time)
+		if(precharge_check == 0 && ts_start == 1)
+		{
+			ts_start = 0;
+		}
+
+		if(precharge_check == 1 && precharge == 1)//&& precharge)
 		{
 			if(read_sdc() == 0)
 			{
 				ts_ready = 0;
 				ts_on = 0;
 				ts_start = 0;
+				precharge_check = 0;
+				charging = 0;
 				HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 			}
-		}
-
-		if(precharge_check == 0 && ts_start == 1)
-		{
-			ts_start = 0;
-		}
-
-		if(precharge_check == 1)//&& precharge)
-		{
-
-			if(charging == 1)
+			else
 			{
-				HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-			}
+				if(charging == 1)
+				{
+					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				}
 
-			if(ts_start == 1)
-			{
-				ts_ready = 1;
-				HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-			}
+				if(ts_start == 1)
+				{
+					ts_ready = 1;
+					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				}
 
-			precharge_check = 0;
+			}
 		}
 
 	}

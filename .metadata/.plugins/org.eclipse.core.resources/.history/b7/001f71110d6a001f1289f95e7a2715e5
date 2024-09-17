@@ -15,6 +15,7 @@
 #include "usbd_cdc_if.h"
 #include "string.h"
 #include "define.h"
+#include "gpio.h"
 
 uint8_t precharge = 0;
 
@@ -61,14 +62,22 @@ uint32_t can_cnt = 0; //can counter to adjust timings
 uint64_t last20 =0;
 uint64_t last100 =0;
 uint64_t last500 = 0;
-uint16_t volt_error_time = 0;
-uint16_t temp_error_time = 0;
-extern uint16_t ivt_error_time;
+uint32_t volt_error_time = 0;
+uint32_t temp_error_time = 0;
+extern uint32_t ivt_error_time;
 
 uint8_t temp_error = 0;
 uint8_t count_selTemp = 0;
 
 uint32_t current_time = 0;
+
+uint8_t index_i = 0;
+uint8_t index_k = 0;
+uint8_t cell_number_temp_min = 0;
+uint8_t cell_number_temp_max = 0;
+uint8_t cell_number_volt_min = 0;
+
+extern uint8_t test[8];
 
 /* 1 ms interrupt
  * HLCK 96 MHz
@@ -119,7 +128,7 @@ void BMS()		// Battery Management System function for main loop.
 	get_ts_ready();
 
 	//precharge = 1 when complete and 0 when still charging
-	precharge = ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
+	precharge |= ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -175,7 +184,11 @@ void BMS()		// Battery Management System function for main loop.
 
 	convertVoltage();
 
-	convertTemperature(selTemp);
+	if(pec == 0)
+	{
+		convertTemperature(selTemp);
+	}
+	//convertTemperature(selTemp);
 
 	checkIMD();
 
@@ -205,7 +218,7 @@ void BMS()		// Battery Management System function for main loop.
 
 	send_usb();
 
-	current_time = HAL_GetTick();
+	HAL_Delay(10);
 }
 
 void convertVoltage()		//convert and sort Voltages
@@ -262,7 +275,12 @@ void convertVoltage()		//convert and sort Voltages
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
 			if(cellVoltages[i + k * 12] > cell_max && (i+1)%12 != 0) cell_max = cellVoltages[i + k * 12];
-			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0) cell_min = cellVoltages[i + k * 12];
+			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0)
+				{
+					cell_min = cellVoltages[i + k * 12];
+					cell_number_volt_min = i + k * 12;
+					test[0] = cell_number_volt_min;
+				}
 		}
 	}
 
@@ -271,12 +289,10 @@ void convertVoltage()		//convert and sort Voltages
 		volt_error_time = HAL_GetTick();
 	}
 
-if(current_time - volt_error_time >= volt_detect_time)
-{
-	AMS_ERROR = 1;
-}
-
-
+	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+	{
+		AMS_ERROR = 1;
+	}
 
 	AMS1_databytes[0] = cell_min;
 	AMS1_databytes[1] = (cell_min >> 8);
@@ -287,13 +303,24 @@ if(current_time - volt_error_time >= volt_detect_time)
 
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
-	if(referenceCode - voltageCode != 0)
+	//if((referenceCode - voltageCode) != 0 && voltageCode != 0 && (referenceCode - voltageCode) >= 1500)
+			if((referenceCode - voltageCode) != 0 && voltageCode != 0)
+				{
+					uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+					return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
+				}
+				else
+					return 0xFFFE;
+
+		/*
+	if((referenceCode - voltageCode) != 0 && voltageCode != 0)
 	{
 		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
 		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
 	}
 	else
-		return 0x00;
+		return 0xFFFE;
+		*/
 }
 
 void CAN_interrupt()
@@ -301,12 +328,8 @@ void CAN_interrupt()
 
 	if (HAL_GetTick()>= last20 + 20)
 	{
-
-		AMS0_databytes[6] |= (precharge << 4);
-
 		CAN_50(AMS0_databytes);
 		last20 = HAL_GetTick();
-
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
@@ -370,25 +393,43 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		//USB STUFF
 	if(selTemp == 3)
 	{
+		/*
 		count_selTemp++;
 
 		if(count_selTemp == 5)
 		{
 			temp_error = 0;
 		}
+		*/
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;
 		}
 		//CAN stuff
 		uint16_t temp_min = temperature[0];
-			uint16_t temp_max = temperature[0];
+		uint16_t temp_max = temperature[0];
+
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 			{
 				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 				{
-					if(temperature[i + k * 12] > temp_max && (i+1)%12 != 0) temp_max = temperature[i + k * 12];
-					else if(temperature[i + k * 12] < temp_min && (i+1)%12 != 0) temp_min = temperature[i + k * 12];
+					if(temperature[i + k * 12] > temp_max && (i+1)%12 != 0)
+						{
+							temp_max = temperature[i + k * 12];
+							cell_number_temp_max = i + k * 12;
+							test[2] = cell_number_temp_max;
+						}
+					else if(temperature[i + k * 12] < temp_min && i != 11)
+
+					//else if(temperature[i + k * 12] < temp_min && (i+1)%12 != 0 && i + k * 12 != 33 &&  i + k * 12 != 24 && i + k * 12 != 69 && i + k * 12 != 60 && i + k * 12 != 105 && i + k * 12 != 96)
+					{
+						temp_min = temperature[i + k * 12];
+						index_i = i;
+						index_k = k;
+						cell_number_temp_min = i + k * 12;
+						test[1] = cell_number_temp_min;
+					}
+
 				}
 
 				/*
@@ -399,14 +440,15 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				*/
 			}
 
-		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		//if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		if(!(temp_max > MAX_Temp))
 		{
 			temp_error_time = HAL_GetTick();
 		}
 
-		if(current_time - temp_error_time >= temp_detect_time)
+		if(HAL_GetTick() - temp_error_time >= temp_detect_time)
 		{
-			//AMS_ERROR = 1;
+			AMS_ERROR = 1;
 		}
 
 		AMS1_databytes[4] = temp_min;
@@ -442,7 +484,7 @@ void send_usb()
 {
 	usb_data[NUM_CELLS * 2 + 2] = 0xff;
 	usb_data[NUM_CELLS * 2] = current >> 8;
-	usb_data[NUM_CELLS + 1] = current;
+	usb_data[NUM_CELLS * 2 + 1] = current;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_data[i] = usb_voltages[i];

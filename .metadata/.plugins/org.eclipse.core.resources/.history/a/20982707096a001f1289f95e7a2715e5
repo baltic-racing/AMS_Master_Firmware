@@ -159,14 +159,14 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 	{
 		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
-		if(RxData[5] >> 7 == 0)
+		if(RxData[2] >> 7 == 0)
 		{
 			//current = (current_data << 1 >> 1)/100;
 			current = current_data/100;
 		}
 		else
 		{
-			current = (current_data << 1 >> 1)/100;
+			current = ~current_data/100;
 		}
 		//current = current_data/100;
 
