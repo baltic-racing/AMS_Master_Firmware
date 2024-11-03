@@ -28,7 +28,7 @@ extern uint8_t ts_on;
 extern uint8_t ts_start;
 extern uint8_t charging;
 extern uint8_t switch_on;
-extern uint8_t test[8];
+extern uint8_t dc_current[8];
 
 uint8_t error = 0;
 uint8_t AIR_N_act = 0;
@@ -81,7 +81,7 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 	AIR_P_int = HAL_GPIO_ReadPin(GPIOB, AIR_P_INT_Pin);
 	AIR_P_act = HAL_GPIO_ReadPin(GPIOB, AIR_P_ACT_Pin);
 
-	test[3] = AIR_P_act;
+	dc_current[3] = AIR_P_act;
 
 	if (AIR_N_int == AIR_N_act && AIR_P_int == AIR_P_act)
 	{
@@ -128,7 +128,7 @@ void get_ts_ready()
 				ts_on = 0;
 				ts_start = 0;
 				precharge_check = 0;
-				charging = 0;
+				//charging = 0;
 				HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 			}

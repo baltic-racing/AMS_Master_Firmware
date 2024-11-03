@@ -17,7 +17,7 @@
 
 #define MAX_VOLTAGE 42500					// Wert in 0,1 mV
 #define MIN_VOLTAGE 25000					// es gehen nur Vielfache von 16
-#define blancing_Voltage 40500
+#define blancing_Voltage 42000
 
 #define MAX_TS_VOLTAGE 554
 #define MIN_TS_VOLTAGE 343

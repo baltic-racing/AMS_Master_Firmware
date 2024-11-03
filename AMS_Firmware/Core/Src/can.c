@@ -25,12 +25,13 @@
 #include "gpio.h"
 #include "adc.h"
 
+
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
 extern uint8_t precharge;
 extern  uint16_t adc_accu_volt;
 uint8_t DIC0_databytes[8];
-uint8_t test[8];
+uint8_t dc_current[8];
 uint32_t current_data = 0;
 uint16_t current = 0;
 uint8_t ts_on = 0;
@@ -38,6 +39,7 @@ uint8_t ts_start = 0;
 uint8_t charging = 0;
 uint8_t ams_status = 0;
 uint8_t switch_on = 0;
+uint32_t capacity_data = 0;
 
 extern uint16_t ts_volt_can;
 
@@ -47,6 +49,10 @@ extern uint8_t IMD_ERROR;
 extern uint8_t AMS_ERROR;
 
 uint32_t ivt_error_time = 0;
+
+
+#define STOP 0
+#define RUN 1
 
 
 /* {StdId, ExtId, IDE, RTR, DLC}
@@ -68,8 +74,10 @@ uint32_t ivt_error_time = 0;
 // Header from DBC
 CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef AMS2_header = {0x210, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
 
-CAN_TxHeaderTypeDef test_header = {0x210, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
+CAN_TxHeaderTypeDef IVT_MSG_COMMAND = {0x411, 0,CAN_ID_STD, CAN_RTR_DATA,8};
+
 
 
 	// transmit CAN Message
@@ -133,6 +141,50 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 	// hier kann man weitere Nachrichten zum Empfangen hinzufügen
 }
 
+void IVT_MODE(uint8_t mode)
+{
+	uint8_t data[8];
+
+	data[0] = 0x34;
+	data[1] = mode;
+	data[2] = 0x01;
+	data[3] = 0x00;
+	data[4] = 0x00;
+	data[5] = 0x00;
+	data[6] = 0x00;
+	data[7] = 0x00;
+
+	CAN_TX_IVT(hcan2,IVT_MSG_COMMAND,data);
+}
+
+void IVT_config()
+{
+	uint8_t data [8];
+
+	data[0] = 0x26;
+	data[1] = 0x02;
+	data[2] = 0x00;
+	data[3] = 0x14;
+	data[4] = 0x00;
+	data[5] = 0x00;
+	data[6] = 0x00;
+	data[7] = 0x00;
+
+	CAN_TX_IVT(hcan2,IVT_MSG_COMMAND,data);
+}
+void IVT_init()
+{
+	HAL_Delay(1000);
+	IVT_MODE(STOP);
+	HAL_Delay(100);
+
+	IVT_config();
+
+	HAL_Delay(100);
+	IVT_MODE(RUN);
+
+
+}
 
 void can_put_data()
 {
@@ -140,6 +192,8 @@ void can_put_data()
 	AMS0_databytes[1] = (ts_volt_can >> 8);
 	AMS0_databytes[2] = current;
 	AMS0_databytes[3] = (current >> 8);
+	//AMS0_databytes[4] = capacity_data;
+	//AMS0_databytes[5] = (capacity_data>>8);
 	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4) | (IMD_ERROR << 6) | (AMS_ERROR << 7);
 	AMS0_databytes[7] = ams_status;
 }
@@ -155,7 +209,7 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 	}
 	current_data = 0;
 
-	if(RxHeader.StdId == 0x521)
+	if(RxHeader.StdId == 0x521)		// Current mA
 	{
 		current_data = RxData[5] | (RxData[4] << (1*8)) | (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
@@ -172,20 +226,27 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 
 		ivt_error_time = HAL_GetTick();
 
-		test[4] = RxData[2];
-		test[5] = RxData[3];
-		test[6] = RxData[4];
-		test[7] = RxData[5];
+		dc_current[4] = RxData[2];
+		dc_current[5] = RxData[3];
+		dc_current[6] = RxData[4];
+		dc_current[7] = RxData[5];
 
 	}
+	if(RxHeader.StdId == 0x527)		// Capacity As
+	{
+		capacity_data = RxData[5] | (RxData[4] << (1*8)); //| (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
+
+		AMS0_databytes[4] = RxData[4];
+			AMS0_databytes[5] = RxData[5];
+	}
 }
 
 void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
 
 	CAN_TX(hcan1, AMS0_header, precharge_data);
-	//CAN_TX_IVT(hcan2,test_header, test);
+
 
 	ams_status++;
 
@@ -198,7 +259,7 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
-	CAN_TX(hcan1, test_header, test);
+	CAN_TX(hcan1, AMS2_header, dc_current);
 
 	//get_ts_ready();
 }
@@ -297,6 +358,21 @@ void MX_CAN2_Init(void)
   canfilterconfig_ivt.SlaveStartFilterBank = 14;  // how many filters to assign to the CAN1 (master can)
 
   HAL_CAN_ConfigFilter(&hcan2, &canfilterconfig_ivt);
+
+  CAN_FilterTypeDef canfilterconfig_ivt1;
+  canfilterconfig_ivt1.FilterActivation = CAN_FILTER_ENABLE;
+    canfilterconfig_ivt1.FilterBank = 15;  // which filter bank to use from the assigned ones
+    canfilterconfig_ivt1.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    canfilterconfig_ivt1.FilterIdHigh = 0x527<<5;
+    canfilterconfig_ivt1.FilterIdLow = 0;
+    canfilterconfig_ivt1.FilterMaskIdHigh = 0x7FF<<5;
+    canfilterconfig_ivt1.FilterMaskIdLow = 0x0000;
+    canfilterconfig_ivt1.FilterMode = CAN_FILTERMODE_IDMASK;
+    canfilterconfig_ivt1.FilterScale = CAN_FILTERSCALE_32BIT;
+    canfilterconfig_ivt1.SlaveStartFilterBank = 14;
+  HAL_CAN_ConfigFilter(&hcan2, &canfilterconfig_ivt1);
+
+
   /* USER CODE END CAN2_Init 2 */
 
 }

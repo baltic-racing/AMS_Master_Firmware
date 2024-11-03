@@ -77,7 +77,7 @@ uint8_t cell_number_temp_min = 0;
 uint8_t cell_number_temp_max = 0;
 uint8_t cell_number_volt_min = 0;
 
-extern uint8_t test[8];
+extern uint8_t dc_current[8];
 
 /* 1 ms interrupt
  * HLCK 96 MHz
@@ -277,7 +277,7 @@ void convertVoltage()		//convert and sort Voltages
 				{
 					cell_min = cellVoltages[i + k * 12];
 					cell_number_volt_min = i + k * 12;
-					test[0] = cell_number_volt_min;
+					dc_current[0] = cell_number_volt_min;
 				}
 		}
 	}
@@ -415,7 +415,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						{
 							temp_max = temperature[i + k * 12];
 							cell_number_temp_max = i + k * 12;
-							test[2] = cell_number_temp_max;
+							dc_current[2] = cell_number_temp_max;
 						}
 					else if(temperature[i + k * 12] < temp_min && i != 11)
 
@@ -425,7 +425,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						index_i = i;
 						index_k = k;
 						cell_number_temp_min = i + k * 12;
-						test[1] = cell_number_temp_min;
+						dc_current[1] = cell_number_temp_min;
 					}
 
 				}
