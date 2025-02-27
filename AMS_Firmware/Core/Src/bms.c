@@ -391,14 +391,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		//USB STUFF
 	if(selTemp == 3)
 	{
-		/*
-		count_selTemp++;
 
-		if(count_selTemp == 5)
-		{
-			temp_error = 0;
-		}
-		*/
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;

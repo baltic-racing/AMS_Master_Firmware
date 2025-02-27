@@ -52,7 +52,7 @@ void CAN_50(uint8_t AMS0_databytes[]);
 void CAN_10(uint8_t AMS1_databytes[]);
 void can_put_data(void);
 void IVT_MODE(uint8_t mode);
-void IVT_config(void);
+void IVT_ACTIVATE(uint8_t channel);
 void IVT_init(void);
 
 

@@ -7,5 +7,5 @@
 ../Core/Src/bms.c:302:10:calculateTemperature	24	static
 ../Core/Src/bms.c:324:6:CAN_interrupt	56	static
 ../Core/Src/bms.c:343:6:convertTemperature	40	static
-../Core/Src/bms.c:460:6:checkIMD	16	static
-../Core/Src/bms.c:481:6:send_usb	16	static
+../Core/Src/bms.c:453:6:checkIMD	16	static
+../Core/Src/bms.c:474:6:send_usb	16	static

@@ -54,6 +54,12 @@ uint32_t ivt_error_time = 0;
 #define STOP 0
 #define RUN 1
 
+#define IVT_MSG_RESULT_T 4
+#define IVT_MSG_RESULT_W 5
+#define IVT_MSG_RESULT_As 6
+#define IVT_MSG_RESULT_Wh 7
+
+
 
 /* {StdId, ExtId, IDE, RTR, DLC}
  * uint32_t StdId;   Specifies the standard identifier.
@@ -112,15 +118,15 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 	}
 
-	if( RxHeader.StdId == 0x500)
+	if( RxHeader.StdId == 0x500)		// Buttons on DIC
 	{
-		if(RxData[0] == 1)
+		if(RxData[0] == 1)				// close SC
 		{
 			ts_on = 1;
 			switch_on = 1;
 		}
 		// verhindert das Drücken in falscher Reihenfolge
-		if(RxData[1] == 1 && ts_on == 1)
+		if(RxData[1] == 1 && ts_on == 1)		// AIRP
 		{
 			ts_start = 1;
 		}
@@ -129,7 +135,7 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 			ts_start = 0;
 		}
 
-		if(RxData[5] == 1)
+		if(RxData[5] == 1)				// for use in Charger
 		{
 			charging = 1;
 			ts_on = 1;
@@ -157,11 +163,11 @@ void IVT_MODE(uint8_t mode)
 	CAN_TX_IVT(hcan2,IVT_MSG_COMMAND,data);
 }
 
-void IVT_config()
+void IVT_ACTIVATE(uint8_t channel)
 {
 	uint8_t data [8];
 
-	data[0] = 0x26;
+	data[0] = 0x20 | channel;
 	data[1] = 0x02;
 	data[2] = 0x00;
 	data[3] = 0x14;
@@ -176,9 +182,12 @@ void IVT_init()
 {
 	HAL_Delay(1000);
 	IVT_MODE(STOP);
-	HAL_Delay(100);
 
-	IVT_config();
+	HAL_Delay(100);
+	IVT_ACTIVATE(IVT_MSG_RESULT_As);
+
+	HAL_Delay(100);
+	IVT_ACTIVATE(IVT_MSG_RESULT_W);
 
 	HAL_Delay(100);
 	IVT_MODE(RUN);
