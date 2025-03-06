@@ -218,6 +218,17 @@ void BMS()		// Battery Management System function for main loop.
 	send_usb();
 }
 
+void checkPEC()
+{
+	if(pec != 0)
+	{
+		pec_error_time = HAL_GetTick();
+	}
+	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
+	{
+		PEC_ERROR = 1;
+	}
+}
 
 void convertVoltage()		//convert and sort Voltages
 {
@@ -349,18 +360,6 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		AMS1_databytes[7] = (temp_max >> 8);
 	}
 
-}
-
-void checkPEC()
-{
-	if(pec != 0)
-	{
-		pec_error_time = HAL_GetTick();
-	}
-	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
-	{
-		PEC_ERROR = 1;
-	}
 }
 
 void checkIMD()

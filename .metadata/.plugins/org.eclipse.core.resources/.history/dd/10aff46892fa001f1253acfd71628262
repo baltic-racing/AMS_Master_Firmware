@@ -30,9 +30,6 @@ uint8_t imd_stamp = 0;
 
 uint8_t IMD_ERROR = 0;
 uint8_t AMS_ERROR = 0;
-uint8_t PEC_ERROR = 0;
-
-uint8_t pec = 0;
 
 extern uint8_t ts_on;
 extern uint8_t ts_start;
@@ -67,7 +64,6 @@ uint64_t last100 =0;
 uint64_t last500 = 0;
 uint32_t volt_error_time = 0;
 uint32_t temp_error_time = 0;
-uint32_t pec_error_time = 0;
 extern uint32_t ivt_error_time;
 
 uint8_t temp_error = 0;
@@ -92,29 +88,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	CAN_interrupt();
 }
 
+
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RX(hcan1);
     CAN_RX_IVT(hcan2);
 }
 
+
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // If the interrupt is triggered by channel 1
+	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // If the interrupt is triggered by channel 1
 	{
 		// Read the IC value
 		ICValue = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
 
-		if(ICValue != 0)
+		if (ICValue != 0)
 		{
-			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue; // calculate the Duty Cycle
+			// calculate the Duty Cycle
+			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue;
+
 		}
 	}
-	if(Duty < 10){
-	    Duty = 10;
-	}else if (Duty > 95){
-	    Duty = 95;
-	}
+
 	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
 }
 
@@ -168,6 +164,7 @@ void BMS()		// Battery Management System function for main loop.
 				}
 			}
 		}
+
 	}
 
 	LTC6811_wrcfg((uint8_t(*)[6])cfg);		// Write config
@@ -186,9 +183,13 @@ void BMS()		// Battery Management System function for main loop.
 	HAL_Delay(3);
 
 	convertVoltage();
-	convertTemperature(selTemp);
 
-	checkPEC();
+	if(pec == 0)
+	{
+		convertTemperature(selTemp);
+	}
+	//convertTemperature(selTemp);
+
 	checkIMD();
 
 	if(HAL_GetTick() - ivt_error_time >= volt_detect_time)
@@ -203,7 +204,7 @@ void BMS()		// Battery Management System function for main loop.
 	else
 		selTemp = 0;
 
-	if(AMS_ERROR == 1 || IMD_ERROR == 1 || PEC_ERROR == 1)
+	if(AMS_ERROR == 1 || IMD_ERROR == 1)
 	{
 		sc_state = 1;
 		ts_on = 0;
@@ -218,15 +219,52 @@ void BMS()		// Battery Management System function for main loop.
 	send_usb();
 }
 
-
 void convertVoltage()		//convert and sort Voltages
 {
+	//uint8_t volt_error_set = 0;
 	ts_volt_can = 0;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
 		usb_voltages[i] = cellVoltages[i]/1000;
+		/*
+		//if(((cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE) && (i+1)%12 != 0) && volt_error_set == 0)
+		if(!(cellVoltages[i] < MIN_VOLTAGE || cellVoltages[i] > MAX_VOLTAGE))
+		{
+//
+			//volt_error_set = 1;
+			//volt_stamp++;
+			volt_error_time = HAL_GetTick();
+			//volt_error_time = HAL_GetTick();
+		}
+		*/
+
 		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
+
+	/*
+	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+	{
+		AMS_ERROR = 1;
+	}
+*/
+	/*
+
+	if(volt_error_set == 0)
+	{
+		volt_stamp = 0;
+	}
+
+	if(volt_stamp > error_max)
+	{
+		AMS_ERROR = 1;
+		sc_state = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+	}
+*/
 
 	uint16_t cell_max = cellVoltages[0];
 	uint16_t cell_min = cellVoltages[0];
@@ -260,14 +298,27 @@ void convertVoltage()		//convert and sort Voltages
 	AMS1_databytes[3] = (cell_max >> 8);
 }
 
+
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
 {
+	//if((referenceCode - voltageCode) != 0 && voltageCode != 0 && (referenceCode - voltageCode) >= 1500)
+			if((referenceCode - voltageCode) != 0 && voltageCode != 0)
+				{
+					uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
+					return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
+				}
+				else
+					return 0xFFFE;
+
+		/*
 	if((referenceCode - voltageCode) != 0 && voltageCode != 0)
 	{
 		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
 		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
 	}
-	else return 0xFFFE;
+	else
+		return 0xFFFE;
+		*/
 }
 
 void CAN_interrupt()
@@ -291,6 +342,9 @@ void CAN_interrupt()
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
+	//uint8_t temp_error_set = 0;
+
+
 	//uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
 	uint8_t indexOffset[12] = {11, 4, 1, 9, 6, 3, 0, 5, 10, 2, 7, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
@@ -299,9 +353,42 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 			{
 				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
+
+				/*
+				if((curr_temp < MIN_Temp || curr_temp > MAX_Temp) && indexOffset[j + selTemp * 3] != 11 && temp_error_set == 0)
+				{
+					temp_error_set = 1;
+					temp_stamp++;
+
+				}
+				*/
 			}
 	}
 
+/*
+	if(temp_error_set == 0)
+	{
+		temp_stamp = 0;
+	}
+	else
+	{
+		temp_error++;
+	}
+
+	if(temp_stamp > error_max || temp_error > 1)
+	{
+		//AMS_ERROR = 1;
+		sc_state = 1;
+		ts_on = 0;
+		ts_start = 0;
+		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		temp_error = 0;
+		//HAL_GPIO_WritePin(GPIOA, SC_OPEN_Pin, GPIO_PIN_RESET);
+	}
+*/
+		//USB STUFF
 	if(selTemp == 3)
 	{
 
@@ -309,7 +396,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		{
 			usb_temperatures[i] = temperature[i]/1000;
 		}
-
+		//CAN stuff
 		uint16_t temp_min = temperature[0];
 		uint16_t temp_max = temperature[0];
 
@@ -324,6 +411,8 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 							dc_current[2] = cell_number_temp_max;
 						}
 					else if(temperature[i + k * 12] < temp_min && i != 11)
+
+					//else if(temperature[i + k * 12] < temp_min && (i+1)%12 != 0 && i + k * 12 != 33 &&  i + k * 12 != 24 && i + k * 12 != 69 && i + k * 12 != 60 && i + k * 12 != 105 && i + k * 12 != 96)
 					{
 						temp_min = temperature[i + k * 12];
 						index_i = i;
@@ -331,10 +420,19 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						cell_number_temp_min = i + k * 12;
 						dc_current[1] = cell_number_temp_min;
 					}
+
 				}
+
+				/*
+				AMS1_databytes[4] = temp_min;
+				AMS1_databytes[5] = (temp_min >> 8);
+				AMS1_databytes[6] = temp_max;
+				AMS1_databytes[7] = (temp_max >> 8);
+				*/
 			}
 
-		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		//if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+		if(!(temp_max > MAX_Temp))
 		{
 			temp_error_time = HAL_GetTick();
 		}
@@ -343,24 +441,13 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		{
 			AMS_ERROR = 1;
 		}
+
 		AMS1_databytes[4] = temp_min;
 		AMS1_databytes[5] = (temp_min >> 8);
 		AMS1_databytes[6] = temp_max;
 		AMS1_databytes[7] = (temp_max >> 8);
 	}
 
-}
-
-void checkPEC()
-{
-	if(pec != 0)
-	{
-		pec_error_time = HAL_GetTick();
-	}
-	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
-	{
-		PEC_ERROR = 1;
-	}
 }
 
 void checkIMD()

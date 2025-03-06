@@ -189,6 +189,7 @@ void BMS()		// Battery Management System function for main loop.
 	convertTemperature(selTemp);
 
 	checkPEC();
+
 	checkIMD();
 
 	if(HAL_GetTick() - ivt_error_time >= volt_detect_time)

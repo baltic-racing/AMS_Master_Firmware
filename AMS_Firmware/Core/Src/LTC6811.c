@@ -123,7 +123,6 @@ void LTC6811_adax()
 {
 	uint8_t cmd[4];
 	uint16_t temp_pec;
-
 	//1
 	cmd[0] = ADAX[0];
 	cmd[1] = ADAX[1];
@@ -159,13 +158,11 @@ void LTC6811_wrcfg(uint8_t config [][6])
 			WRCFG[WRCFG_index] = config[current_ic][current_byte];
 			WRCFG_index++;
 		}
-
 		temp_pec = (uint16_t)pec15_calc(BYTES_IN_REG, &config[current_ic][0]);
 		WRCFG[WRCFG_index] = (uint8_t)(temp_pec >> 8);
 		WRCFG[WRCFG_index + 1] = (uint8_t)temp_pec;
 		WRCFG_index += 2;
 	}
-
 	wakeup_idle();
 
 	for(current_ic = 0; current_ic < NUM_STACK; current_ic++)
@@ -180,13 +177,10 @@ void LTC6811_wrcfg(uint8_t config [][6])
 		spi_write_array(8, &WRCFG[4 + (8 * current_ic)]);
 		HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
 
-
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 		HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
-
 	}
 }
-
 
 /*
 void LTC6811_rdcfg()
@@ -232,7 +226,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 			}
 			received_pec = (cell_data[data_counter] << 8) + cell_data[data_counter + 1];
 			data_pec = pec15_calc(BYTES_IN_REG, &cell_data[current_ic * NUM_RX_BYT]);
-			if (received_pec != data_pec)
+			if(received_pec != data_pec)
 			{
 			  pec_error = -1;
 			}
@@ -294,7 +288,7 @@ int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 			}
 			received_pec = (aux_data[data_counter] << 8) + aux_data[data_counter + 1];
 			data_pec = pec15_calc(BYTES_IN_REG, &aux_data[current_ic * NUM_RX_BYT]);
-			if (received_pec != data_pec)
+			if(received_pec != data_pec)
 			{
 			  pec_error = -1;
 			}
@@ -328,7 +322,6 @@ void LTC6811_rdaux_reg(uint8_t reg, uint8_t *data)
         HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
     }
 }
-
 
 /*
 int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[], uint8_t r_statb[][6])
@@ -408,23 +401,19 @@ void LTC6811_clrstat()
 {
   uint8_t cmd[4];
   uint16_t cmd_pec;
-
   //1
   cmd[0] = 0x07;
   cmd[1] = 0x13;
-
   //2
   cmd_pec = pec15_calc(2, cmd);
   cmd[2] = (uint8_t)(cmd_pec >> 8);
   cmd[3] = (uint8_t)(cmd_pec);
-
   //3
   wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
   //4
   HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
   spi_write_array(4, cmd);
   HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
-
   HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
   HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 }
