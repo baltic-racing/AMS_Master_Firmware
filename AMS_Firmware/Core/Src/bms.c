@@ -32,8 +32,6 @@ uint8_t IMD_ERROR = 0;
 uint8_t AMS_ERROR = 0;
 uint8_t PEC_ERROR = 0;
 
-uint8_t pec = 0;
-
 extern uint8_t ts_on;
 extern uint8_t ts_start;
 extern uint8_t sc_state;
@@ -104,17 +102,14 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	{
 		// Read the IC value
 		ICValue = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-
 		if(ICValue != 0)
-		{
 			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue; // calculate the Duty Cycle
-		}
 	}
-	if(Duty < 10){
-	    Duty = 10;
-	}else if (Duty > 95){
-	    Duty = 95;
-	}
+	if(Duty < 10)
+		Duty = 10;
+	else if (Duty > 90)
+		Duty = 90;
+
 	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
 }
 
@@ -188,18 +183,13 @@ void BMS()		// Battery Management System function for main loop.
 	convertVoltage();
 	convertTemperature(selTemp);
 
-	checkPEC();
+	checkPEC(pec);
 	checkIMD();
 
-	if(HAL_GetTick() - ivt_error_time >= volt_detect_time)
-	{
-		AMS_ERROR = 1;
-	}
+	if(HAL_GetTick() - ivt_error_time >= volt_detect_time) AMS_ERROR = 1;
 
-	if (selTemp < 3)		// Variable for cycling the multiplexers for temp measurement.
-	{
-		selTemp++;
-	}
+	if (selTemp < 3)
+		selTemp++;		// Variable for cycling the multiplexers for temp measurement.
 	else
 		selTemp = 0;
 
@@ -214,7 +204,6 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
-
 	send_usb();
 }
 
@@ -234,25 +223,22 @@ void convertVoltage()		//convert and sort Voltages
 	{
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
-			if(cellVoltages[i + k * 12] > cell_max && (i+1)%12 != 0) cell_max = cellVoltages[i + k * 12];
+			if(cellVoltages[i + k * 12] > cell_max && (i+1)%12 != 0)
+				cell_max = cellVoltages[i + k * 12];
 			else if(cellVoltages[i + k * 12] < cell_min && (i+1)%12 != 0)
-				{
-					cell_min = cellVoltages[i + k * 12];
-					cell_number_volt_min = i + k * 12;
-					dc_current[0] = cell_number_volt_min;
-				}
+			{
+				cell_min = cellVoltages[i + k * 12];
+				cell_number_volt_min = i + k * 12;
+				dc_current[0] = cell_number_volt_min;
+			}
 		}
 	}
 
 	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
-	{
 		volt_error_time = HAL_GetTick();
-	}
 
 	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
-	{
 		AMS_ERROR = 1;
-	}
 
 	AMS1_databytes[0] = cell_min;
 	AMS1_databytes[1] = (cell_min >> 8);
@@ -267,12 +253,11 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
 		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / 3435.0)) - 273150.0;
 	}
-	else return 0xFFFE;
+	else return 0xFFFF;
 }
 
 void CAN_interrupt()
 {
-
 	if (HAL_GetTick()>= last20 + 20)
 	{
 		CAN_50(AMS0_databytes);
@@ -288,23 +273,26 @@ void CAN_interrupt()
 	}
 }
 
-
-void convertTemperature(uint8_t selTemp)		// sort temp
+void sortTemperature(uint8_t selTemp)
 {
 	//uint8_t indexOffset[12] = {9, 4, 11, 7, 6, 1, 0, 3, 10, 2, 5, 8};
 	uint8_t indexOffset[12] = {11, 4, 1, 9, 6, 3, 0, 5, 10, 2, 7, 8};
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
-			for(uint8_t j = 0; j < 3; j++)
-			{
-				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
-				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
-			}
+		for(uint8_t j = 0; j < 3; j++)
+		{
+			uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
+			temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
+		}
 	}
+}
+
+void convertTemperature(uint8_t selTemp)		// sort temp
+{
+	sortTemperature(selTemp);
 
 	if(selTemp == 3)
 	{
-
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;
@@ -335,14 +323,12 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 			}
 
 		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
-		{
 			temp_error_time = HAL_GetTick();
-		}
+
 
 		if(HAL_GetTick() - temp_error_time >= temp_detect_time)
-		{
 			AMS_ERROR = 1;
-		}
+
 		AMS1_databytes[4] = temp_min;
 		AMS1_databytes[5] = (temp_min >> 8);
 		AMS1_databytes[6] = temp_max;
@@ -351,16 +337,12 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 }
 
-void checkPEC()
+void checkPEC(uint8_t pec)
 {
 	if(pec != 0)
-	{
 		pec_error_time = HAL_GetTick();
-	}
 	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
-	{
 		PEC_ERROR = 1;
-	}
 }
 
 void checkIMD()
@@ -374,14 +356,10 @@ void checkIMD()
 	}
 
 	if(imd_error_set == 0)
-	{
 		imd_stamp = 0;
-	}
 
 	if(imd_stamp > error_max)
-	{
 		IMD_ERROR = 1;
-	}
 }
 
 void send_usb()

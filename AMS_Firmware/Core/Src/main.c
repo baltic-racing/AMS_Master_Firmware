@@ -131,9 +131,6 @@ int main(void)
   while (1)
   {
 	 BMS();
-
-
-
   }
     /* USER CODE END WHILE */
 

@@ -228,7 +228,7 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 			data_pec = pec15_calc(BYTES_IN_REG, &cell_data[current_ic * NUM_RX_BYT]);
 			if(received_pec != data_pec)
 			{
-			  pec_error = -1;
+			  pec_error = 255;
 			}
 			data_counter = data_counter + 2;
 		}
@@ -263,7 +263,7 @@ void LTC6811_rdcv_reg(uint8_t reg, uint8_t *data)
     }
 }
 
-int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
+uint8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 {
 	uint8_t pec_error = 0; //pec Error wenn -1
 	uint16_t received_pec;
@@ -290,7 +290,7 @@ int8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 			data_pec = pec15_calc(BYTES_IN_REG, &aux_data[current_ic * NUM_RX_BYT]);
 			if(received_pec != data_pec)
 			{
-			  pec_error = -1;
+			  pec_error = 255;
 			}
 			data_counter += 2;
 		}
