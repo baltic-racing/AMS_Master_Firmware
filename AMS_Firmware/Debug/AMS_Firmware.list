@@ -3381,8 +3381,8 @@ void BMS()		// Battery Management System function for main loop.
  8001e16:	4413      	add	r3, r2
  8001e18:	4a77      	ldr	r2, [pc, #476]	@ (8001ff8 <BMS+0x2bc>)
  8001e1a:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
- 8001e1e:	f5a3 43ea 	sub.w	r3, r3, #29952	@ 0x7500
- 8001e22:	3b30      	subs	r3, #48	@ 0x30
+ 8001e1e:	f5a3 4324 	sub.w	r3, r3, #41984	@ 0xa400
+ 8001e22:	3b10      	subs	r3, #16
  8001e24:	4a75      	ldr	r2, [pc, #468]	@ (8001ffc <BMS+0x2c0>)
  8001e26:	8812      	ldrh	r2, [r2, #0]
  8001e28:	4293      	cmp	r3, r2
@@ -3439,8 +3439,8 @@ void BMS()		// Battery Management System function for main loop.
  8001e86:	3308      	adds	r3, #8
  8001e88:	4a5b      	ldr	r2, [pc, #364]	@ (8001ff8 <BMS+0x2bc>)
  8001e8a:	f832 3013 	ldrh.w	r3, [r2, r3, lsl #1]
- 8001e8e:	f5a3 43ea 	sub.w	r3, r3, #29952	@ 0x7500
- 8001e92:	3b30      	subs	r3, #48	@ 0x30
+ 8001e8e:	f5a3 4324 	sub.w	r3, r3, #41984	@ 0xa400
+ 8001e92:	3b10      	subs	r3, #16
  8001e94:	4a59      	ldr	r2, [pc, #356]	@ (8001ffc <BMS+0x2c0>)
  8001e96:	8812      	ldrh	r2, [r2, #0]
  8001e98:	4293      	cmp	r3, r2
@@ -3637,7 +3637,7 @@ void BMS()		// Battery Management System function for main loop.
  8001fe8:	20000467 	.word	0x20000467
  8001fec:	20000a09 	.word	0x20000a09
  8001ff0:	2000059c 	.word	0x2000059c
- 8001ff4:	20000002 	.word	0x20000002
+ 8001ff4:	20000a1c 	.word	0x20000a1c
  8001ff8:	2000047c 	.word	0x2000047c
  8001ffc:	20000000 	.word	0x20000000
  8002000:	200005e4 	.word	0x200005e4
@@ -4809,9 +4809,9 @@ void CAN_RX(CAN_HandleTypeDef hcan)
  8002878:	b004      	add	sp, #16
  800287a:	4770      	bx	lr
  800287c:	20000a1a 	.word	0x20000a1a
- 8002880:	20000a1d 	.word	0x20000a1d
+ 8002880:	20000a1e 	.word	0x20000a1e
  8002884:	20000a1b 	.word	0x20000a1b
- 8002888:	20000002 	.word	0x20000002
+ 8002888:	20000a1c 	.word	0x20000a1c
 
 0800288c <IVT_MODE>:
 
@@ -5061,7 +5061,7 @@ void can_put_data()
  8002a34:	20000467 	.word	0x20000467
  8002a38:	2000046b 	.word	0x2000046b
  8002a3c:	2000046c 	.word	0x2000046c
- 8002a40:	20000a1c 	.word	0x20000a1c
+ 8002a40:	20000a1d 	.word	0x20000a1d
 
 08002a44 <CAN_RX_IVT>:
 
@@ -5267,7 +5267,7 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
  8002b8e:	bdf0      	pop	{r4, r5, r6, r7, pc}
  8002b90:	20000a28 	.word	0x20000a28
  8002b94:	20000004 	.word	0x20000004
- 8002b98:	20000a1c 	.word	0x20000a1c
+ 8002b98:	20000a1d 	.word	0x20000a1d
 
 08002b9c <CAN_10>:
 
@@ -6154,7 +6154,7 @@ void get_ts_ready()
  800311e:	bf00      	nop
  8003120:	bd80      	pop	{r7, pc}
  8003122:	bf00      	nop
- 8003124:	20000a1d 	.word	0x20000a1d
+ 8003124:	20000a1e 	.word	0x20000a1e
  8003128:	20000a84 	.word	0x20000a84
  800312c:	20000a1a 	.word	0x20000a1a
  8003130:	20000a82 	.word	0x20000a82
@@ -6164,7 +6164,7 @@ void get_ts_ready()
  8003140:	20000a1b 	.word	0x20000a1b
  8003144:	20000467 	.word	0x20000467
  8003148:	20000a81 	.word	0x20000a81
- 800314c:	20000002 	.word	0x20000002
+ 800314c:	20000a1c 	.word	0x20000a1c
 
 08003150 <MX_GPIO_Init>:
         * Output

@@ -7421,10 +7421,7 @@ LOAD C:/ST/STM32CubeIDE_1.15.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .data.balanceMargin
                 0x20000000        0x2 ./Core/Src/bms.o
                 0x20000000                balanceMargin
- .data.charging
-                0x20000002        0x1 ./Core/Src/can.o
-                0x20000002                charging
- *fill*         0x20000003        0x1 
+ *fill*         0x20000002        0x2 
  .data.AMS0_header
                 0x20000004       0x18 ./Core/Src/can.o
                 0x20000004                AMS0_header
@@ -7630,13 +7627,15 @@ LOAD C:/ST/STM32CubeIDE_1.15.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x20000a1a                ts_on
  .bss.ts_start  0x20000a1b        0x1 ./Core/Src/can.o
                 0x20000a1b                ts_start
+ .bss.charging  0x20000a1c        0x1 ./Core/Src/can.o
+                0x20000a1c                charging
  .bss.ams_status
-                0x20000a1c        0x1 ./Core/Src/can.o
-                0x20000a1c                ams_status
- .bss.switch_on
                 0x20000a1d        0x1 ./Core/Src/can.o
-                0x20000a1d                switch_on
- *fill*         0x20000a1e        0x2 
+                0x20000a1d                ams_status
+ .bss.switch_on
+                0x20000a1e        0x1 ./Core/Src/can.o
+                0x20000a1e                switch_on
+ *fill*         0x20000a1f        0x1 
  .bss.capacity_data
                 0x20000a20        0x4 ./Core/Src/can.o
                 0x20000a20                capacity_data

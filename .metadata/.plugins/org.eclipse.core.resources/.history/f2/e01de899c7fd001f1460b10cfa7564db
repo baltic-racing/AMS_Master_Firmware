@@ -356,7 +356,7 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
   {
 	  uint8_t i =0;
 	  OV_flag[current_ic] = 0;
-
+	  /*
 	  for (uint8_t byte = 2; byte < 5; byte++)
 	  {
 		  for (uint8_t bit = 0; bit < 8; bit+=2)
