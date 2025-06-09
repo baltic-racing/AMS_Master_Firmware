@@ -1,0 +1,10 @@
+17:21:25 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+make -j12 all 
+arm-none-eabi-size  AMS_Firmware.elf 
+   text	   data	    bss	    dec	    hex	filename
+  65064	    936	   8432	  74432	  122c0	AMS_Firmware.elf
+Finished building: default.size.stdout
+ 
+
+17:21:25 Build Finished. 0 errors, 0 warnings. (took 779ms)
+
