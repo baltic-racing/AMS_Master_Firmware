@@ -260,9 +260,8 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 	{
 		capacity_data = RxData[5] | (RxData[4] << (1*8)); //| (RxData[3] << (2*8)) | (RxData[2] << (3*8));
 
-
 		AMS0_databytes[4] = RxData[4];
-			AMS0_databytes[5] = RxData[5];
+		AMS0_databytes[5] = RxData[5];
 	}
 }
 
