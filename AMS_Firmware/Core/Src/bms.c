@@ -22,7 +22,8 @@ uint8_t precharge = 0;
 extern uint8_t charging;
 
 uint16_t ts_volt_can = 0;
-
+uint16_t blancing_Voltage = 42000;
+uint16_t max_voltage = MAX_VOLTAGE;
 uint16_t balanceMargin = 100; //in 0.1mV
 uint8_t volt_stamp = 0;
 uint8_t temp_stamp = 0;
@@ -79,6 +80,7 @@ uint8_t index_k = 0;
 uint8_t cell_number_temp_min = 0;
 uint8_t cell_number_temp_max = 0;
 uint8_t cell_number_volt_min = 0;
+uint8_t cell_number_volt_max = 0;
 
 extern uint8_t dc_current[8];
 
@@ -134,6 +136,8 @@ void BMS()		// Battery Management System function for main loop.
 
 	//precharge = 1 when complete and 0 when still charging
 	precharge |= ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
+
+	balanceMargin = ((max_voltage - blancing_Voltage) * getbalancingKP(blancing_Voltage))/10;
 
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
@@ -243,14 +247,18 @@ void convertVoltage()		//convert and sort Voltages
 	//uint16_t cell_max = cellVoltages[0];
 	//uint16_t cell_min = cellVoltages[0];
 	uint16_t cell_max = 26000;
-	uint16_t cell_min = 41000;
+	uint16_t cell_min = 43000;
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
 			if(cellVoltages[i + k * 12] > cell_max && (cellVoltages[i + k * 12] < 45000 || cellVoltages[i + k * 12] > 60000) && (i+1)%12 != 0)
+			{
 				cell_max = cellVoltages[i + k * 12];
+				cell_number_volt_max = i + k * 12;
+				dc_current[3] = cell_number_volt_max;
+			}
 			else if(cellVoltages[i + k * 12] < cell_min && (cellVoltages[i + k * 12] > 23000 || cellVoltages[i + k * 12] < 5000) && (i+1)%12 != 0)
 			{
 				cell_min = cellVoltages[i + k * 12];
@@ -265,6 +273,9 @@ void convertVoltage()		//convert and sort Voltages
 
 	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
 		AMS_ERROR = 1;
+
+	blancing_Voltage = cell_min;
+	max_voltage = cell_max;
 
 	AMS1_databytes[0] = cell_min;
 	AMS1_databytes[1] = (cell_min >> 8);
@@ -400,11 +411,11 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 				}
 			}
 
-		if(!(temp_max > MAX_Temp))
-			temp_error_time = HAL_GetTick();
+		//if(!(temp_max > MAX_Temp))
+		//	temp_error_time = HAL_GetTick();
 
-		//if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
-		//			temp_error_time = HAL_GetTick();
+		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
+					temp_error_time = HAL_GetTick();
 
 
 		if(HAL_GetTick() - temp_error_time >= temp_detect_time){
@@ -465,5 +476,23 @@ void send_usb()
 	}
 
 	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 2 + 1);
+}
+
+uint8_t getbalancingKP(uint16_t minVoltage)
+{
+	uint8_t KP ;
+	if(minVoltage >= 40000)
+	{
+		KP = 8;
+	}
+	else if (minVoltage >= 30000)
+	{
+		KP = 7;
+	}
+	else
+	{
+		KP = 8;
+	}
+	return KP;
 }
 

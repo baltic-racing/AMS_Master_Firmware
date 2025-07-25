@@ -30,6 +30,7 @@ void CAN_interrupt(void);
 void send_usb(void);
 void checkIMD(void);
 void checkPEC(uint8_t pec);
+uint8_t getbalancingKP(uint16_t minVoltage);
 
 
 #endif /* INC_BMS_H_ */

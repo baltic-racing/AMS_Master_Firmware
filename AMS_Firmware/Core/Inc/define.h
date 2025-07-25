@@ -17,7 +17,7 @@
 
 #define MAX_VOLTAGE 42500					// Wert in 0,1 mV
 #define MIN_VOLTAGE 25000					// es gehen nur Vielfache von 16
-#define blancing_Voltage 42000
+//#define blancing_Voltage 42000
 
 #define MAX_TS_VOLTAGE 554
 #define MIN_TS_VOLTAGE 343
@@ -35,8 +35,8 @@
 
 #define error_max 5
 
-#define volt_detect_time 500	//nicht regelkonform
-#define temp_detect_time 1000
+#define volt_detect_time 700	//nicht regelkonform
+#define temp_detect_time 1200
 #define precharge_check_time 2000
 #define switch_time 100
 
