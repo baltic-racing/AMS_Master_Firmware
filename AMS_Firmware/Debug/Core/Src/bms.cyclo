@@ -6,9 +6,9 @@
 ../Core/Src/bms.c:238:6:convertVoltage	15
 ../Core/Src/bms.c:286:10:calculateTemperature	3
 ../Core/Src/bms.c:299:6:CAN_interrupt	3
-../Core/Src/bms.c:321:6:sortTemperature	5
-../Core/Src/bms.c:368:6:convertTemperature	14
-../Core/Src/bms.c:434:6:checkPEC	3
-../Core/Src/bms.c:447:6:checkIMD	6
-../Core/Src/bms.c:467:6:send_usb	2
-../Core/Src/bms.c:481:9:getbalancingKP	3
+../Core/Src/bms.c:322:6:sortTemperature	5
+../Core/Src/bms.c:369:6:convertTemperature	14
+../Core/Src/bms.c:435:6:checkPEC	3
+../Core/Src/bms.c:448:6:checkIMD	6
+../Core/Src/bms.c:468:6:send_usb	2
+../Core/Src/bms.c:482:9:getbalancingKP	3

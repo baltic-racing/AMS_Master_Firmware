@@ -39,7 +39,7 @@ uint32_t current_data = 0;
 uint16_t current = 0;
 uint8_t ts_on = 0;
 uint8_t ts_start = 0;
-uint8_t charging = 1;
+uint8_t charging = 0;
 uint8_t ams_status = 0;
 uint8_t switch_on = 0;
 uint32_t capacity_data = 0;
@@ -123,30 +123,33 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 	if( RxHeader.StdId == 0x500)		// Buttons on DIC
 	{
-		if(RxData[0] == 1)				// close SC
+		if((RxData[0]& 1) == 1)				// close SC
 		{
 			ts_on = 1;
 			switch_on = 1;
-		}
-		// verhindert das Drücken in falscher Reihenfolge
-		if(RxData[1] == 1 && ts_on == 1)		// AIRP
-		{
-			ts_start = 1;
-		}
-		else
-		{
-			ts_start = 0;
 		}
 
-		if(RxData[5] == 1)				// for use in Charger
-		{
-			charging = 1;
-			ts_on = 1;
-			switch_on = 1;
+		charging = (RxData[0]>>7);
+
+		// verhindert das Drücken in falscher Reihenfolge
+		//if(RxData[1] == 1 && ts_on == 1)		// AIRP
+		//{
+		//	ts_start = 1;
+		//}
+		//else
+		//{
+		//	ts_start = 0;
+		//}
+
+		//if(RxData[5] == 1)				// for use in Charger
+		//{
+			//charging = 1;
+		//	ts_on = 1;
+		//	switch_on = 1;
 			//switch_stamp = HAL_GetTick();
 			//HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
 			//HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-		}
+		//}
 	}
 	/*
 	if(ts_on){

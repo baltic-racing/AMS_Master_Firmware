@@ -231,7 +231,7 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
-	send_usb();
+	//send_usb();
 }
 
 
@@ -310,6 +310,7 @@ void CAN_interrupt()
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
 		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		last100 = HAL_GetTick();
+		send_usb();
 	}
 }
 

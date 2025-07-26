@@ -162,18 +162,9 @@ void get_ts_ready()
 			}
 			else
 			{
-				if(charging == 1)
-				{
-					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-					//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-				}
 
-				if(ts_start == 1)
-				{
-					ts_ready = 1;
-					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-					//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-				}
+			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+			//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
 
 			}
 		}
