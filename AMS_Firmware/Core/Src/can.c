@@ -40,12 +40,14 @@ uint16_t current = 0;
 uint8_t ts_on = 0;
 uint8_t ts_start = 0;
 uint8_t charging = 0;
-uint8_t ams_status = 0;
+volatile uint8_t ams_status = 0;
 uint8_t switch_on = 0;
 uint32_t capacity_data = 0;
 
 extern uint16_t ts_volt_can;
 
+extern volatile uint8_t send_can_50_message;
+extern volatile uint8_t send_can_10_message;
 
 extern uint8_t ts_ready ;
 extern uint8_t IMD_ERROR;
@@ -121,7 +123,7 @@ void CAN_RX(CAN_HandleTypeDef hcan)
 
 	}
 
-	if( RxHeader.StdId == 0x500)		// Buttons on DIC
+	if(RxHeader.StdId == 0x500)		// Buttons on DIC
 	{
 		if((RxData[0]& 1) == 1)				// close SC
 		{
@@ -270,9 +272,14 @@ void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 
 void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 {
-
-	CAN_TX(hcan1, AMS0_header, precharge_data);
-
+	uint32_t TxMailbox;
+	if(send_can_50_message > 0)
+	{
+		//CAN_TX(hcan1, AMS0_header, precharge_data);
+		HAL_CAN_AddTxMessage(&hcan1, &AMS0_header, precharge_data, &TxMailbox);
+		send_can_50_message = 0;
+	}
+	//CAN_TX(hcan1, AMS0_header, precharge_data);
 
 	ams_status++;
 
@@ -284,8 +291,17 @@ void CAN_50(uint8_t precharge_data[])		// CAN Messages transmitted with 50 Hz
 
 void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
-	CAN_TX(hcan1, AMS1_header, bms_data);
-	CAN_TX(hcan1, AMS2_header, dc_current);
+	uint32_t TxMailbox;
+	if(send_can_10_message > 0)
+	{
+		HAL_CAN_AddTxMessage(&hcan1, &AMS1_header, bms_data, &TxMailbox);
+		HAL_CAN_AddTxMessage(&hcan1, &AMS2_header, dc_current, &TxMailbox);
+		//CAN_TX(hcan1, AMS1_header, bms_data);
+		//CAN_TX(hcan1, AMS2_header, dc_current);
+		send_can_10_message = 0;
+	}
+	//CAN_TX(hcan1, AMS1_header, bms_data);
+	//CAN_TX(hcan1, AMS2_header, dc_current);
 
 	//get_ts_ready();
 }
@@ -313,9 +329,9 @@ void MX_CAN1_Init(void)
   hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
-  hcan1.Init.AutoBusOff = DISABLE;
-  hcan1.Init.AutoWakeUp = DISABLE;
-  hcan1.Init.AutoRetransmission = DISABLE;
+  hcan1.Init.AutoBusOff = ENABLE;
+  hcan1.Init.AutoWakeUp = ENABLE;
+  hcan1.Init.AutoRetransmission = ENABLE;
   hcan1.Init.ReceiveFifoLocked = DISABLE;
   hcan1.Init.TransmitFifoPriority = DISABLE;
   if (HAL_CAN_Init(&hcan1) != HAL_OK)
@@ -359,9 +375,9 @@ void MX_CAN2_Init(void)
   hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
-  hcan2.Init.AutoBusOff = DISABLE;
-  hcan2.Init.AutoWakeUp = DISABLE;
-  hcan2.Init.AutoRetransmission = DISABLE;
+  hcan2.Init.AutoBusOff = ENABLE;
+  hcan2.Init.AutoWakeUp = ENABLE;
+  hcan2.Init.AutoRetransmission = ENABLE;
   hcan2.Init.ReceiveFifoLocked = DISABLE;
   hcan2.Init.TransmitFifoPriority = DISABLE;
   if (HAL_CAN_Init(&hcan2) != HAL_OK)

@@ -146,8 +146,6 @@ void get_ts_ready()
 			AIR_N_check = 0;
 		}
 
-
-
 		if(precharge_check == 1 && precharge == 1)//&& precharge)
 		{
 			if(read_sdc() == 0)
@@ -163,9 +161,9 @@ void get_ts_ready()
 			else
 			{
 
+			ts_ready = 1;
 			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
 			//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
-
 			}
 		}
 
@@ -202,7 +200,7 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, LED_GN_Pin|LED_YW_Pin|LED_RD_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOC, LED_GN_Pin|LED_YW_Pin|LED_RD_Pin|SC_STATE_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(WDI_GPIO_Port, WDI_Pin, GPIO_PIN_RESET);
@@ -216,8 +214,10 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PCPin PCPin PCPin PCPin */
-  GPIO_InitStruct.Pin = LED_GN_Pin|LED_YW_Pin|LED_RD_Pin|AIR_P_SW_Pin;
+  /*Configure GPIO pins : PCPin PCPin PCPin PCPin
+                           PCPin */
+  GPIO_InitStruct.Pin = LED_GN_Pin|LED_YW_Pin|LED_RD_Pin|SC_STATE_Pin
+                          |AIR_P_SW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -236,8 +236,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PCPin PCPin PCPin PCPin */
-  GPIO_InitStruct.Pin = SC_CLOSING_Pin|SC_STATE_Pin|AIR_N_ACT_Pin|AIR_N_INT_Pin;
+  /*Configure GPIO pins : PCPin PCPin PCPin */
+  GPIO_InitStruct.Pin = SC_CLOSING_Pin|AIR_N_ACT_Pin|AIR_N_INT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

@@ -61,10 +61,15 @@ uint16_t OV_flag[NUM_STACK];
 uint16_t UV_flag[NUM_STACK];
 uint8_t r_statb[NUM_STACK][6];
 
-uint32_t can_cnt = 0; //can counter to adjust timings
-uint64_t last20 =0;
-uint64_t last100 =0;
-uint64_t last500 = 0;
+volatile uint32_t can_cnt = 0; //can counter to adjust timings
+volatile uint64_t last20 =0;
+volatile uint64_t last100 =0;
+volatile uint64_t last500 = 0;
+volatile uint8_t send_can_50_message = 0;
+volatile uint8_t send_can_10_message = 0;
+volatile uint8_t bms_send = 0;
+volatile uint8_t send_usb_message = 0;
+
 uint32_t volt_error_time = 0;
 uint32_t temp_error_time = 0;
 uint32_t pec_error_time = 0;
@@ -121,6 +126,29 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
 }
 
+void CAN_Recovery_Task()
+{
+    static uint32_t last_check = 0;
+    if (HAL_GetTick() - last_check < 1000) return;
+    last_check = HAL_GetTick();
+
+    // CAN1 Recovery
+    if (hcan1.Instance->ESR & CAN_ESR_BOFF)
+    {
+        HAL_CAN_Stop(&hcan1);
+        HAL_CAN_Start(&hcan1);
+        HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+    }
+
+    // CAN2 Recovery
+    if (hcan2.Instance->ESR & CAN_ESR_BOFF)
+    {
+        HAL_CAN_Stop(&hcan2);
+        HAL_CAN_Start(&hcan2);
+        HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
+    }
+}
+
 void BMS_init()
 {
 	LTC6811_initialize();
@@ -128,110 +156,129 @@ void BMS_init()
 
 void BMS()		// Battery Management System function for main loop.
 {
-	uint8_t pec = 0;
-	static uint8_t selTemp = 0;
-	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
-	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
+
+	if(HAL_GetTick() > 2000)
+	{
+		CAN_Recovery_Task();
+		//CAN_50(AMS0_databytes);
+		//CAN_10(AMS1_databytes);
+	}
+
 	get_ts_ready();
 
 	//precharge = 1 when complete and 0 when still charging
 	precharge |= ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
-	balanceMargin = ((max_voltage - blancing_Voltage) * getbalancingKP(blancing_Voltage))/10;
-
-	for (uint8_t i = 0; i < NUM_STACK; i++)
+	//CAN_50(AMS0_databytes);
+	//CAN_10(AMS1_databytes);
+	if(bms_send > 0)
 	{
-		//Balancing with flags
-/*
-		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
-		cfg[i][1] = 0x00 | VUV;
-		cfg[i][2] = 0x00 | (VOV<<4) | (VUV>>4);
-		cfg[i][3] = 0x00 | (VOV>>4);
-		cfg[i][4] = 0x00 | OV_flag[i];
-		cfg[i][5] = 0x00 | (OV_flag[i]>>8);
+		uint8_t pec = 0;
+		static uint8_t selTemp = 0;
+		//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
+		//uint16_t VUV = (MIN_VOLTAGE/16)-1;
 
-*/
-		//Balancing without flags
-		cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
-		cfg[i][1] = 0x00;
-		cfg[i][2] = 0x00;
-		cfg[i][3] = 0x00;
-		cfg[i][4] = 0x00;
-		cfg[i][5] = 0x00;
-
-		if(charging == 1)
+		for (uint8_t i = 0; i < NUM_STACK; i++)
 		{
-			if(selTemp < 5)
+			//Balancing without flags
+			cfg[i][0] = 0x3C | ((selTemp << 6) & 0xC0);		//cfg : Databytes in config register of the LTC6811
+			cfg[i][1] = 0x00;
+			cfg[i][2] = 0x00;
+			cfg[i][3] = 0x00;
+			cfg[i][4] = 0x00;
+			cfg[i][5] = 0x00;
+
+			if(charging == 1)
 			{
-				for(uint8_t j = 0; j < 8; j++)
+				balanceMargin = ((max_voltage - blancing_Voltage) * getbalancingKP(blancing_Voltage))/10;
+				if(balanceMargin > 100)
 				{
-					if(cellVoltages[i * NUM_STACK + j] - blancing_Voltage > balanceMargin)cfg[i][4] |= 1 << j;
-				}
-				for(uint8_t j = 0; j < 3; j++)
-				{
-					if(cellVoltages[i * NUM_STACK + j + 8] - blancing_Voltage > balanceMargin)cfg[i][5] |= 1 << j;
+					if(selTemp < 5)
+					{
+						for(uint8_t j = 0; j < 8; j++)
+						{
+							if(cellVoltages[i * NUM_STACK + j] - blancing_Voltage > balanceMargin)cfg[i][4] |= 1 << j;
+						}
+						for(uint8_t j = 0; j < 3; j++)
+						{
+							if(cellVoltages[i * NUM_STACK + j + 8] - blancing_Voltage > balanceMargin)cfg[i][5] |= 1 << j;
+						}
+					}
 				}
 			}
 		}
-	}
 
-	LTC6811_wrcfg((uint8_t(*)[6])cfg);		// Write config
-	HAL_Delay(3);
+		LTC6811_wrcfg((uint8_t(*)[6])cfg);		// Write config
+		HAL_Delay(3);
 
-	LTC6811_adcv();										// measure voltages
-	HAL_Delay(3);
+		LTC6811_adcv();										// measure voltages
+		HAL_Delay(3);
 
-	pec = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
-	HAL_Delay(3);
+		pec = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
+		HAL_Delay(3);
 
-	LTC6811_clraux();
-	HAL_Delay(3);
+		LTC6811_clraux();
+		HAL_Delay(3);
 
-	LTC6811_adax();										// measure 3 celltemp
-	HAL_Delay(3);
+		LTC6811_adax();										// measure 3 celltemp
+		HAL_Delay(3);
 
-	pec = LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
-	HAL_Delay(3);
+		pec = LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
+		HAL_Delay(3);
+	/*
+		if(pec == 0)
+		{
+			convertVoltage();
+			convertTemperature(selTemp);
+		}
+		*/
 
-	convertVoltage();
-	convertTemperature(selTemp);
+		convertVoltage();
+		convertTemperature(selTemp);
 
-	checkPEC(pec);
+		checkPEC(pec);
 
-	//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, AMS_ERROR); //Aktuell led defekt 30.5.25
+		//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, AMS_ERROR); //Aktuell led defekt 30.5.25
 
-	if(IMDcheck == 0){
-		if(HAL_GetTick()>2000){
-			IMDcheck =1;
+		if(IMDcheck == 0){
+			if(HAL_GetTick()>2000){
+				IMDcheck =1;
+			}
 		}
 
+		if(IMDcheck){
+			checkIMD();
+		}
+
+		if(HAL_GetTick() - ivt_error_time >= volt_detect_time){
+			AMS_ERROR = 1;
+		}
+
+
+		if (selTemp < 3)
+			selTemp++;		// Variable for cycling the multiplexers for temp measurement.
+		else
+			selTemp = 0;
+
+
+		if(AMS_ERROR == 1 || IMD_ERROR == 1 )//|| PEC_ERROR == 1)
+		{
+			sc_state = 1;
+			ts_on = 0;
+			ts_start = 0;
+			HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		}
+
+		can_put_data();
 	}
-	if(IMDcheck){
-		checkIMD();
-	}
 
-
-	if(HAL_GetTick() - ivt_error_time >= volt_detect_time){
-		AMS_ERROR = 1;
-	}
-
-	if (selTemp < 3)
-		selTemp++;		// Variable for cycling the multiplexers for temp measurement.
-	else
-		selTemp = 0;
-
-	if(AMS_ERROR == 1 || IMD_ERROR == 1 )//|| PEC_ERROR == 1)
+	if(send_usb_message > 0)
 	{
-		sc_state = 1;
-		ts_on = 0;
-		ts_start = 0;
-		HAL_GPIO_WritePin(GPIOC, SC_STATE_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(AIR_P_SW_GPIO_Port, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		send_usb();
+		send_usb_message = 0;
 	}
-
-	can_put_data();
-	//send_usb();
 }
 
 
@@ -244,10 +291,17 @@ void convertVoltage()		//convert and sort Voltages
 		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
 
-	//uint16_t cell_max = cellVoltages[0];
-	//uint16_t cell_min = cellVoltages[0];
-	uint16_t cell_max = 26000;
-	uint16_t cell_min = 43000;
+	static uint16_t cell_max;
+	static uint16_t cell_min;
+
+	static uint8_t prev_number_volt_max = 0;
+	static uint8_t prev_number_volt_min = 0;
+
+	cell_max = cellVoltages[0];
+	cell_min = cellVoltages[0];
+
+	//uint16_t cell_max = 26000;
+	//uint16_t cell_min = 43000;
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
@@ -268,8 +322,13 @@ void convertVoltage()		//convert and sort Voltages
 		}
 	}
 
-	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
+	if(!((cell_min < MIN_VOLTAGE && cell_number_volt_min == prev_number_volt_min) || (cell_max > MAX_VOLTAGE && cell_number_volt_max == prev_number_volt_max)))
 		volt_error_time = HAL_GetTick();
+
+	/*
+	if(!(cell_max > MAX_VOLTAGE && cell_number_volt_max != prev_number_volt_max))
+		volt_error_time = HAL_GetTick();
+		*/
 
 	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
 		AMS_ERROR = 1;
@@ -281,6 +340,9 @@ void convertVoltage()		//convert and sort Voltages
 	AMS1_databytes[1] = (cell_min >> 8);
 	AMS1_databytes[2] = cell_max;
 	AMS1_databytes[3] = (cell_max >> 8);
+
+	prev_number_volt_max = cell_number_volt_max;
+	prev_number_volt_min = cell_number_volt_min;
 }
 
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
@@ -300,24 +362,22 @@ void CAN_interrupt()
 {
 	if (HAL_GetTick()>= last20 + 20)
 	{
+		send_can_50_message = 1;
+		bms_send = 1;
 		CAN_50(AMS0_databytes);
 		last20 = HAL_GetTick();
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
+		send_can_10_message = 1;
 		CAN_10(AMS1_databytes);
-
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
 		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		last100 = HAL_GetTick();
-		send_usb();
+		send_usb_message = 1;
+		//send_usb();
 	}
 }
-
-
-
-uint16_t find_me = 0;
-uint8_t test2 = 0;
 
 void sortTemperature(uint8_t selTemp)
 {
@@ -333,38 +393,13 @@ void sortTemperature(uint8_t selTemp)
 			}
 			else
 			{
-				/*
-				if((k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]) == 57)
-				{
-					//printf("DEBUG: k=%d, j=%d, selTemp=%d, index=%d\n", k, j, selTemp, (k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]));
-					find_me = slaveGPIOs[j + k * 6];
-					test2 = 1;
-				}
-				*/
 				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
-
 			}
-			/*
-			uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
-			temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
-			*/
-/*
-			if((k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]) == 57)
-			{
-				find_me = slaveGPIOs[j + k * 6];
-				test2 = 1;
-			}
-			*/
 
 		}
 	}
 }
-
-
-//uint16_t temp_min = 30000;
-//uint16_t temp_max = 10000;
-uint16_t count = 0;
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
@@ -372,26 +407,34 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 	if(selTemp == 3)
 	{
+		/*
 		for(uint8_t i = 0; i < NUM_CELLS; i++)
 		{
 			usb_temperatures[i] = temperature[i]/1000;
 		}
+		*/
 
-		//uint16_t temp_min = temperature[0];
-		//uint16_t temp_max = temperature[0];
-		uint16_t temp_min = 30000;
-		uint16_t temp_max = 10000;
+		static uint16_t temp_min;
+		static uint16_t temp_max;
+
+		temp_min = temperature[0];
+		temp_max = temperature[0];
+
+		static uint8_t prev_number_temp_max = 0;
+		static uint8_t prev_number_temp_min = 0;
+		//uint16_t temp_min = 30000;
+		//uint16_t temp_max = 10000;
 
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 			{
 				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 				{
 					if(temperature[i + k * 12] > temp_max && ((i+1)%12 != 0 && (i+1)%10 != 0))
-						{
-							temp_max = temperature[i + k * 12];
-							cell_number_temp_max = i + k * 12;
-							dc_current[2] = cell_number_temp_max;
-						}
+					{
+						temp_max = temperature[i + k * 12];
+						cell_number_temp_max = i + k * 12;
+						dc_current[2] = cell_number_temp_max;
+					}
 					else if(temperature[i + k * 12] < temp_min && ((i+1)%12 != 0 && (i+1)%10 != 0))
 					{
 						temp_min = temperature[i + k * 12];
@@ -401,33 +444,33 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						dc_current[1] = cell_number_temp_min;
 					}
 
-/*
-					if(temperature[i+k*12] == 0xffff && (i+1)%12 != 0 && k > 3)
-					{
-						printf("%d Zelle [%d] = %.2f\n", count, i + k * 12, (double)temperature[i + k * 12]);
-						count++;
+					if ((i+1)%10 != 0) {
+						usb_temperatures[i + k * 12] = temperature[i + k * 12]/1000;
 					}
-					*/
+					else if (temperature[i + k * 12] < 60000) {
+						usb_temperatures[i + k * 12] = temperature[i + k * 12]/1000;
+					}
 
 				}
 			}
-
-		//if(!(temp_max > MAX_Temp))
-		//	temp_error_time = HAL_GetTick();
-
+/*
 		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
 					temp_error_time = HAL_GetTick();
-
+*/
+		if(!((temp_min < MIN_Temp && prev_number_temp_min == cell_number_temp_min) || (temp_max > MAX_Temp && prev_number_temp_max == cell_number_temp_max)))
+					temp_error_time = HAL_GetTick();
 
 		if(HAL_GetTick() - temp_error_time >= temp_detect_time){
 			AMS_ERROR = 1;
 		}
 
-
 		AMS1_databytes[4] = temp_min;
 		AMS1_databytes[5] = (temp_min >> 8);
 		AMS1_databytes[6] = temp_max;
 		AMS1_databytes[7] = (temp_max >> 8);
+
+		prev_number_temp_max = cell_number_temp_max;
+		prev_number_temp_min = cell_number_temp_min;
 	}
 
 }

@@ -23,6 +23,7 @@
 
 void BMS(void);
 void BMS_init(void);
+void CAN_Recovery_Task(void);
 void convertVoltage(void);
 void sortTemperature(uint8_t selTemp);
 void convertTemperature(uint8_t selTemp);
