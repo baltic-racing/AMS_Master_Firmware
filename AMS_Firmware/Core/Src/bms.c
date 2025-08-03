@@ -108,8 +108,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 		if(ICValue != 0){
 			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue; // calculate the Duty Cycle
 		}
-
-
 	}
 	if(Duty < 10) {
 		Duty = 10;
@@ -137,8 +135,6 @@ void BMS()		// Battery Management System function for main loop.
 	//precharge = 1 when complete and 0 when still charging
 	precharge |= ADC_TS_Voltage(MAX_TS_VOLTAGE, MIN_TS_VOLTAGE);
 
-	balanceMargin = ((max_voltage - blancing_Voltage) * getbalancingKP(blancing_Voltage))/10;
-
 	for (uint8_t i = 0; i < NUM_STACK; i++)
 	{
 		//Balancing with flags
@@ -161,17 +157,23 @@ void BMS()		// Battery Management System function for main loop.
 
 		if(charging == 1)
 		{
-			if(selTemp < 5)
+			balanceMargin = ((max_voltage - blancing_Voltage) * getbalancingKP(blancing_Voltage))/10;
+
+			if(balanceMargin > 100)
 			{
-				for(uint8_t j = 0; j < 8; j++)
+				if(selTemp < 5)
 				{
-					if(cellVoltages[i * NUM_STACK + j] - blancing_Voltage > balanceMargin)cfg[i][4] |= 1 << j;
-				}
-				for(uint8_t j = 0; j < 3; j++)
-				{
-					if(cellVoltages[i * NUM_STACK + j + 8] - blancing_Voltage > balanceMargin)cfg[i][5] |= 1 << j;
+					for(uint8_t j = 0; j < 8; j++)
+					{
+						if(cellVoltages[i * NUM_STACK + j] - blancing_Voltage > balanceMargin)cfg[i][4] |= 1 << j;
+					}
+					for(uint8_t j = 0; j < 3; j++)
+					{
+						if(cellVoltages[i * NUM_STACK + j + 8] - blancing_Voltage > balanceMargin)cfg[i][5] |= 1 << j;
+					}
 				}
 			}
+
 		}
 	}
 
@@ -231,7 +233,7 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
-	//send_usb();
+	send_usb();
 }
 
 
@@ -244,10 +246,15 @@ void convertVoltage()		//convert and sort Voltages
 		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
 
-	//uint16_t cell_max = cellVoltages[0];
-	//uint16_t cell_min = cellVoltages[0];
-	uint16_t cell_max = 26000;
-	uint16_t cell_min = 43000;
+	static uint16_t cell_max;
+	static uint16_t cell_min;
+
+	static uint8_t prev_number_volt_max = 0;
+	static uint8_t prev_number_volt_min = 0;
+
+	cell_max = cellVoltages[0];
+	cell_min = cellVoltages[0];
+
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
@@ -268,9 +275,12 @@ void convertVoltage()		//convert and sort Voltages
 		}
 	}
 
+	if(!((cell_min < MIN_VOLTAGE && cell_number_volt_min == prev_number_volt_min) || (cell_max > MAX_VOLTAGE && cell_number_volt_max == prev_number_volt_max)))
+		volt_error_time = HAL_GetTick();
+	/*
 	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
 		volt_error_time = HAL_GetTick();
-
+*/
 	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
 		AMS_ERROR = 1;
 
@@ -281,6 +291,9 @@ void convertVoltage()		//convert and sort Voltages
 	AMS1_databytes[1] = (cell_min >> 8);
 	AMS1_databytes[2] = cell_max;
 	AMS1_databytes[3] = (cell_max >> 8);
+
+	prev_number_volt_max = cell_number_volt_max;
+	prev_number_volt_min = cell_number_volt_min;
 }
 
 uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//convert temp
@@ -314,8 +327,6 @@ void CAN_interrupt()
 	}
 }
 
-
-
 uint16_t find_me = 0;
 uint8_t test2 = 0;
 
@@ -333,38 +344,14 @@ void sortTemperature(uint8_t selTemp)
 			}
 			else
 			{
-				/*
-				if((k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]) == 57)
-				{
-					//printf("DEBUG: k=%d, j=%d, selTemp=%d, index=%d\n", k, j, selTemp, (k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]));
-					find_me = slaveGPIOs[j + k * 6];
-					test2 = 1;
-				}
-				*/
 				uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
 				temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
 
 			}
-			/*
-			uint16_t curr_temp = calculateTemperature(slaveGPIOs[j + k * 6], slaveGPIOs[5 + k * NUM_GPIO_STACK]);
-			temperature[k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]] = curr_temp;
-			*/
-/*
-			if((k * NUM_CELLS_STACK + indexOffset[j + selTemp * 3]) == 57)
-			{
-				find_me = slaveGPIOs[j + k * 6];
-				test2 = 1;
-			}
-			*/
 
 		}
 	}
 }
-
-
-//uint16_t temp_min = 30000;
-//uint16_t temp_max = 10000;
-uint16_t count = 0;
 
 void convertTemperature(uint8_t selTemp)		// sort temp
 {
@@ -372,15 +359,14 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 	if(selTemp == 3)
 	{
-		for(uint8_t i = 0; i < NUM_CELLS; i++)
-		{
-			usb_temperatures[i] = temperature[i]/1000;
-		}
+		static uint16_t temp_min;
+		static uint16_t temp_max;
 
-		//uint16_t temp_min = temperature[0];
-		//uint16_t temp_max = temperature[0];
-		uint16_t temp_min = 30000;
-		uint16_t temp_max = 10000;
+		temp_min = temperature[0];
+		temp_max = temperature[0];
+
+		static uint8_t prev_number_temp_max = 0;
+		static uint8_t prev_number_temp_min = 0;
 
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 			{
@@ -401,33 +387,33 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 						dc_current[1] = cell_number_temp_min;
 					}
 
-/*
-					if(temperature[i+k*12] == 0xffff && (i+1)%12 != 0 && k > 3)
-					{
-						printf("%d Zelle [%d] = %.2f\n", count, i + k * 12, (double)temperature[i + k * 12]);
-						count++;
+					if ((i+1)%10 != 0) {
+						usb_temperatures[i + k * 12] = temperature[i + k * 12]/1000;
 					}
-					*/
-
+					else if (temperature[i + k * 12] < 60000) {
+						usb_temperatures[i + k * 12] = temperature[i + k * 12]/1000;
+					}
 				}
 			}
 
-		//if(!(temp_max > MAX_Temp))
-		//	temp_error_time = HAL_GetTick();
-
+		/*
 		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))
 					temp_error_time = HAL_GetTick();
-
+*/
+		if(!((temp_min < MIN_Temp && prev_number_temp_min == cell_number_temp_min) || (temp_max > MAX_Temp && prev_number_temp_max == cell_number_temp_max)))
+					temp_error_time = HAL_GetTick();
 
 		if(HAL_GetTick() - temp_error_time >= temp_detect_time){
 			AMS_ERROR = 1;
 		}
 
-
 		AMS1_databytes[4] = temp_min;
 		AMS1_databytes[5] = (temp_min >> 8);
 		AMS1_databytes[6] = temp_max;
 		AMS1_databytes[7] = (temp_max >> 8);
+
+		prev_number_temp_max = cell_number_temp_max;
+		prev_number_temp_min = cell_number_temp_min;
 	}
 
 }
@@ -458,7 +444,6 @@ void checkIMD()
 	if(imd_error_set == 0){
 		imd_stamp = 0;
 	}
-
 
 	if(imd_stamp > error_max){
 		IMD_ERROR = 1;

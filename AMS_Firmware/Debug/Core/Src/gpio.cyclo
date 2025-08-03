@@ -1,5 +1,5 @@
 ../Core/Src/gpio.c:63:6:close_sdc	1
 ../Core/Src/gpio.c:69:9:read_sdc	1
-../Core/Src/gpio.c:78:9:check_AIRs	3
-../Core/Src/gpio.c:103:6:get_ts_ready	14
-../Core/Src/gpio.c:192:6:MX_GPIO_Init	1
+../Core/Src/gpio.c:79:9:check_AIRs	3
+../Core/Src/gpio.c:104:6:get_ts_ready	9
+../Core/Src/gpio.c:210:6:MX_GPIO_Init	1
