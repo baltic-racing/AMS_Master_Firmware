@@ -40,7 +40,7 @@
 #define precharge_check_time 4000
 #define switch_time 100
 
-#define MIN_IMD_RES 400 // minimaler ISOwiderstand in kOhm
+#define MIN_IMD_RES 300 // minimaler ISOwiderstand in kOhm
 
 #define TSON_RESET_TIME 1000
 

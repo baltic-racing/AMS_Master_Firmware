@@ -101,6 +101,7 @@ uint8_t check_AIRs() 		// returns 1 if all AIRs are in their intended state
 	 return AIR_OK;
 }
 
+
 void get_ts_ready()
 {
 
@@ -128,12 +129,47 @@ void get_ts_ready()
 				ts_ready = 0;
 				ts_on = 0;
 				switch_on = 0;
+				if(!switch_on)
+				{
+					precharge_time = HAL_GetTick();
+				}
 				HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
 			}
 		}
 
+	}
+	else
+	{
+		ts_ready = 0;
+		ts_on = 0;
+		switch_on = 0;
+		HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+
+		if(!switch_on)
+		{
+			precharge_time = HAL_GetTick();
+		}
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
+	}
+
+}
+
 /*
+void get_ts_ready()
+{
+
+	if(!(switch_on == 1))
+	{
+		precharge_time = HAL_GetTick();
+	}
+
+	if(ts_on == 1 && check_AIRs() == 1 && sc_state == 0)
+	{
+		HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_SET);
+
 		//delay checking precharge 1 sec for static measurements
 		if(HAL_GetTick() - precharge_time >= precharge_check_time)
 		{
@@ -141,11 +177,21 @@ void get_ts_ready()
 			switch_on = 0;
 		}
 
+		if(precharge_check == 0 && ts_start == 1)
+		{
+			ts_start = 0;
+		}
+
+
+		if(HAL_GetTick() - precharge_time >= TSON_RESET_TIME)
+		{
+			AIR_N_check = 1;
+		}
+
 		if(AIR_N_check)
 		{
 			if(read_sdc() == 0)
 			{
-				//HAL_GPIO_WritePin(GPIOC, LED_YW_Pin, GPIO_PIN_RESET);
 				ts_ready = 0;
 				ts_on = 0;
 				ts_start = 0;
@@ -173,31 +219,34 @@ void get_ts_ready()
 			}
 			else
 			{
+				if(charging == 1)
+				{
+					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+					//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				}
 
-			HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
-			ts_ready = 1;
-			//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				if(ts_start == 1)
+				{
+					ts_ready = 1;
+					HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_SET);
+					//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, GPIO_PIN_RESET);
+				}
 
 			}
 		}
-		*/
 
 	}
 	else
 	{
 		ts_ready = 0;
 		ts_on = 0;
-		switch_on = 0;
+		ts_start = 0;
 		HAL_GPIO_WritePin(GPIOC, AIR_P_SW_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(TS_ACTIVATE_GPIO_Port, TS_ACTIVATE_Pin, GPIO_PIN_RESET);
-
-		if(!switch_on)
-		{
-			precharge_time = HAL_GetTick();
-		}
 	}
 
 }
+*/
 /* USER CODE END 1 */
 
 /** Configure pins as
