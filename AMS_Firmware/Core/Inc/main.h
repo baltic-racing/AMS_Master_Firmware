@@ -93,6 +93,8 @@ void Error_Handler(void);
 #define SPI3_CS_GPIO_Port GPIOA
 #define PCHRG_ACT_Pin GPIO_PIN_2
 #define PCHRG_ACT_GPIO_Port GPIOD
+#define BMS_BALANCING_Pin GPIO_PIN_0
+#define BMS_BALANCING_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

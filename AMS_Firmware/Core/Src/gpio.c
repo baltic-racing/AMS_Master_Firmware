@@ -268,6 +268,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PCHRG_ACT_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : BMS_BALANCING_Pin */
+  GPIO_InitStruct.Pin = BMS_BALANCING_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BMS_BALANCING_GPIO_Port, &GPIO_InitStruct);
+
+
 }
 
 /* USER CODE BEGIN 2 */

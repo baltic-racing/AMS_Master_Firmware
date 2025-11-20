@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (12.3.rel1)
+# Toolchain: GNU Tools for STM32 (9-2020-q2-update)
 ################################################################################
 
 -include ../makefile.init
@@ -16,6 +16,7 @@ RM := rm -rf
 -include Drivers/STM32F2xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -47,14 +48,14 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 EXECUTABLES += \
 AMS_Firmware.elf \
 
-MAP_FILES += \
-AMS_Firmware.map \
-
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
 AMS_Firmware.list \
+
+OBJCOPY_BIN += \
+AMS_Firmware.bin \
 
 
 # All Target
@@ -64,8 +65,8 @@ all: main-build
 main-build: AMS_Firmware.elf secondary-outputs
 
 # Tool invocations
-AMS_Firmware.elf AMS_Firmware.map: $(OBJS) $(USER_OBJS) C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\shoot\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+AMS_Firmware.elf: $(OBJS) $(USER_OBJS) C:\Users\Electronics\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\Electronics\Documents\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -79,12 +80,17 @@ AMS_Firmware.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+AMS_Firmware.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "AMS_Firmware.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) AMS_Firmware.elf AMS_Firmware.list AMS_Firmware.map default.size.stdout
+	-$(RM) $(SIZE_OUTPUT)$(OBJDUMP_LIST)$(EXECUTABLES)$(OBJS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(OBJCOPY_BIN) AMS_Firmware.elf
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
@@ -93,6 +99,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
 
 -include ../makefile.targets
