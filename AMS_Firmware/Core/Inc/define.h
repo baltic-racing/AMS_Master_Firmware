@@ -47,6 +47,8 @@
 #define NTC_BETA 3892
 
 
+
+
 /*
 #define CYCLE_PERIOD 30 //bms cycle period in ms
 

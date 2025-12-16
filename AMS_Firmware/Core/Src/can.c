@@ -39,7 +39,7 @@ uint32_t current_data = 0;
 uint16_t current = 0;
 uint8_t ts_on = 0;
 uint8_t ts_start = 0;
-uint8_t charging = 0;
+uint8_t charging = 1;
 uint8_t ams_status = 0;
 uint8_t switch_on = 0;
 uint32_t capacity_data = 0;
@@ -286,6 +286,7 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
 	CAN_TX(hcan1, AMS2_header, dc_current);
+	send_usb();
 
 	//get_ts_ready();
 }

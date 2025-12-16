@@ -49,7 +49,7 @@ uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO
 uint16_t slaveGPIOs[NUM_GPIO] = {0};
 uint16_t temperature[NUM_CELLS] = {0};
 
-uint8_t usb_data[NUM_CELLS*2 + 2 + 1] = {0};
+uint8_t usb_data[NUM_CELLS*3 + 2 + 1] = {0};
 uint8_t usb_voltages[NUM_CELLS_STACK*NUM_STACK] = {0};
 uint8_t usb_temperatures[NUM_CELLS_STACK*NUM_STACK] = {0};
 
@@ -233,7 +233,7 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
-	send_usb();
+	//send_usb();
 }
 
 
@@ -242,7 +242,7 @@ void convertVoltage()		//convert and sort Voltages
 	ts_volt_can = 0;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
-		usb_voltages[i] = cellVoltages[i]/1000;
+		//usb_voltages[i] = cellVoltages[i]/1000;
 		ts_volt_can = ts_volt_can + cellVoltages[i]/100;
 	}
 
@@ -281,8 +281,8 @@ void convertVoltage()		//convert and sort Voltages
 	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
 		volt_error_time = HAL_GetTick();
 */
-	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
-		AMS_ERROR = 1;
+	//if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+	//	AMS_ERROR = 1;
 
 	blancing_Voltage = cell_min;
 	max_voltage = cell_max;
@@ -452,16 +452,19 @@ void checkIMD()
 
 void send_usb()
 {
-	usb_data[NUM_CELLS * 2 + 2] = 0xff;
-	usb_data[NUM_CELLS * 2] = current >> 8;
-	usb_data[NUM_CELLS * 2 + 1] = current;
+	usb_data[NUM_CELLS * 3 + 2] = 0xff;
+	usb_data[NUM_CELLS * 3 + 3] = 0xff;
+	usb_data[NUM_CELLS * 3] = current >> 8;
+	usb_data[NUM_CELLS * 3 + 1] = current;
 	for(uint8_t i = 0; i < NUM_CELLS; i++)
 	{
-		usb_data[i] = usb_voltages[i];
-		usb_data[NUM_CELLS + i] = usb_temperatures[i];
+		usb_data[2*i] = ((cellVoltages[i]/10)>>8);
+		usb_data[2*i+1] = (cellVoltages[i]/10);
+		usb_data[2*NUM_CELLS + i] = usb_temperatures[i];
 	}
 
-	CDC_Transmit_FS(usb_data, NUM_CELLS * 2 + 2 + 1);
+	CDC_Transmit_FS(usb_data, NUM_CELLS * 3 + 4);
+
 }
 
 uint8_t getbalancingKP(uint16_t minVoltage)

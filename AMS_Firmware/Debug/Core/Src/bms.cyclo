@@ -3,7 +3,7 @@
 ../Core/Src/bms.c:102:6:HAL_TIM_IC_CaptureCallback	5
 ../Core/Src/bms.c:122:6:BMS_init	1
 ../Core/Src/bms.c:127:6:BMS	16
-../Core/Src/bms.c:240:6:convertVoltage	17
+../Core/Src/bms.c:240:6:convertVoltage	16
 ../Core/Src/bms.c:299:10:calculateTemperature	3
 ../Core/Src/bms.c:312:6:CAN_interrupt	3
 ../Core/Src/bms.c:333:6:sortTemperature	5
@@ -11,4 +11,4 @@
 ../Core/Src/bms.c:421:6:checkPEC	3
 ../Core/Src/bms.c:434:6:checkIMD	6
 ../Core/Src/bms.c:453:6:send_usb	2
-../Core/Src/bms.c:467:9:getbalancingKP	3
+../Core/Src/bms.c:470:9:getbalancingKP	3
