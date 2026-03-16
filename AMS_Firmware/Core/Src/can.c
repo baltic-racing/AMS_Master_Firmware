@@ -286,7 +286,7 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 {
 	CAN_TX(hcan1, AMS1_header, bms_data);
 	CAN_TX(hcan1, AMS2_header, dc_current);
-	send_usb();
+	//send_usb();
 
 	//get_ts_ready();
 }

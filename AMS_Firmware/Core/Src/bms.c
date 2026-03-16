@@ -281,8 +281,8 @@ void convertVoltage()		//convert and sort Voltages
 	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
 		volt_error_time = HAL_GetTick();
 */
-	//if(HAL_GetTick() - volt_error_time >= volt_detect_time)
-	//	AMS_ERROR = 1;
+	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
+		AMS_ERROR = 1;
 
 	blancing_Voltage = cell_min;
 	max_voltage = cell_max;

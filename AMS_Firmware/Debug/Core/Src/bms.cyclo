@@ -3,7 +3,7 @@
 ../Core/Src/bms.c:102:6:HAL_TIM_IC_CaptureCallback	5
 ../Core/Src/bms.c:122:6:BMS_init	1
 ../Core/Src/bms.c:127:6:BMS	16
-../Core/Src/bms.c:240:6:convertVoltage	16
+../Core/Src/bms.c:240:6:convertVoltage	17
 ../Core/Src/bms.c:299:10:calculateTemperature	3
 ../Core/Src/bms.c:312:6:CAN_interrupt	3
 ../Core/Src/bms.c:333:6:sortTemperature	5

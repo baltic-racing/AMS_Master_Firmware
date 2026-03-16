@@ -37,7 +37,7 @@
 
 #define volt_detect_time 700	//nicht regelkonform
 #define temp_detect_time 1200
-#define precharge_check_time 4000
+#define precharge_check_time 1500
 #define switch_time 100
 
 #define MIN_IMD_RES 300 // minimaler ISOwiderstand in kOhm
