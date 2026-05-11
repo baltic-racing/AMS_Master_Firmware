@@ -41,7 +41,7 @@
 #define switch_time 100
 
 #define MIN_IMD_RES 400 // minimaler ISOwiderstand in kOhm
-define imd_detect_time 200 //Zeit in ms, die der IMD-Widerstand unter dem Grenzwert sein muss, bevor ein Fehler erkannt wird
+#define imd_detect_time 200 //Zeit in ms, die der IMD-Widerstand unter dem Grenzwert sein muss, bevor ein Fehler erkannt wird
 
 #define TSON_RESET_TIME 1000
 

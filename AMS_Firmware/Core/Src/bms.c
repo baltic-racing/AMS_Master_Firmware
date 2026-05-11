@@ -68,6 +68,7 @@ uint64_t last500 = 0;
 uint32_t volt_error_time = 0;
 uint32_t temp_error_time = 0;
 uint32_t pec_error_time = 0;
+uint32_t imd_error_time = 0;
 extern uint32_t ivt_error_time;
 
 uint8_t temp_error = 0;
