@@ -434,7 +434,7 @@ void checkPEC(uint8_t pec)
 
 void checkIMD()
 {
-	if(imdStatValue > MIN_IMD_RES && imdStatValue != 0)
+	if(imdStatValue > MIN_IMD_RES && imdStatValue != 0 && IMD_ERROR == 0)
 	{
 		imd_error_time = HAL_GetTick();
 		IMD_ERROR = 0;
