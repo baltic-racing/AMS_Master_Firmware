@@ -290,6 +290,29 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 
 	//get_ts_ready();
 }
+
+void CAN_Recovery_Task()
+{
+	static uint32_t last_check = 0;
+	if (HAL_GetTick() - last_check < 1000) return;
+	last_check = HAL_GetTick();
+
+	// CAN1 Recovery
+	if (hcan1.Instance->ESR & CAN_ESR_BOFF)
+	{
+		HAL_CAN_Stop(&hcan1);
+		HAL_CAN_Start(&hcan1);
+		HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+	}
+
+	// CAN2 Recovery
+	if (hcan2.Instance->ESR & CAN_ESR_BOFF)
+	{
+		HAL_CAN_Stop(&hcan2);
+		HAL_CAN_Start(&hcan2);
+		HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
+	}
+}
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -306,6 +329,7 @@ void MX_CAN1_Init(void)
 
   /* USER CODE BEGIN CAN1_Init 1 */
 
+
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 3;
@@ -314,8 +338,10 @@ void MX_CAN1_Init(void)
   hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
-  hcan1.Init.AutoBusOff = DISABLE;
-  hcan1.Init.AutoWakeUp = DISABLE;
+  hcan1.Init.AutoBusOff = ENABLE;
+  //hcan1.Init.AutoBusOff = DISABLE;
+  hcan1.Init.AutoWakeUp = ENABLE;
+ // hcan1.Init.AutoWakeUp = DISABLE;
   hcan1.Init.AutoRetransmission = DISABLE;
   hcan1.Init.ReceiveFifoLocked = DISABLE;
   hcan1.Init.TransmitFifoPriority = DISABLE;
@@ -360,8 +386,10 @@ void MX_CAN2_Init(void)
   hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
-  hcan2.Init.AutoBusOff = DISABLE;
-  hcan2.Init.AutoWakeUp = DISABLE;
+  hcan2.Init.AutoBusOff = ENABLE;
+  //hcan2.Init.AutoBusOff = DISABLE;
+  hcan2.Init.AutoWakeUp = ENABLE;
+  //hcan2.Init.AutoWakeUp = DISABLE;
   hcan2.Init.AutoRetransmission = DISABLE;
   hcan2.Init.ReceiveFifoLocked = DISABLE;
   hcan2.Init.TransmitFifoPriority = DISABLE;

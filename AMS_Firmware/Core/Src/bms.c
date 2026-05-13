@@ -127,6 +127,8 @@ void BMS_init()
 
 void BMS()		// Battery Management System function for main loop.
 {
+	CAN_Recovery_Task();
+
 	uint8_t pec = 0;
 	static uint8_t selTemp = 0;
 	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65

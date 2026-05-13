@@ -54,6 +54,7 @@ void can_put_data(void);
 void IVT_MODE(uint8_t mode);
 void IVT_ACTIVATE(uint8_t channel);
 void IVT_init(void);
+void CAN_Recovery_Task(void);
 
 
 /* USER CODE END Prototypes */
