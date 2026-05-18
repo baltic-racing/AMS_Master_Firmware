@@ -225,7 +225,7 @@ void BMS()		// Battery Management System function for main loop.
 	else
 		selTemp = 0;
 
-	if(AMS_ERROR == 1 || IMD_ERROR == 1 )//|| PEC_ERROR == 1)
+	if(AMS_ERROR == 1)// || IMD_ERROR == 1 )//|| PEC_ERROR == 1)
 	{
 		sc_state = 1;
 		ts_on = 0;
