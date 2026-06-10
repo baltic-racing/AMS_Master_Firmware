@@ -69,6 +69,8 @@ uint32_t volt_error_time = 0;
 uint32_t temp_error_time = 0;
 uint32_t pec_error_time = 0;
 uint32_t imd_error_time = 0;
+uint32_t IMD_ERROR_CAN = 0;
+uint8_t sdc_state = 0;
 extern uint32_t ivt_error_time;
 
 uint8_t temp_error = 0;
@@ -440,10 +442,18 @@ void checkIMD()
 	{
 		imd_error_time = HAL_GetTick();
 		IMD_ERROR = 0;
+		IMD_ERROR_CAN = 0;
 	}
 
-	if(HAL_GetTick() - imd_error_time >= imd_detect_time){
+	if(HAL_GetTick() - imd_error_time >= imd_detect_time)
+	{
 		IMD_ERROR = 1;
+		//check if SDC is closed.//1 if closed, 0 if open
+		sdc_state = (HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin) == GPIO_PIN_SET) ? 1 : 0;
+		if(!sdc_state && IMD_ERROR)
+		{
+			IMD_ERROR_CAN = 1;
+		}
 	}
 }
 

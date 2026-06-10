@@ -70,7 +70,6 @@ uint8_t read_sdc()
 {
 	// returns 1 if closed
 	// returns 0 if open
-	//return HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin);
 	return (HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin) == GPIO_PIN_SET) ? 1 : 0;
 }
 

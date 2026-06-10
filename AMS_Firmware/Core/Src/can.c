@@ -47,8 +47,8 @@ uint32_t capacity_data = 0;
 extern uint16_t ts_volt_can;
 
 
-extern uint8_t ts_ready ;
-extern uint8_t IMD_ERROR;
+extern uint8_t ts_ready;
+extern uint8_t IMD_ERROR_CAN;
 extern uint8_t AMS_ERROR;
 
 uint32_t ivt_error_time = 0;
@@ -221,7 +221,7 @@ void can_put_data()
 	AMS0_databytes[3] = (current >> 8);
 	AMS0_databytes[4] = imdStatValue;
 	AMS0_databytes[5] = (imdStatValue>>8);
-	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4) | (IMD_ERROR << 6) | (AMS_ERROR << 7);
+	AMS0_databytes[6] =  0  | (ts_ready << 3) | (precharge << 4) | (IMD_ERROR_CAN << 6) | (AMS_ERROR << 7);
 	AMS0_databytes[7] = ams_status;
 }
 
