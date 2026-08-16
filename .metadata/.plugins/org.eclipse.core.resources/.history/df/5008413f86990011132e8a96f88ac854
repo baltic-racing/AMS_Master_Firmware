@@ -308,7 +308,7 @@ uint16_t calculateTemperature(uint16_t voltageCode, uint16_t referenceCode)		//c
 	//if((referenceCode - voltageCode) != 0 && voltageCode != 0)
 	if (denom >= 2000 && voltageCode != 0)
 	{
-		uint32_t convert_R = (voltageCode * 10000)/(referenceCode - voltageCode);
+		uint32_t convert_R = (voltageCode * 100000)/(referenceCode - voltageCode);
 		return 1000.0 / ((1.0 / 298.15) - (log(10000.0 / convert_R) / NTC_BETA)) - 273150.0;
 	}
 	else return 0xFFFF;
