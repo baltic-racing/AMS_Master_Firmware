@@ -191,17 +191,6 @@ void BMS()		// Battery Management System function for main loop.
 	pec = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
 	HAL_Delay(3);
 
-	// Open-Wire-Prüfung einmal pro Sekunde
-	static uint32_t last_openwire_check = 0;
-	if (HAL_GetTick() - last_openwire_check >= 1000)
-	{
-	    last_openwire_check = HAL_GetTick();
-	    if (LTC6811_check_open_wire())
-	    {
-	        AMS_ERROR = 1;
-	    }
-	}
-
 	LTC6811_clraux();
 	HAL_Delay(3);
 

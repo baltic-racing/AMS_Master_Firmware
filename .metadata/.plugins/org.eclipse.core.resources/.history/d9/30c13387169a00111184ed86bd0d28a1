@@ -133,9 +133,6 @@ void wakeup_sleep(void);
 uint16_t pec15_calc(uint8_t len, uint8_t *data);
 void nopDelay(uint32_t cnt);
 
-void LTC6811_adow(uint8_t pup);
-uint8_t LTC6811_check_open_wire(void);
-
 /**
  * @brief Write an array of bytes out of the SPI port (Used as abstraction for compatibility)
  *
