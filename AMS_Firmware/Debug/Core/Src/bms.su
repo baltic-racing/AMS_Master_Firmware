@@ -11,4 +11,4 @@
 ../Core/Src/bms.c:437:6:checkPEC	16	static
 ../Core/Src/bms.c:450:6:checkIMD	8	static
 ../Core/Src/bms.c:471:6:send_usb	16	static
-../Core/Src/bms.c:488:9:getbalancingKP	24	static
+../Core/Src/bms.c:500:9:getbalancingKP	24	static

@@ -10,5 +10,5 @@
 ../Core/Src/bms.c:372:6:convertTemperature	17
 ../Core/Src/bms.c:437:6:checkPEC	3
 ../Core/Src/bms.c:450:6:checkIMD	7
-../Core/Src/bms.c:471:6:send_usb	2
-../Core/Src/bms.c:488:9:getbalancingKP	3
+../Core/Src/bms.c:471:6:send_usb	4
+../Core/Src/bms.c:500:9:getbalancingKP	3
