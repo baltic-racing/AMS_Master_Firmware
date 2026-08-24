@@ -470,19 +470,31 @@ void checkIMD()
 
 void send_usb()
 {
-    usb_data[NUM_CELLS * 3 + 2] = 0xff;
-    usb_data[NUM_CELLS * 3 + 3] = 0xff;
-    usb_data[NUM_CELLS * 3] = current >> 8;
-    usb_data[NUM_CELLS * 3 + 1] = current;
+	usb_data[NUM_CELLS * 3 + 2] = 0xff;
+	usb_data[NUM_CELLS * 3 + 3] = 0xff;
+	usb_data[NUM_CELLS * 3] = current >> 8;
+	usb_data[NUM_CELLS * 3 + 1] = current;
+	for(uint8_t i = 0; i < NUM_CELLS; i++)
+	{
+	    // Spannung unverändert übertragen
+	    usb_data[2*i] = ((cellVoltages[i]/10)>>8);
+	    usb_data[2*i+1] = (cellVoltages[i]/10);
 
-    for(uint8_t i = 0; i < NUM_CELLS; i++)
-    {
-        usb_data[2*i] = ((cellVoltages[i]/10)>>8);
-        usb_data[2*i+1] = (cellVoltages[i]/10);
-        usb_data[2*NUM_CELLS + i] = usb_temperatures[i];
-    }
+	    // Temperatur nur für die USB-Ausgabe korrigieren
+	    uint8_t temp_usb = usb_temperatures[i];
 
-    CDC_Transmit_FS(usb_data, NUM_CELLS * 3 + 4);
+	    // Stack 04 (= fünfter Stack), Zelle 0 bis 10
+	    if ((i / NUM_CELLS_STACK) == 4 &&
+	        (i % NUM_CELLS_STACK) < 11)
+	    {
+	        temp_usb += 2;
+	    }
+
+	    usb_data[2*NUM_CELLS + i] = temp_usb;
+	}
+
+	CDC_Transmit_FS(usb_data, NUM_CELLS * 3 + 4);
+
 }
 
 uint8_t getbalancingKP(uint16_t minVoltage)
