@@ -257,12 +257,24 @@ void convertVoltage()		//convert and sort Voltages
 	static uint8_t prev_number_volt_max = 0;
 	static uint8_t prev_number_volt_min = 0;
 
-	cell_max = cellVoltages[0];
-	cell_min = cellVoltages[0];
+	//cell_max = cellVoltages[0];
+	//cell_min = cellVoltages[0];
 
+	temp_min = 0xFFFF;
+	temp_max = 0;
+
+	//NTC Variable
+	uint8_t ntc_error_count = 0;
 
 	for(uint8_t k = 0; k < NUM_STACK; k++)
 	{
+		//NTC
+		if(temperature[i + k * 12] == 0xFFFF)
+		{
+			ntc_error_count++;
+			continue;
+		}
+
 		for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 		{
 			if(cellVoltages[i + k * 12] > cell_max && (cellVoltages[i + k * 12] < 45000 || cellVoltages[i + k * 12] > 60000) && (i+1)%12 != 0)
@@ -278,6 +290,12 @@ void convertVoltage()		//convert and sort Voltages
 				dc_current[0] = cell_number_volt_min;
 			}
 		}
+	}
+
+	//NTC
+	if(ntc_error_count >= 3)
+	{
+		AMS_ERROR = 1;
 	}
 
 	if(!((cell_min < MIN_VOLTAGE && cell_number_volt_min == prev_number_volt_min) || (cell_max > MAX_VOLTAGE && cell_number_volt_max == prev_number_volt_max)))
@@ -367,28 +385,16 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		static uint16_t temp_min;
 		static uint16_t temp_max;
 
-		uint8_t ntc_error_count = 0;
-
-		temp_min = 0xFFFF;
-		temp_max = 0;
-
-		//temp_min = temperature[0];
-		//temp_max = temperature[0];
+		temp_min = temperature[0];
+		temp_max = temperature[0];
 
 		static uint8_t prev_number_temp_max = 0;
 		static uint8_t prev_number_temp_min = 0;
 
 		for(uint8_t k = 0; k < NUM_STACK; k++)
 			{
-
 				for(uint8_t i = 0; i < NUM_CELLS_STACK; i++)
 				{
-					if(temperature[i + k * 12] == 0xFFFF)
-					{
-						ntc_error_count++;
-						continue;
-					}
-
 					if(temperature[i + k * 12] > temp_max && ((i+1)%12 != 0 && (i+1)%10 != 0))
 						{
 							temp_max = temperature[i + k * 12];
@@ -412,11 +418,6 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 					}
 				}
 			}
-
-		if(ntc_error_count >= 3)
-		{
-		    AMS_ERROR = 1;
-		}
 
 		/*
 		if(!(temp_min < MIN_Temp || temp_max > MAX_Temp))

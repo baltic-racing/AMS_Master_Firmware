@@ -8,7 +8,7 @@
 ../Core/Src/bms.c:317:6:CAN_interrupt	56	static
 ../Core/Src/bms.c:338:6:sortTemperature	32	static
 ../Core/Src/bms.c:361:6:convertTemperature	24	static
-../Core/Src/bms.c:426:6:checkPEC	16	static
-../Core/Src/bms.c:439:6:checkIMD	8	static
-../Core/Src/bms.c:460:6:send_usb	16	static
-../Core/Src/bms.c:477:9:getbalancingKP	24	static
+../Core/Src/bms.c:443:6:checkPEC	16	static
+../Core/Src/bms.c:456:6:checkIMD	8	static
+../Core/Src/bms.c:477:6:send_usb	16	static
+../Core/Src/bms.c:494:9:getbalancingKP	24	static

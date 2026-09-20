@@ -7,8 +7,8 @@
 ../Core/Src/bms.c:304:10:calculateTemperature	3
 ../Core/Src/bms.c:317:6:CAN_interrupt	3
 ../Core/Src/bms.c:338:6:sortTemperature	5
-../Core/Src/bms.c:361:6:convertTemperature	17
-../Core/Src/bms.c:426:6:checkPEC	3
-../Core/Src/bms.c:439:6:checkIMD	7
-../Core/Src/bms.c:460:6:send_usb	2
-../Core/Src/bms.c:477:9:getbalancingKP	3
+../Core/Src/bms.c:361:6:convertTemperature	19
+../Core/Src/bms.c:443:6:checkPEC	3
+../Core/Src/bms.c:456:6:checkIMD	7
+../Core/Src/bms.c:477:6:send_usb	2
+../Core/Src/bms.c:494:9:getbalancingKP	3
