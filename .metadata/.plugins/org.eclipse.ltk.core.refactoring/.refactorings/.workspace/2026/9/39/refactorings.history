@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;AMS_Firmware/Core/Inc/usb_control.c&apos;" deleteContents="false" description="Delete resource &apos;AMS_Firmware/Core/Inc/usb_control.c&apos;" element1="/AMS_Firmware/Core/Inc/usb_control.c" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1789915451361"/>&#x0A;<refactoring comment="Delete resource &apos;AMS_Firmware/Core/usb_control.h&apos;" deleteContents="false" description="Delete resource &apos;AMS_Firmware/Core/usb_control.h&apos;" element1="/AMS_Firmware/Core/usb_control.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1789915765175"/>
+</session>

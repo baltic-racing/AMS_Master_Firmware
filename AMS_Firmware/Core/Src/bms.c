@@ -13,6 +13,9 @@
 #include "can.h"
 #include "adc.h"
 #include "usbd_cdc_if.h"
+#include "usb_control.h"
+#include "usb_measurements.h"
+
 #include "string.h"
 #include "define.h"
 #include "gpio.h"
@@ -239,6 +242,7 @@ void BMS()		// Battery Management System function for main loop.
 
 	can_put_data();
 	//send_usb();
+	send_usb_measurements();
 }
 
 
@@ -328,7 +332,9 @@ void CAN_interrupt()
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
 		HAL_GPIO_TogglePin(GPIOC, LED_GN_Pin);	// toggle LED
 		last100 = HAL_GetTick();
-		send_usb();
+
+		//send_usb();
+		//send_usb_measurements();
 	}
 }
 
@@ -474,6 +480,7 @@ void checkIMD()
 	}
 }
 
+/*
 void send_usb()
 {
 	usb_data[NUM_CELLS * 3 + 2] = 0xff;
@@ -489,6 +496,58 @@ void send_usb()
 
 	CDC_Transmit_FS(usb_data, NUM_CELLS * 3 + 4);
 
+}
+*/
+
+void send_usb_measurements(void)
+{
+    static uint8_t slot = 0;
+    static uint8_t next_stack = 0;
+    static uint32_t last_usb = 0;
+
+    uint32_t now = HAL_GetTick();
+
+    if (now - last_usb < 20)
+    {
+        return;
+    }
+
+    last_usb = now;
+
+    switch (slot)
+    {
+        case 0:
+            USB_Send_TS_Voltage();
+            break;
+
+        case 1:
+            USB_Send_TS_Current();
+            break;
+
+        case 2:
+            USB_Send_CellTempMin();
+            break;
+
+        default:
+            USB_Send_StackDetail(next_stack);
+
+            next_stack++;
+
+            if (next_stack >= NUM_STACK)
+            {
+                next_stack = 0;
+            }
+
+
+            break;
+    }
+
+    slot++;
+
+    if (slot >= (3 + NUM_STACK))
+    {
+        slot = 0;
+    }
 }
 
 uint8_t getbalancingKP(uint16_t minVoltage)

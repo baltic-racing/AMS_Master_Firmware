@@ -11,6 +11,8 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f2xx.o"
 "./Core/Src/tim.o"
+"./Core/Src/usb_control.o"
+"./Core/Src/usb_measurements.o"
 "./Core/Startup/startup_stm32f205rbtx.o"
 "./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o"
 "./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_adc.o"

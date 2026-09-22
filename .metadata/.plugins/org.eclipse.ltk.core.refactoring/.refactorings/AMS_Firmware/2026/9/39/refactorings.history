@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;AMS_Firmware/Core/Src/usb_meadurements.c&apos; to &apos;usb_measurements.c&apos;" description="Rename resource &apos;usb_meadurements.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Src/usb_meadurements.c" name="usb_measurements.c" stamp="1789913809630" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;AMS_Firmware/Core/Inc/usb_cotrol.h&apos; to &apos;usb_control.h&apos;" description="Rename resource &apos;usb_cotrol.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Inc/usb_cotrol.h" name="usb_control.h" stamp="1789915501189" updateReferences="true"/>
+</session>
