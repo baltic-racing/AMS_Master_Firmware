@@ -88,6 +88,10 @@ uint8_t cell_number_temp_max = 0;
 uint8_t cell_number_volt_min = 0;
 uint8_t cell_number_volt_max = 0;
 
+int16_t ltcTemps_raw[NUM_STACK] = {0};      // Reihenfolge wie vom LTC-Treiber gelesen
+int16_t ltcTemps_c10[NUM_STACK] = {0};      // Reihenfolge nach physischem Stack
+int16_t temp_c10 = 0;
+
 extern uint8_t dc_current[8];
 
 /* 1 ms interrupt
@@ -206,6 +210,16 @@ void BMS()		// Battery Management System function for main loop.
 	convertVoltage();
 	convertTemperature(selTemp);
 
+	LTC6811_clrstat();
+	HAL_Delay(3);
+
+	LTC6811_adstat();
+	HAL_Delay(3);
+
+	convertVoltage();
+	convertTemperature(selTemp);
+	LTCTemperature();
+
 	checkPEC(pec);
 
 	//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, AMS_ERROR); //Aktuell led defekt 30.5.25
@@ -241,8 +255,9 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
+	LTC6811_read_all_internal_temps();
 	//send_usb();
-	send_usb_measurements();
+	//send_usb_measurements();
 }
 
 
@@ -503,11 +518,12 @@ void send_usb_measurements(void)
 {
     static uint8_t slot = 0;
     static uint8_t next_stack = 0;
+    static uint8_t ltc_divider = 0;
     static uint32_t last_usb = 0;
 
     uint32_t now = HAL_GetTick();
 
-    if (now - last_usb < 20)
+    if (now - last_usb < 100)
     {
         return;
     }
@@ -528,6 +544,14 @@ void send_usb_measurements(void)
             USB_Send_CellTempMin();
             break;
 
+        case 3:
+            if (++ltc_divider >= 5)
+            {
+                ltc_divider = 0;
+                USB_Send_LTC_AllStacks();
+            }
+            break;
+
         default:
             USB_Send_StackDetail(next_stack);
 
@@ -538,12 +562,10 @@ void send_usb_measurements(void)
                 next_stack = 0;
             }
 
-
             break;
     }
 
     slot++;
-
     if (slot >= (3 + NUM_STACK))
     {
         slot = 0;
@@ -568,3 +590,33 @@ uint8_t getbalancingKP(uint16_t minVoltage)
 	return KP;
 }
 
+const uint8_t ltc_raw_to_stack[NUM_STACK] = {6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7};
+
+void LTCTemperature(void)
+{
+    uint8_t stA[NUM_STACK][8] = {0};
+    int8_t rd = LTC6811_rdstat(7, (uint8_t*)stA);
+
+    if (rd == 0)
+    {
+        for (uint8_t raw = 0; raw < NUM_STACK; raw++)
+        {
+            uint16_t itmp = (uint16_t)stA[raw][2] | ((uint16_t)stA[raw][3] << 8);
+            ltcTemps_raw[raw] = (int16_t)(((int32_t)itmp * 10 + 37) / 75 - 2730);
+        }
+
+        for (uint8_t raw = 0; raw < NUM_STACK; raw++)
+        {
+            uint8_t stack = ltc_raw_to_stack[raw];
+            ltcTemps_c10[stack] = ltcTemps_raw[raw];
+        }
+    }
+    else
+    {
+        for (uint8_t i = 0; i < NUM_STACK; i++)
+        {
+            ltcTemps_raw[i] = 0x7FFF;
+            ltcTemps_c10[i] = 0x7FFF;
+        }
+    }
+}

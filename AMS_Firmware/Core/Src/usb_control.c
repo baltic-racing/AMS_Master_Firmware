@@ -113,7 +113,9 @@ void USB_transmit(uint8_t type, const uint8_t *data_shit, uint8_t shit_count)
     packet[idx++] = chk;					// Checksum
 
     CDC_SendBlocking(packet, idx, 3);
+    //CDC_SendNonBlocking(packet, idx);
 }
+
 
 uint8_t CDC_SendBlocking(uint8_t *buf, uint16_t len, uint32_t timeout_ms)
 {
@@ -134,4 +136,19 @@ uint8_t CDC_SendBlocking(uint8_t *buf, uint16_t len, uint32_t timeout_ms)
 
     return 1;
 }
+/*
+uint8_t CDC_SendNonBlocking(uint8_t *buf, uint16_t len)
+{
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+    {
+        return 0;
+    }
 
+    if (CDC_Transmit_FS(buf, len) == USBD_OK)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+*/

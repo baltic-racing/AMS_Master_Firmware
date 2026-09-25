@@ -15,22 +15,26 @@
 /*@brief 6811 conversion command variables
 
 */
-uint8_t ADCV[2]; //!< Cell Voltage conversion command.
-uint8_t ADAX[2]; //!< GPIO conversion command.
-uint8_t CVST[2]; //!< Cell Voltage selftest command
-uint8_t AXST[2]; //!< GPIO selftest command
-uint8_t ADSTAT[2];
-uint8_t CLRAUX[2]; //clear Auxiliary register
+uint8_t ADCV[2]; 	//!< Cell Voltage conversion command.
+uint8_t ADAX[2]; 	//!< GPIO conversion command.
+uint8_t CVST[2]; 	//!< Cell Voltage selftest command
+uint8_t AXST[2]; 	//!< GPIO selftest command
+uint8_t ADSTAT[2];	//!< LTC temperature
+uint8_t CLRAUX[2]; 	//clear Auxiliary register
 uint8_t CLRCELL[2]; //clear cell voltage register
 uint8_t CLRSTAT[2]; //clear status register
+uint8_t RDSTAT[8];
+uint8_t RDAUXA[8];
 
 uint8_t wakeup = 0x00;
 
+extern int16_t ltcTemps_c10[NUM_STACK];
 /*@brief Initializes all command variables
  */
 void LTC6811_initialize()
 {
-  set_adc(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL, AUX_CH_ALL, CHST_SC);
+  //set_adc(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL, AUX_CH_ALL, CHST_SC);
+  set_adc(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL, AUX_CH_ALL, CHST_ITMP);
   //set_selftest(MD_NORMAL, ST_1);
 }
 
@@ -83,9 +87,6 @@ void set_adc(uint8_t MD, uint8_t DCP, uint8_t CH, uint8_t CHG, uint8_t CHST)
 
   CLRSTAT[0] = 0x07;
   CLRSTAT[1] = 0x13;
-
-
-
 
 }
 
@@ -200,6 +201,85 @@ void LTC6811_adax()
 	HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
 }
 
+void LTC6811_adstat()
+{
+	uint8_t cmd[4];
+	uint16_t temp_pec;
+
+	cmd[0] = ADSTAT[0];
+	cmd[1] = ADSTAT[1];
+
+	temp_pec = pec15_calc(2, ADSTAT);
+	cmd[2] = (uint8_t)(temp_pec >> 8);
+	cmd[3] = (uint8_t)(temp_pec);
+
+	wakeup_idle();
+
+	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+	spi_write_array(4, cmd);
+	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+
+	HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
+	HAL_SPI_Transmit(&hspi3, &wakeup, 1, 1);
+}
+
+uint8_t LTC6811_rdadstat(uint8_t reg, uint8_t *data)
+{
+	uint8_t cmd[4];
+	uint16_t temp_pec;
+
+	wakeup_idle();
+
+	cmd[0] = 0x00;			// RDAUXA = Read AUX A
+	cmd[1] = 0x0C;
+
+	temp_pec = pec15_calc(2, cmd);
+	cmd[2] = (uint8_t)(temp_pec >> 8);
+	cmd[3] = (uint8_t)(temp_pec);
+
+	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+	spi_write_read(cmd, 4, &data[0], 8);
+	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+
+	return 0;
+
+}
+
+int8_t LTC6811_rdstat(uint8_t addr, uint8_t *data)
+{
+    uint8_t cmd[4];
+    uint16_t cmd_pec;
+    uint8_t pec_error = 0;
+
+    // Broadcast RDSTATA an alle LTCs
+    cmd[0] = 0x00;
+    cmd[1] = 0x10;   // RDSTATA
+    cmd_pec = pec15_calc(2, cmd);
+    cmd[2] = (uint8_t)(cmd_pec >> 8);
+    cmd[3] = (uint8_t)(cmd_pec);
+
+    wakeup_idle();
+
+    HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+    spi_write_read(cmd, 4, data, NUM_STACK * 8);   // 8 Byte pro LTC
+    HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+
+    // PEC für jeden LTC prüfen
+    for (uint8_t i = 0; i < NUM_STACK; i++)
+    {
+        uint8_t *p = &data[i * 8];
+
+        uint16_t received_pec = ((uint16_t)p[6] << 8) | p[7];
+        uint16_t calc_pec     = pec15_calc(6, &p[0]);
+
+        if (received_pec != calc_pec)
+        {
+            pec_error = 1;
+        }
+    }
+
+    return (pec_error == 0) ? 0 : -1;
+}
 
 void LTC6811_wrcfg(uint8_t config [][6])
 
@@ -463,6 +543,65 @@ int8_t LTC6811_rdstatb(uint8_t total_ic, uint16_t OV_flag[] ,uint16_t UV_flag[],
   return (pec_error);
 }
 */
+
+void LTC6811x_rdstat_reg(uint8_t reg, uint8_t total_ic, uint8_t data[])
+{
+    uint8_t cmd[4];
+    uint16_t cmd_pec;
+
+    switch (reg)
+    {
+        case 0: cmd[1] = 0x10; break;   // RDSTATA
+        case 1: cmd[1] = 0x12; break;   // RDSTATB
+        case 2: cmd[1] = 0x14; break;   // RDSTATC
+        case 3: cmd[1] = 0x16; break;   // RDSTATD
+        default: cmd[1] = 0x10; break;
+    }
+
+    wakeup_idle();
+
+    for (uint8_t ic = 0; ic < total_ic; ic++)
+    {
+        cmd[0] = 0x80 + (ic << 3);   // jede LTC-Adresse einzeln
+        cmd_pec = pec15_calc(2, cmd);
+        cmd[2] = (uint8_t)(cmd_pec >> 8);
+        cmd[3] = (uint8_t)(cmd_pec & 0xFF);
+
+        HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+        spi_write_read(cmd, 4, &data[ic * 8], 8);
+        HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+    }
+}
+
+void LTC6811_read_all_internal_temps(void)
+{
+    uint8_t raw[NUM_STACK * 8];
+
+    LTC6811_adstat();
+    HAL_Delay(5);
+
+    LTC6811x_rdstat_reg(0, NUM_STACK, raw);
+
+    for (uint8_t i = 0; i < NUM_STACK; i++)
+    {
+        uint8_t *p = &raw[i * 8];
+
+        uint16_t rx_pec   = ((uint16_t)p[6] << 8) | p[7];
+        uint16_t calc_pec = pec15_calc(6, p);
+
+        if (rx_pec != calc_pec)
+        {
+            ltcTemps_c10[i] = -1;
+            continue;
+        }
+
+        // Vorläufiger Testwert aus STATA
+        uint16_t itmp_raw = ((uint16_t)p[2]) | ((uint16_t)p[3] << 8);
+
+        // Umrechnung in 0.1°C
+        ltcTemps_c10[i] = (int16_t)(((int32_t)itmp_raw * 10) / 75 - 2730);
+    }
+}
 
 void LTC6811_clrstat()
 {

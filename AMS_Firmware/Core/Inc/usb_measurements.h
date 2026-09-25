@@ -15,7 +15,7 @@ void USB_Send_TS_Current(void);;
 void USB_Send_CellTempMin(void);
 
 void USB_Send_StackDetail(uint8_t stack);
-//void USB_Send_LTC_AllStacks(void);
+void USB_Send_LTC_AllStacks(void);
 
 
 #endif /* INC_USB_MEASUREMENTS_H_ */

@@ -34,6 +34,7 @@ void checkIMD(void);
 void checkPEC(uint8_t pec);
 uint8_t getbalancingKP(uint16_t minVoltage);
 
+void LTCTemperature(void);
 
 #endif /* INC_BMS_H_ */
 
