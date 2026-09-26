@@ -13,8 +13,8 @@
 #include "LTC6811.h"
 #include "usbd_def.h"
 #include "usbd_cdc_if.h"
-#include <string.h>
 #include "usb_control.h"
+#include "usbd_cdc.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -36,6 +36,22 @@ uint8_t debug_len = 0;
 uint8_t debug_buffer[64];
 
 static uint8_t packet[64];
+
+#define USB_QUEUE_SIZE 8
+#define USB_PACKET_SIZE 64
+
+typedef struct
+{
+    uint8_t data[USB_PACKET_SIZE];
+    uint8_t len;
+} USB_Packet_t;
+
+static USB_Packet_t usb_queue[USB_QUEUE_SIZE];
+
+static volatile uint8_t usb_head = 0;
+static volatile uint8_t usb_tail = 0;
+
+static uint8_t usb_in_flight = 0;
 
 /*
 .______________.
@@ -112,8 +128,9 @@ void USB_transmit(uint8_t type, const uint8_t *data_shit, uint8_t shit_count)
 
     packet[idx++] = chk;					// Checksum
 
-    CDC_SendBlocking(packet, idx, 3);
+    //CDC_SendBlocking(packet, idx, 3);
     //CDC_SendNonBlocking(packet, idx);
+    USB_QueuePacket(packet, idx);
 }
 
 
@@ -152,3 +169,83 @@ uint8_t CDC_SendNonBlocking(uint8_t *buf, uint16_t len)
     return 0;
 }
 */
+
+uint8_t USB_QueuePacket(const uint8_t *data, uint8_t len)
+{
+    if (len > USB_PACKET_SIZE)
+    {
+        return 0;
+    }
+
+    uint8_t next = (usb_head + 1) % USB_QUEUE_SIZE;
+
+    // Queue voll
+    if (next == usb_tail)
+    {
+        return 0;
+    }
+
+    memcpy(usb_queue[usb_head].data, data, len);
+    usb_queue[usb_head].len = len;
+
+    usb_head = next;
+
+    return 1;
+}
+
+void USB_Task(void)
+{
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+    {
+        return;
+    }
+
+    USBD_CDC_HandleTypeDef *hcdc =
+        (USBD_CDC_HandleTypeDef *)hUsbDeviceFS.pClassData;
+
+    if (hcdc == NULL)
+    {
+        return;
+    }
+
+    /*
+     * Ein vorheriges Paket läuft noch.
+     */
+    if (usb_in_flight)
+    {
+        if (hcdc->TxState != 0)
+        {
+            return;
+        }
+
+        /*
+         * Übertragung abgeschlossen.
+         * Erst jetzt Queue-Eintrag freigeben.
+         */
+        usb_tail = (usb_tail + 1) % USB_QUEUE_SIZE;
+        usb_in_flight = 0;
+    }
+
+    // Queue leer
+    if (usb_tail == usb_head)
+    {
+        return;
+    }
+
+    /*
+     * Falls USB aus irgendeinem Grund noch beschäftigt ist:
+     * NICHT warten.
+     */
+    if (hcdc->TxState != 0)
+    {
+        return;
+    }
+
+    if (CDC_Transmit_FS(
+            usb_queue[usb_tail].data,
+            usb_queue[usb_tail].len) == USBD_OK)
+    {
+        usb_in_flight = 1;
+    }
+}
+

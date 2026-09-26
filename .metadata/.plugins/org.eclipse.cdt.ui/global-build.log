@@ -1,23 +1,21 @@
-10:03:33 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+16:25:36 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/bms.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/bms.d" -MT"Core/Src/bms.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/bms.o"
-arm-none-eabi-gcc "../Core/Src/usb_control.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/usb_control.d" -MT"Core/Src/usb_control.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/usb_control.o"
-arm-none-eabi-gcc "../Core/Src/usb_measurements.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F205xx -c -I../Core/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc -I../Drivers/STM32F2xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F2xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/usb_measurements.d" -MT"Core/Src/usb_measurements.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/usb_measurements.o"
 arm-none-eabi-gcc -o "AMS_Firmware.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\finja\OneDrive\Dokumente\GitHub\AMS_Master_Firmware\AMS_Firmware\STM32F205RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AMS_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: AMS_Firmware.elf
  
 arm-none-eabi-size  AMS_Firmware.elf 
 arm-none-eabi-objdump -h -S AMS_Firmware.elf  > "AMS_Firmware.list"
    text	   data	    bss	    dec	    hex	filename
-  69740	    940	   8160	  78840	  133f8	AMS_Firmware.elf
+  69900	    940	   8680	  79520	  136a0	AMS_Firmware.elf
 Finished building: default.size.stdout
  
 Finished building: AMS_Firmware.list
  
-10:03:37 **** Incremental Build of configuration Debug for project AMS_Firmware ****
+16:25:44 **** Incremental Build of configuration Debug for project AMS_Firmware ****
 make -j16 all 
 arm-none-eabi-size  AMS_Firmware.elf 
    text	   data	    bss	    dec	    hex	filename
-  69740	    940	   8160	  78840	  133f8	AMS_Firmware.elf
+  69900	    940	   8680	  79520	  136a0	AMS_Firmware.elf
 Finished building: default.size.stdout
  

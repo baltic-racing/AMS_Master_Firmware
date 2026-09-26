@@ -24,6 +24,7 @@
 #include "tim.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "usb_control.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -136,6 +137,8 @@ int main(void)
 	      BMS();
 
 	      send_usb_measurements();
+
+	      USB_Task();
 
   }
     /* USER CODE END WHILE */

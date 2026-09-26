@@ -340,6 +340,7 @@ void LTC6811_rdcfg()
 }
 */
 
+/*
 uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 {
 	uint8_t pec_error = 0; //pec Error wenn -1
@@ -378,6 +379,69 @@ uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
 	}
 	return(pec_error);
 }
+*/
+
+uint8_t LTC6811_rdcv(uint8_t reg, uint16_t cell_codes[][12])
+{
+    uint8_t pec_error = 0;
+
+    uint16_t received_pec;
+    uint16_t data_pec;
+
+    uint8_t cell_data[NUM_RX_BYT * NUM_STACK];
+
+    for(uint8_t cell_reg = 1; cell_reg < 5; cell_reg++)
+    {
+        LTC6811_rdcv_reg(cell_reg, cell_data);
+
+        for(uint8_t current_ic = 0;
+            current_ic < NUM_STACK;
+            current_ic++)
+        {
+            uint8_t *p =
+                &cell_data[current_ic * NUM_RX_BYT];
+
+            received_pec =
+                ((uint16_t)p[6] << 8)
+                | p[7];
+
+            data_pec =
+                pec15_calc(BYTES_IN_REG, p);
+
+            /*
+             * Falsches Paket:
+             * alte Zellwerte behalten.
+             */
+            if(received_pec != data_pec)
+            {
+                pec_error = 255;
+                continue;
+            }
+
+            /*
+             * Nur gültige Daten übernehmen.
+             */
+            for(uint8_t current_cell = 0;
+                current_cell < CELL_IN_REG;
+                current_cell++)
+            {
+                uint16_t parsed_cell =
+                    p[current_cell * 2]
+                    |
+                    ((uint16_t)p[current_cell * 2 + 1]
+                     << 8);
+
+                cell_codes[current_ic]
+                          [current_cell
+                           + ((cell_reg - 1)
+                           * CELL_IN_REG)]
+                    = parsed_cell;
+            }
+        }
+    }
+
+    return pec_error;
+}
 
 void LTC6811_rdcv_reg(uint8_t reg, uint8_t *data)
 {
@@ -406,6 +470,7 @@ void LTC6811_rdcv_reg(uint8_t reg, uint8_t *data)
     }
 }
 
+/*
 uint8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 {
 	uint8_t pec_error = 0; //pec Error wenn -1
@@ -443,6 +508,66 @@ uint8_t LTC6811_rdaux(uint8_t reg, uint16_t aux_codes[][6])
 		}
 	}
 	return(pec_error);
+}
+*/
+uint8_t LTC6811_rdaux(uint8_t reg,
+                      uint16_t aux_codes[][6])
+{
+    uint8_t pec_error = 0;
+
+    uint16_t received_pec;
+    uint16_t data_pec;
+
+    uint8_t aux_data[NUM_RX_BYT * NUM_STACK];
+
+    for(uint8_t aux_reg = 1;
+        aux_reg < AUX_IN_REG;
+        aux_reg++)
+    {
+        LTC6811_rdaux_reg(aux_reg, aux_data);
+
+        for(uint8_t current_ic = 0;
+            current_ic < NUM_STACK;
+            current_ic++)
+        {
+            uint8_t *p =
+                &aux_data[current_ic * NUM_RX_BYT];
+
+            received_pec =
+                ((uint16_t)p[6] << 8)
+                | p[7];
+
+            data_pec =
+                pec15_calc(BYTES_IN_REG, p);
+
+            if(received_pec != data_pec)
+            {
+                pec_error = 255;
+
+                // Schlechte Messung nicht übernehmen
+                continue;
+            }
+
+            for(uint8_t current_gpio = 0;
+                current_gpio < AUX_IN_REG;
+                current_gpio++)
+            {
+                uint16_t parsed_value =
+                    p[current_gpio * 2]
+                    |
+                    ((uint16_t)p[current_gpio * 2 + 1]
+                     << 8);
+
+                aux_codes[current_ic]
+                         [current_gpio
+                          + ((aux_reg - 1)
+                          * AUX_IN_REG)]
+                    = parsed_value;
+            }
+        }
+    }
+
+    return pec_error;
 }
 
 void LTC6811_rdaux_reg(uint8_t reg, uint8_t *data)
