@@ -23,8 +23,6 @@ extern uint8_t cell_number_volt_max;
 extern uint8_t cell_number_temp_min;
 extern uint8_t cell_number_temp_max;
 
-extern uint8_t cfg[NUM_STACK][6];
-
 extern uint16_t cellVoltages[NUM_CELLS];
 extern uint16_t temperature[NUM_CELLS];
 extern int16_t ltcTemps_c10[NUM_STACK];
@@ -64,7 +62,7 @@ void USB_Send_CellTempMin(void)
 
 void USB_Send_StackDetail(uint8_t stack)
 {
-    uint8_t payload[1 + 12 * 2 + 12 * 2 + 2];
+    uint8_t payload[1 + 12 * 2 + 12 * 2];
     uint8_t idx = 0;
 
     if (stack >= NUM_STACK)
@@ -87,9 +85,6 @@ void USB_Send_StackDetail(uint8_t stack)
         payload[idx++] = (uint8_t)(t >> 8);
         payload[idx++] = (uint8_t)(t & 0xFF);
     }
-
-    payload[idx++] = cfg[stack][4];
-    payload[idx++] = cfg[stack][5];
 
     USB_transmit(0x40, payload, idx);   // 0x40 = Message_ID
 }

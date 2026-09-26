@@ -1,5 +1,5 @@
-../Core/Src/usb_measurements.c:31:6:USB_Send_TS_Voltage	1
-../Core/Src/usb_measurements.c:41:6:USB_Send_TS_Current	1
-../Core/Src/usb_measurements.c:51:6:USB_Send_CellTempMin	1
-../Core/Src/usb_measurements.c:63:6:USB_Send_StackDetail	4
-../Core/Src/usb_measurements.c:92:6:USB_Send_LTC_AllStacks	2
+../Core/Src/usb_measurements.c:33:6:USB_Send_TS_Voltage	1
+../Core/Src/usb_measurements.c:43:6:USB_Send_TS_Current	1
+../Core/Src/usb_measurements.c:53:6:USB_Send_CellTempMin	1
+../Core/Src/usb_measurements.c:65:6:USB_Send_StackDetail	4
+../Core/Src/usb_measurements.c:97:6:USB_Send_LTC_AllStacks	2
