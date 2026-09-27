@@ -33,7 +33,7 @@ Core/Src/can.o: ../Core/Src/can.c ../Core/Inc/can.h ../Core/Inc/main.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_ll_usb.h \
  ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal_pcd_ex.h \
  ../Core/Inc/gpio.h ../Core/Inc/adc.h ../Core/Inc/bms.h \
- ../Core/Inc/define.h
+ ../Core/Inc/define.h ../Core/Inc/imd_decode.h
 ../Core/Inc/can.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F2xx_HAL_Driver/Inc/stm32f2xx_hal.h:
@@ -73,3 +73,4 @@ Core/Src/can.o: ../Core/Src/can.c ../Core/Inc/can.h ../Core/Inc/main.h \
 ../Core/Inc/adc.h:
 ../Core/Inc/bms.h:
 ../Core/Inc/define.h:
+../Core/Inc/imd_decode.h:

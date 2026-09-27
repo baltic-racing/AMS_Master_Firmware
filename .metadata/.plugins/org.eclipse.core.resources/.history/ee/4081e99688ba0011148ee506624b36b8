@@ -19,8 +19,6 @@
 #include "string.h"
 #include "define.h"
 #include "gpio.h"
-#include "tim.h"
-#include "imd_decode.h"
 
 uint8_t precharge = 0;
 
@@ -43,25 +41,9 @@ extern uint8_t ts_start;
 extern uint8_t sc_state;
 extern uint16_t current;
 
-/*
 uint32_t ICValue = 0;
 float Duty = 0;
 uint16_t imdStatValue = 0;
-*/
-volatile uint16_t imdStatValue = 0;
-
-static volatile uint32_t imd_period = 0;
-static volatile uint32_t imd_low = 0;
-static volatile uint32_t imd_last_capture = 0;
-static volatile uint8_t imd_seen = 0;
-
-static IMD_Diagnostic imd_diag = {
-    0U, 0U, IMD_RES_INVALID, IMD_WAITING, 0U
-};
-
-static uint32_t imd_started = 0;
-static uint32_t imd_timer_hz = 0;
-
 uint8_t IMDcheck = 0;
 
 uint16_t cellVoltages[NUM_CELLS] = {0};	//cell voltages in 0.1[mV]
@@ -90,9 +72,7 @@ uint32_t volt_error_time = 0;
 uint32_t temp_error_time = 0;
 uint32_t pec_error_time = 0;
 uint32_t imd_error_time = 0;
-//uint32_t IMD_ERROR_CAN = 0;
-volatile uint8_t IMD_ERROR_CAN = 0;
-
+uint32_t IMD_ERROR_CAN = 0;
 uint8_t sdc_state = 0;
 extern uint32_t ivt_error_time;
 
@@ -120,84 +100,33 @@ extern uint8_t dc_current[8];
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM2)
-    {
-        CAN_interrupt();
-    }
+	CAN_interrupt();
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    if (hcan->Instance == CAN1)
-    {
-        CAN_RX(hcan1);
-    }
-    else if (hcan->Instance == CAN2)
-    {
-        CAN_RX_IVT(hcan2);
-    }
+    CAN_RX(hcan1);
+    CAN_RX_IVT(hcan2);
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-    static uint8_t have_falling = 0;
-    static uint8_t have_rising = 0;
-    static uint32_t previous_falling = 0;
+	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // If the interrupt is triggered by channel 1
+	{
+		// Read the IC value
+		ICValue = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+		if(ICValue != 0){
+			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue; // calculate the Duty Cycle
+		}
+	}
+	if(Duty < 10) {
+		Duty = 10;
+	}
+	else if(Duty > 90){
+		Duty = 90;
+	}
 
-    uint32_t now;
-    uint32_t period;
-    uint32_t low;
-
-    if (htim->Instance != TIM9)
-    {
-        return;
-    }
-
-    /* Steigende Flanke: frische Pulsbreitenmessung vorhanden */
-    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-    {
-        have_rising = 1U;
-        return;
-    }
-
-    if (htim->Channel != HAL_TIM_ACTIVE_CHANNEL_2)
-    {
-        return;
-    }
-
-    now = HAL_GetTick();
-
-    period = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-    low = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
-    /*
-     * Erste unvollstaendige Periode verwerfen.
-     * Nach laengerer Pause ebenfalls neu synchronisieren.
-     */
-    if (have_falling &&
-        (uint32_t)(now - previous_falling) <= IMD_TIMEOUT_MS)
-    {
-        imd_period = period;
-        imd_low = have_rising ? low : 0U;
-
-        if ((htim->Instance->SR &
-            (TIM_SR_CC1OF | TIM_SR_CC2OF)) != 0U)
-        {
-            imd_low = 0U;
-        }
-
-        imd_last_capture = now;
-        imd_seen = 1U;
-    }
-
-    __HAL_TIM_CLEAR_FLAG(
-        htim,
-        TIM_FLAG_CC1OF | TIM_FLAG_CC2OF
-    );
-
-    previous_falling = now;
-    have_falling = 1U;
-    have_rising = 0U;
+	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
 }
 
 void BMS_init()
@@ -208,9 +137,6 @@ void BMS_init()
 void BMS()		// Battery Management System function for main loop.
 {
 	CAN_Recovery_Task();
-
-	IMD_Task();
-	CAN_IMD_Task();
 
 	uint8_t pec = 0;
 	static uint8_t selTemp = 0;
@@ -543,25 +469,25 @@ void checkPEC(uint8_t pec)
 
 }
 
-void checkIMD(void)
+void checkIMD()
 {
-    uint8_t healthy =
-        (imd_diag.code == IMD_NORMAL ||
-         imd_diag.code == IMD_SST_GOOD);
+	if(imdStatValue > MIN_IMD_RES && imdStatValue != 0 && IMD_ERROR == 0)
+	{
+		imd_error_time = HAL_GetTick();
+		IMD_ERROR = 0;
+		IMD_ERROR_CAN = 0;
+	}
 
-    if (healthy && IMD_ERROR == 0U)
-    {
-        imd_error_time = HAL_GetTick();
-    }
-
-    if (!healthy &&
-        (uint32_t)(HAL_GetTick() - imd_error_time)
-        >= imd_detect_time)
-    {
-        IMD_ERROR = 1U;
-    }
-
-    IMD_ERROR_CAN = IMD_ERROR;
+	if(HAL_GetTick() - imd_error_time >= imd_detect_time)
+	{
+		IMD_ERROR = 1;
+		//check if SDC is closed.//1 if closed, 0 if open
+		sdc_state = (HAL_GPIO_ReadPin(GPIOC, AIR_N_INT_Pin) == GPIO_PIN_SET) ? 1 : 0;
+		if(!sdc_state && IMD_ERROR)
+		{
+			IMD_ERROR_CAN = 1;
+		}
+	}
 }
 
 /*
@@ -657,110 +583,6 @@ uint8_t getbalancingKP(uint16_t minVoltage)
 		KP = 8;
 	}
 	return KP;
-}
-
-
-void IMD_Init(void)
-{
-    uint32_t timer_clock = HAL_RCC_GetPCLK2Freq();
-
-    if ((RCC->CFGR & RCC_CFGR_PPRE2) != 0U)
-    {
-        timer_clock *= 2U;
-    }
-
-    imd_timer_hz = timer_clock / (htim9.Init.Prescaler + 1U);
-
-    imd_started = HAL_GetTick();
-}
-
-
-void IMD_Task(void)
-{
-    uint32_t period;
-    uint32_t low;
-    uint32_t stamp;
-    uint32_t now;
-    uint32_t irq;
-    uint8_t seen;
-
-    /* Zusammengehoerige Capture-Werte atomar uebernehmen */
-    irq = __get_PRIMASK();
-    __disable_irq();
-
-    period = imd_period;
-    low = imd_low;
-    stamp = imd_last_capture;
-    seen = imd_seen;
-    now = HAL_GetTick();
-
-    __set_PRIMASK(irq);
-
-    if (!seen || (uint32_t)(now - stamp) > IMD_TIMEOUT_MS)
-    {
-        imd_diag = (IMD_Diagnostic){
-            0U, 0U, IMD_RES_INVALID, IMD_WAITING, 0U
-        };
-
-        if (seen || (uint32_t)(now - imd_started) >= 2000U)
-        {
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_SET)
-            {
-                imd_diag.code = IMD_NO_PWM_HIGH;
-            }
-            else
-            {
-                imd_diag.code = IMD_NO_PWM_LOW;
-            }
-        }
-    }
-    else
-    {
-        imd_diag = IMD_Decode(
-            period,
-            low,
-            imd_timer_hz,
-            MIN_IMD_RES
-        );
-    }
-
-    /*
-     * Bestehender Widerstandswert fuer CAN 0x200.
-     * Bei ungueltiger Messung 0.
-     * Das ausdrueckliche Gueltigkeitsflag steht in 0x203.
-     */
-    if (imd_diag.flags & IMD_FLAG_RES_VALID)
-    {
-        imdStatValue = imd_diag.resistance_kohm;
-    }
-    else
-    {
-        imdStatValue = 0U;
-    }
-}
-
-
-void IMD_GetCANData(uint8_t data[8])
-{
-    uint8_t flags = 0U;
-
-    if (HAL_GPIO_ReadPin(IMD_SAFE_GPIO_Port, IMD_SAFE_Pin)
-        == GPIO_PIN_SET)
-    {
-        flags |= 8U;
-    }
-
-    if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_SET)
-    {
-        flags |= 16U;
-    }
-
-    if (IMD_ERROR)
-    {
-        flags |= 32U;
-    }
-
-    IMD_Pack(&imd_diag, flags, data);
 }
 
 const uint8_t ltc_raw_to_stack[NUM_STACK] = {6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7};
