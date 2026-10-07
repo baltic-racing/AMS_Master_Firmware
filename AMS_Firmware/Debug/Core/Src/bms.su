@@ -7,9 +7,9 @@
 ../Core/Src/bms.c:318:10:calculateTemperature	24	static
 ../Core/Src/bms.c:331:6:CAN_interrupt	56	static
 ../Core/Src/bms.c:354:6:sortTemperature	32	static
-../Core/Src/bms.c:377:6:convertTemperature	24	static
-../Core/Src/bms.c:459:6:checkPEC	16	static
-../Core/Src/bms.c:472:6:checkIMD	8	static
-../Core/Src/bms.c:512:6:send_usb_measurements	16	static
-../Core/Src/bms.c:570:9:getbalancingKP	24	static
-../Core/Src/bms.c:590:6:LTCTemperature	112	static
+../Core/Src/bms.c:378:6:convertTemperature	24	static
+../Core/Src/bms.c:444:6:checkPEC	16	static
+../Core/Src/bms.c:457:6:checkIMD	8	static
+../Core/Src/bms.c:497:6:send_usb_measurements	16	static
+../Core/Src/bms.c:555:9:getbalancingKP	24	static
+../Core/Src/bms.c:575:6:LTCTemperature	112	static
