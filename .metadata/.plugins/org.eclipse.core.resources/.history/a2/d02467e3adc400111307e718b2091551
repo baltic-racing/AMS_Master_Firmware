@@ -85,15 +85,6 @@ CAN_TxHeaderTypeDef AMS0_header = {0x200, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS1_header = {0x201, 0, CAN_ID_STD, CAN_RTR_DATA, 8};
 CAN_TxHeaderTypeDef AMS2_header = {0x210, 0 , CAN_ID_STD, CAN_RTR_DATA, 8};
 
-CAN_TxHeaderTypeDef AMS_DIAG_header = {
-    .StdId = 0x204,
-    .ExtId = 0,
-    .IDE = CAN_ID_STD,
-    .RTR = CAN_RTR_DATA,
-    .DLC = 8,
-    .TransmitGlobalTime = DISABLE
-};
-
 CAN_TxHeaderTypeDef IVT_MSG_COMMAND = {0x411, 0,CAN_ID_STD, CAN_RTR_DATA,8};
 
 
@@ -302,19 +293,22 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 
 void CAN_SendDiagnostic(uint8_t code)
 {
+    CAN_TxHeaderTypeDef header = {0};
     uint32_t mailbox;
     uint8_t data[8] = {0};
+
+    header.StdId = 0x204;
+    header.IDE = CAN_ID_STD;
+    header.RTR = CAN_RTR_DATA;
+    header.DLC = 8;
+    header.TransmitGlobalTime = DISABLE;
 
     data[0] = code;
 
     if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0U)
     {
         (void)HAL_CAN_AddTxMessage(
-            &hcan1,
-            &AMS_DIAG_header,
-            data,
-            &mailbox
-        );
+            &hcan1, &header, data, &mailbox);
     }
 }
 

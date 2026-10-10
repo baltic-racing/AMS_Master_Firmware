@@ -362,7 +362,8 @@ void CAN_interrupt()
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
-		CAN_SendDiagnostic(ams_diagnostic_code);
+		//CAN_SendDiagnostic(ams_diagnostic_code);
+		CAN_SendDiagnostic(3);
 		CAN_10(AMS1_databytes);
 
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog

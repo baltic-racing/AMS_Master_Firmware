@@ -485,7 +485,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 }
 
-/*
+
 void checkPEC(uint8_t pec)
 {
 	if(pec != 0)
@@ -495,28 +495,9 @@ void checkPEC(uint8_t pec)
 	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
 	{
 		PEC_ERROR = 1;
-		record_diagnostic(6);  // PEC-Fehler
+		//record_diagnostic(6);  // PEC-Fehler
 	}
 
-}
-*/
-void checkPEC(uint8_t pec)
-{
-    uint32_t now = HAL_GetTick();
-
-    // Gueltige PEC: Fehlerzeit zuruecksetzen
-    if (pec == 0U)
-    {
-        pec_error_time = now;
-        return;
-    }
-
-    // PEC-Fehler besteht ueber die eingestellte Zeit
-    if (now - pec_error_time >= volt_detect_time)
-    {
-        PEC_ERROR = 1;
-        record_diagnostic(6);
-    }
 }
 
 void checkIMD()

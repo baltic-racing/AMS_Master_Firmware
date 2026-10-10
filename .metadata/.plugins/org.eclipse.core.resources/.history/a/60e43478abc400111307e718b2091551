@@ -94,16 +94,6 @@ int16_t temp_c10 = 0;
 
 extern uint8_t dc_current[8];
 
-volatile uint8_t ams_diagnostic_code = 0;
-
-static void record_diagnostic(uint8_t code)
-{
-    if (ams_diagnostic_code == 0U)
-    {
-        ams_diagnostic_code = code;
-    }
-}
-
 /* 1 ms interrupt
  * HLCK 96 MHz
  * APB1 48 MHz
@@ -310,23 +300,8 @@ void convertVoltage()		//convert and sort Voltages
 	if(!(cell_min < MIN_VOLTAGE || cell_max > MAX_VOLTAGE))
 		volt_error_time = HAL_GetTick();
 */
-	/*
 	if(HAL_GetTick() - volt_error_time >= volt_detect_time)
 		AMS_ERROR = 1;
-*/
-	if (HAL_GetTick() - volt_error_time >= volt_detect_time)
-	{
-	    AMS_ERROR = 1;
-
-	    if (cell_max > MAX_VOLTAGE)
-	    {
-	        record_diagnostic(1);  // Zellspannung zu hoch
-	    }
-	    else if (cell_min < MIN_VOLTAGE)
-	    {
-	        record_diagnostic(2);  // Zellspannung zu niedrig
-	    }
-	}
 
 	blancing_Voltage = cell_min;
 	max_voltage = cell_max;
@@ -362,7 +337,6 @@ void CAN_interrupt()
 	}
 	if (HAL_GetTick()>= last100 + 100)
 	{
-		CAN_SendDiagnostic(ams_diagnostic_code);
 		CAN_10(AMS1_databytes);
 
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
@@ -451,27 +425,8 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 		if(!((temp_min < MIN_Temp && prev_number_temp_min == cell_number_temp_min) || (temp_max > MAX_Temp && prev_number_temp_max == cell_number_temp_max)))
 					temp_error_time = HAL_GetTick();
 
-		/*
 		if(HAL_GetTick() - temp_error_time >= temp_detect_time){
 			AMS_ERROR = 1;
-		}
-		*/
-		if (HAL_GetTick() - temp_error_time >= temp_detect_time)
-		{
-		    AMS_ERROR = 1;
-
-		    if (temp_max == 0xFFFFU)
-		    {
-		        record_diagnostic(5);  // Ungueltiger Temperaturwert
-		    }
-		    else if (temp_max > MAX_Temp)
-		    {
-		        record_diagnostic(3);  // Zelltemperatur zu hoch
-		    }
-		    else if (temp_min < MIN_Temp)
-		    {
-		        record_diagnostic(4);  // Zelltemperatur zu niedrig
-		    }
 		}
 
 		AMS1_databytes[4] = temp_min;
@@ -485,7 +440,7 @@ void convertTemperature(uint8_t selTemp)		// sort temp
 
 }
 
-/*
+
 void checkPEC(uint8_t pec)
 {
 	if(pec != 0)
@@ -495,28 +450,8 @@ void checkPEC(uint8_t pec)
 	if(HAL_GetTick() - pec_error_time >= volt_detect_time)
 	{
 		PEC_ERROR = 1;
-		record_diagnostic(6);  // PEC-Fehler
 	}
 
-}
-*/
-void checkPEC(uint8_t pec)
-{
-    uint32_t now = HAL_GetTick();
-
-    // Gueltige PEC: Fehlerzeit zuruecksetzen
-    if (pec == 0U)
-    {
-        pec_error_time = now;
-        return;
-    }
-
-    // PEC-Fehler besteht ueber die eingestellte Zeit
-    if (now - pec_error_time >= volt_detect_time)
-    {
-        PEC_ERROR = 1;
-        record_diagnostic(6);
-    }
 }
 
 void checkIMD()
@@ -536,7 +471,6 @@ void checkIMD()
 		if(!sdc_state && IMD_ERROR)
 		{
 			IMD_ERROR_CAN = 1;
-			record_diagnostic(9);  // IMD-Fehler
 		}
 	}
 }

@@ -56,7 +56,6 @@ void IVT_ACTIVATE(uint8_t channel);
 void IVT_init(void);
 void CAN_Recovery_Task(void);
 
-void CAN_SendDiagnostic(uint8_t code);
 
 /* USER CODE END Prototypes */
 
