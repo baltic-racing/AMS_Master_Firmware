@@ -131,14 +131,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 //BMS();
+	 BMS();
 
 
-	      BMS();
+	      //BMS();
 
-	      send_usb_measurements();
+	      //send_usb_measurements();
 
-	      USB_Task();
+	      //USB_Task();
 
   }
     /* USER CODE END WHILE */

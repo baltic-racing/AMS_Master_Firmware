@@ -172,7 +172,7 @@ uint8_t CDC_SendNonBlocking(uint8_t *buf, uint16_t len)
 
 uint8_t USB_QueuePacket(const uint8_t *data, uint8_t len)
 {
-    if (len > USB_PACKET_SIZE)
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
     {
         return 0;
     }

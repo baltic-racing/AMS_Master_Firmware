@@ -15,6 +15,7 @@
 #include "usbd_cdc_if.h"
 #include "usb_control.h"
 #include "usb_measurements.h"
+#include "usb_device.h"
 
 #include "string.h"
 #include "define.h"
@@ -93,7 +94,7 @@ int16_t ltcTemps_c10[NUM_STACK] = {0};      // Reihenfolge nach physischem Stack
 int16_t temp_c10 = 0;
 
 extern uint8_t dc_current[8];
-
+extern USBD_HandleTypeDef hUsbDeviceFS;
 volatile uint8_t ams_diagnostic_code = 0;
 
 static void record_diagnostic(uint8_t code)
@@ -263,6 +264,9 @@ void BMS()		// Battery Management System function for main loop.
 
 	can_put_data();
 	LTC6811_read_all_internal_temps();
+	USB_Task();
+	send_usb_measurements();
+	USB_Task();
 }
 
 
@@ -542,24 +546,6 @@ void checkIMD()
 }
 
 /*
-void send_usb()
-{
-	usb_data[NUM_CELLS * 3 + 2] = 0xff;
-	usb_data[NUM_CELLS * 3 + 3] = 0xff;
-	usb_data[NUM_CELLS * 3] = current >> 8;
-	usb_data[NUM_CELLS * 3 + 1] = current;
-	for(uint8_t i = 0; i < NUM_CELLS; i++)
-	{
-		usb_data[2*i] = ((cellVoltages[i]/10)>>8);
-		usb_data[2*i+1] = (cellVoltages[i]/10);
-		usb_data[2*NUM_CELLS + i] = usb_temperatures[i];
-	}
-
-	CDC_Transmit_FS(usb_data, NUM_CELLS * 3 + 4);
-
-}
-*/
-
 void send_usb_measurements(void)
 {
     static uint8_t slot = 0;
@@ -570,6 +556,27 @@ void send_usb_measurements(void)
     uint32_t now = HAL_GetTick();
 
     if (now - last_usb < 20)
+    {
+        return;
+    }
+
+    last_usb = now;
+    */
+void send_usb_measurements(void)
+{
+    static uint8_t slot = 0;
+    static uint8_t next_stack = 0;
+    static uint8_t ltc_divider = 0;
+    static uint32_t last_usb = 0;
+
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+    {
+        return;
+    }
+
+    uint32_t now = HAL_GetTick();
+
+    if ((uint32_t)(now - last_usb) < 50U)
     {
         return;
     }
