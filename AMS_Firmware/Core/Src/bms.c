@@ -116,8 +116,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    CAN_RX(hcan1);
-    CAN_RX_IVT(hcan2);
+    if (hcan->Instance == CAN1) {
+        CAN_RX(hcan1);
+    } else if (hcan->Instance == CAN2) {
+        CAN_RX_IVT(hcan2);
+    }
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
@@ -226,7 +229,7 @@ void BMS()		// Battery Management System function for main loop.
 
 	convertVoltage();
 	convertTemperature(selTemp);
-	LTCTemperature();
+	//LTCTemperature();
 
 	checkPEC(pec);
 
@@ -263,7 +266,9 @@ void BMS()		// Battery Management System function for main loop.
 	}
 
 	can_put_data();
+
 	LTC6811_read_all_internal_temps();
+
 	USB_Task();
 	send_usb_measurements();
 	USB_Task();

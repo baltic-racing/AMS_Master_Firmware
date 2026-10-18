@@ -12,6 +12,7 @@
 #include <main.h>
 #include <math.h>
 #include "define.h"
+#include "can.h"
 /*@brief 6811 conversion command variables
 
 */
@@ -28,6 +29,8 @@ uint8_t RDAUXA[8];
 
 uint8_t wakeup = 0x00;
 
+/* Bereits in bms.c definiert: hier nur bekannt machen. */
+extern const uint8_t ltc_raw_to_stack[NUM_STACK];
 extern int16_t ltcTemps_c10[NUM_STACK];
 /*@brief Initializes all command variables
  */
@@ -698,6 +701,7 @@ void LTC6811x_rdstat_reg(uint8_t reg, uint8_t total_ic, uint8_t data[])
     }
 }
 
+/*
 void LTC6811_read_all_internal_temps(void)
 {
     uint8_t raw[NUM_STACK * 8];
@@ -726,6 +730,101 @@ void LTC6811_read_all_internal_temps(void)
         // Umrechnung in 0.1°C
         ltcTemps_c10[i] = (int16_t)(((int32_t)itmp_raw * 10) / 75 - 2730);
     }
+}
+*/
+void LTC6811_read_all_internal_temps(void)
+{
+    uint8_t raw[NUM_STACK * 8U] = {0};
+
+    int16_t temperatures[NUM_STACK];
+    uint8_t valid[NUM_STACK] = {0};
+
+    int16_t temp_min_c10 = INT16_MIN;
+    int16_t temp_max_c10 = INT16_MIN;
+
+    uint8_t stack_min = 0;
+    uint8_t stack_max = 0;
+    uint8_t valid_count = 0;
+
+    /* Ungueltige Werte fuer diesen Messdurchlauf vorbelegen. */
+    for (uint8_t stack = 0; stack < NUM_STACK; stack++)
+    {
+        temperatures[stack] = INT16_MAX;
+    }
+
+    /* Bestehende Messung ausloesen und auslesen. */
+    LTC6811_adstat();
+    HAL_Delay(5);
+
+    LTC6811x_rdstat_reg(0, NUM_STACK, raw);
+
+    /* Rohdaten pruefen und den physischen Stacks zuordnen. */
+    for (uint8_t ic = 0; ic < NUM_STACK; ic++)
+    {
+        uint8_t stack = ltc_raw_to_stack[ic];
+
+        if (stack >= NUM_STACK)
+        {
+            continue;
+        }
+
+        uint8_t *p = &raw[ic * 8U];
+
+        uint16_t rx_pec =
+            ((uint16_t)p[6] << 8) | (uint16_t)p[7];
+
+        uint16_t calc_pec = pec15_calc(6, p);
+
+        if (rx_pec != calc_pec)
+        {
+            continue;
+        }
+
+        uint16_t itmp_raw =
+            (uint16_t)p[2] | ((uint16_t)p[3] << 8);
+
+        /* Bestehende Umrechnung in Zehntelgrad Celsius. */
+        temperatures[stack] =
+            (int16_t)(((int32_t)itmp_raw * 10) / 75 - 2730);
+
+        valid[stack] = 1U;
+    }
+
+    /* Minimum und Maximum nur aus gueltigen Werten bestimmen. */
+    for (uint8_t stack = 0; stack < NUM_STACK; stack++)
+    {
+        ltcTemps_c10[stack] = temperatures[stack];
+
+        if (valid[stack] == 0U)
+        {
+            continue;
+        }
+
+        int16_t temperature = temperatures[stack];
+
+        if ((valid_count == 0U) || (temperature < temp_min_c10))
+        {
+            temp_min_c10 = temperature;
+            stack_min = stack + 1U;
+        }
+
+        if ((valid_count == 0U) || (temperature > temp_max_c10))
+        {
+            temp_max_c10 = temperature;
+            stack_max = stack + 1U;
+        }
+
+        valid_count++;
+    }
+
+    /* Fertigen Datensatz fuer die CAN-Sendefunktion bereitstellen. */
+    CAN_UpdateLTCDiagnostic(
+        temp_min_c10,
+        temp_max_c10,
+        stack_min,
+        stack_max,
+        valid_count
+    );
 }
 
 void LTC6811_clrstat()

@@ -57,6 +57,11 @@ void IVT_init(void);
 void CAN_Recovery_Task(void);
 
 void CAN_SendDiagnostic(uint8_t code);
+void CAN_UpdateLTCDiagnostic(int16_t temp_min_c10,
+                             int16_t temp_max_c10,
+                             uint8_t stack_min,
+                             uint8_t stack_max,
+                             uint8_t valid_count);
 
 /* USER CODE END Prototypes */
 
