@@ -132,6 +132,7 @@ int main(void)
   while (1)
   {
 	 BMS();
+	 CAN_Detail_Task();
 
 
 	      //BMS();

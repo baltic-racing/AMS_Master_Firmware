@@ -27,6 +27,264 @@
 #include "bms.h"
 #include "define.h"
 
+#include <stdint.h>
+#include <string.h>
+#include <limits.h>
+
+/* Messwerte werden bereits in bms.c angelegt. */
+extern uint16_t cellVoltages[NUM_CELLS];
+extern uint16_t temperature[NUM_CELLS];
+extern int16_t ltcTemps_c10[NUM_STACK];
+
+/* Dieses Nachrichtenformat setzt 144 Kanaele und 12 LTCs voraus. */
+#if (NUM_CELLS != 144) || (NUM_STACK != 12)
+#error "CAN-Detailformat an die Anzahl der Messwerte anpassen"
+#endif
+
+/*
+ * CAN-IDs 0x300 bis 0x320:
+ * Vor Verwendung gegen eure gesamte CAN-Belegung pruefen!
+ */
+#define DETAIL_ID_BASE          0x300U
+
+#define DETAIL_PERIOD_MS        1000U
+#define DETAIL_FRAME_GAP_MS        15U
+
+#define DETAIL_DATA_BYTES        264U
+#define DETAIL_FRAME_COUNT        33U
+
+#define DETAIL_CELL_TEMP_OFFSET  144U
+#define DETAIL_LTC_TEMP_OFFSET   252U
+
+static uint8_t detail_data[DETAIL_DATA_BYTES];
+
+static uint32_t detail_cycle_time = 0U;
+static uint32_t detail_last_frame_time = 0U;
+
+static uint8_t detail_frame = DETAIL_FRAME_COUNT;
+static uint8_t detail_started = 0U;
+
+
+/*
+ * Spannung:
+ * Eingang: 0,1 mV pro Schritt.
+ *
+ * Ausgang:
+ *   0   = 2,00 V
+ *   1   = 2,01 V
+ *   ...
+ *   254 = 4,54 V
+ *   255 = ungueltig / ausserhalb des Bereichs
+ */
+static uint8_t Detail_EncodeVoltage(uint16_t raw)
+{
+    if (raw < 20000U || raw > 45400U)
+    {
+        return 255U;
+    }
+
+    /* Auf 10 mV runden, Offset von 2,00 V abziehen. */
+    return (uint8_t)(
+        ((uint32_t)raw - 20000U + 50U) / 100U
+    );
+}
+
+
+/*
+ * Zelltemperatur:
+ * Eingang: bestehendes temperature[] in Milligrad Celsius.
+ *
+ * Ausgang:
+ *   0  = -20 Grad C
+ *   1  = -18 Grad C
+ *   ...
+ *   62 = 104 Grad C
+ *   63 = ungueltig
+ *
+ * Achtung:
+ * Das bestehende uint16_t-Array kann negative Temperaturen
+ * und Temperaturen ueber ca. 65,5 Grad C nicht sauber speichern.
+ * Dieser Adapter uebernimmt die vorhandenen nichtnegativen Werte.
+ */
+static uint8_t Detail_EncodeCellTemperature(uint16_t raw)
+{
+    if (raw == 0xFFFFU || raw == 0xFFFEU)
+    {
+        return 63U;
+    }
+
+    /* Auf 2 Grad C runden, dann Offset hinzufuegen. */
+    return (uint8_t)(
+        ((uint32_t)raw + 1000U) / 2000U + 10U
+    );
+}
+
+
+/*
+ * LTC-Temperatur:
+ * Eingang: 0,1 Grad C pro Schritt.
+ *
+ * Ausgang:
+ *   0   = -40 Grad C
+ *   ...
+ *   254 = 214 Grad C
+ *   255 = ungueltig / ausserhalb des Bereichs
+ */
+static uint8_t Detail_EncodeLTCTemperature(int16_t raw)
+{
+    if (raw == INT16_MAX || raw == INT16_MIN)
+    {
+        return 255U;
+    }
+
+    int32_t shifted = (int32_t)raw + 400;
+
+    if (shifted < 0 || shifted > 2540)
+    {
+        return 255U;
+    }
+
+    /* Auf ganze Grad C runden. */
+    return (uint8_t)((shifted + 5) / 10);
+}
+
+
+/*
+ * Einen festen Sendepuffer aus den aktuellen Messwerten aufbauen.
+ *
+ * Byte   0..143: Zellspannungen
+ * Byte 144..251: gepackte Zelltemperaturen
+ * Byte 252..263: LTC-Temperaturen
+ */
+static void Detail_BuildSnapshot(void)
+{
+    memset(detail_data, 0, sizeof(detail_data));
+
+    /* 144 Zellspannungen mit je 8 Bit. */
+    for (uint16_t i = 0U; i < NUM_CELLS; i++)
+    {
+        detail_data[i] =
+            Detail_EncodeVoltage(cellVoltages[i]);
+    }
+
+    /* Vier Zelltemperaturen mit je 6 Bit in drei Bytes packen. */
+    for (uint16_t i = 0U; i < NUM_CELLS; i += 4U)
+    {
+        uint32_t t0 =
+            Detail_EncodeCellTemperature(temperature[i]);
+
+        uint32_t t1 =
+            Detail_EncodeCellTemperature(temperature[i + 1U]);
+
+        uint32_t t2 =
+            Detail_EncodeCellTemperature(temperature[i + 2U]);
+
+        uint32_t t3 =
+            Detail_EncodeCellTemperature(temperature[i + 3U]);
+
+        uint32_t packed = t0
+                        | (t1 << 6)
+                        | (t2 << 12)
+                        | (t3 << 18);
+
+        uint16_t offset =
+            DETAIL_CELL_TEMP_OFFSET + (i / 4U) * 3U;
+
+        detail_data[offset] =
+            (uint8_t)packed;
+
+        detail_data[offset + 1U] =
+            (uint8_t)(packed >> 8);
+
+        detail_data[offset + 2U] =
+            (uint8_t)(packed >> 16);
+    }
+
+    /* Zwoelf LTC-Temperaturen mit je 8 Bit. */
+    for (uint8_t i = 0U; i < NUM_STACK; i++)
+    {
+        detail_data[DETAIL_LTC_TEMP_OFFSET + i] =
+            Detail_EncodeLTCTemperature(ltcTemps_c10[i]);
+    }
+}
+
+
+/*
+ * Regelmaessig aus der Hauptschleife aufrufen.
+ *
+ * Ein neuer Datensatz wird alle 1000 ms vorbereitet.
+ * Pro Aufruf wird hoechstens eine Nachricht eingereiht.
+ * Bei belegten CAN-Mailboxen wird spaeter erneut versucht.
+ */
+void CAN_Detail_Task(void)
+{
+    uint32_t now = HAL_GetTick();
+
+    /* Nach dem ersten Aufruf zunaechst eine Sekunde warten. */
+    if (detail_started == 0U)
+    {
+        detail_started = 1U;
+        detail_cycle_time = now;
+        return;
+    }
+
+    if ((uint32_t)(now - detail_cycle_time)
+        >= DETAIL_PERIOD_MS)
+    {
+        detail_cycle_time = now;
+
+        /*
+         * Ein eventuell unvollstaendiger alter Sendezyklus
+         * wird durch aktuelle Daten ersetzt.
+         */
+        Detail_BuildSnapshot();
+        detail_frame = 0U;
+
+        detail_last_frame_time =
+            now - DETAIL_FRAME_GAP_MS;
+    }
+
+    /* Alle 33 Nachrichten bereits eingereiht? */
+    if (detail_frame >= DETAIL_FRAME_COUNT)
+    {
+        return;
+    }
+
+    /* Mindestabstand zwischen den Detailnachrichten. */
+    if ((uint32_t)(now - detail_last_frame_time)
+        < DETAIL_FRAME_GAP_MS)
+    {
+        return;
+    }
+
+    /* Eine Mailbox fuer andere Nachrichten freihalten. */
+    if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) < 2U)
+    {
+        return;
+    }
+
+    CAN_TxHeaderTypeDef header = {0};
+    uint32_t mailbox;
+
+    header.StdId = DETAIL_ID_BASE + detail_frame;
+    header.ExtId = 0U;
+    header.IDE = CAN_ID_STD;
+    header.RTR = CAN_RTR_DATA;
+    header.DLC = 8U;
+    header.TransmitGlobalTime = DISABLE;
+
+    uint16_t offset = (uint16_t)detail_frame * 8U;
+
+    if (HAL_CAN_AddTxMessage(
+            &hcan1,
+            &header,
+            &detail_data[offset],
+            &mailbox) == HAL_OK)
+    {
+        detail_frame++;
+        detail_last_frame_time = now;
+    }
+}
 
 extern uint8_t AMS0_databytes[8];
 extern uint8_t AMS1_databytes[8];
