@@ -94,6 +94,15 @@ CAN_TxHeaderTypeDef AMS_DIAG_header = {
     .TransmitGlobalTime = DISABLE
 };
 
+CAN_TxHeaderTypeDef IMD_DIAG_header = {
+    .StdId = 0x205,
+    .ExtId = 0,
+    .IDE = CAN_ID_STD,
+    .RTR = CAN_RTR_DATA,
+    .DLC = 8,
+    .TransmitGlobalTime = DISABLE
+};
+
 CAN_TxHeaderTypeDef IVT_MSG_COMMAND = {0x411, 0,CAN_ID_STD, CAN_RTR_DATA,8};
 
 
@@ -272,6 +281,24 @@ void CAN_UpdateLTCDiagnostic(int16_t temp_min_c10,
     ltc_diag_data[6] = valid_count;
 
     __set_PRIMASK(primask);
+}
+
+void CAN_SendIMDCode(uint8_t code)
+{
+    uint8_t data[8] = {0};
+    uint32_t mailbox;
+
+    data[0] = code;
+
+    if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0U)
+    {
+        (void)HAL_CAN_AddTxMessage(
+            &hcan1,
+            &IMD_DIAG_header,
+            data,
+            &mailbox
+        );
+    }
 }
 
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)

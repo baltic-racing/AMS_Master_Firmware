@@ -47,6 +47,11 @@ float Duty = 0;
 uint16_t imdStatValue = 0;
 uint8_t IMDcheck = 0;
 
+volatile uint16_t imd_pwm_frequency_hz = 0U;
+volatile uint8_t imd_error_code = 0U;
+#define TIM9_INPUT_CLOCK_HZ 96000000UL
+#define TIM9_PRESCALER_VALUE 24000UL
+
 uint16_t cellVoltages[NUM_CELLS] = {0};	//cell voltages in 0.1[mV]
 int16_t cellTemperatures[NUM_CELLS] = {0}; //cell temperatures in 0.1[°C]
 uint8_t cfg[NUM_STACK][6] = {{0}}; //0x38 disables the GPIO1..3 pulldown so GPIO1..3 can be used for measurement
@@ -129,8 +134,22 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	{
 		// Read the IC value
 		ICValue = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+		/*
 		if(ICValue != 0){
 			Duty = 100 - (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0)/ICValue; // calculate the Duty Cycle
+		}
+		*/
+		if (ICValue != 0U)
+		{
+		    uint32_t divisor =
+		        (TIM9_PRESCALER_VALUE + 1U) * ICValue;
+
+		    imd_pwm_frequency_hz =
+		        (uint16_t)((TIM9_INPUT_CLOCK_HZ + divisor / 2U) / divisor);
+
+		    Duty = 100.0f -
+		        (HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * 100.0f)
+		        / ICValue;
 		}
 	}
 	if(Duty < 10) {
@@ -141,6 +160,40 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	}
 
 	imdStatValue = (90.0*1200)/(Duty-5.0) - 1200;		//R_F = (90% * 1200kOhm)/(duty[%] - 5%) - 1200kOhm
+
+	switch (imd_pwm_frequency_hz)
+	{
+	    case 10U:
+	        if (imdStatValue <= MIN_IMD_RES)
+	        {
+	            imd_error_code = 1U;  // Isolationswiderstand zu niedrig
+	        }
+	        else
+	        {
+	            imd_error_code = 0U;  // kein erkannter Fehler
+	        }
+	        break;
+
+	    case 20U:
+	        imd_error_code = 2U;      // Unterspannung
+	        break;
+
+	    case 30U:
+	        imd_error_code = 6U;      // Schnellstartmessung
+	        break;
+
+	    case 40U:
+	        imd_error_code = 3U;      // Gerätefehler
+	        break;
+
+	    case 50U:
+	        imd_error_code = 4U;      // Erdanschlussfehler
+	        break;
+
+	    default:
+	        imd_error_code = 255U;    // unbekannte Frequenz
+	        break;
+	}
 }
 
 void BMS_init()
@@ -152,10 +205,15 @@ void BMS()		// Battery Management System function for main loop.
 {
 	CAN_Recovery_Task();
 
-	uint8_t pec = 0;
+	//uint8_t pec = 0;
+	uint8_t pec_cells = 0;
+	uint8_t pec_aux = 0;
+
 	static uint8_t selTemp = 0;
+
 	//uint16_t VOV = MAX_VOLTAGE/16;					// Formeln aus Datenblatt S.65
 	//uint16_t VUV = (MIN_VOLTAGE/16)-1;
+
 	get_ts_ready();
 
 	//precharge = 1 when complete and 0 when still charging
@@ -209,7 +267,8 @@ void BMS()		// Battery Management System function for main loop.
 	LTC6811_adcv();										// measure voltages
 	HAL_Delay(3);
 
-	pec = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
+	//pec = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);	//read voltages
+	pec_cells = LTC6811_rdcv(0, (uint16_t(*)[12])cellVoltages);
 	HAL_Delay(3);
 
 	LTC6811_clraux();
@@ -218,20 +277,22 @@ void BMS()		// Battery Management System function for main loop.
 	LTC6811_adax();										// measure 3 celltemp
 	HAL_Delay(3);
 
-	pec = LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
+	//pec = LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);	// read celltemp
+	pec_aux = LTC6811_rdaux(0, (uint16_t(*)[6])slaveGPIOs);
 	HAL_Delay(3);
 
 	LTC6811_clrstat();
 	HAL_Delay(3);
 
-	LTC6811_adstat();
-	HAL_Delay(3);
+	//LTC6811_adstat();
+	//HAL_Delay(3);
 
 	convertVoltage();
 	convertTemperature(selTemp);
 	//LTCTemperature();
 
-	checkPEC(pec);
+	//checkPEC(pec);
+	checkPEC(pec_cells | pec_aux);
 
 	//HAL_GPIO_WritePin(GPIOC, LED_RD_Pin, AMS_ERROR); //Aktuell led defekt 30.5.25
 
@@ -372,6 +433,7 @@ void CAN_interrupt()
 	if (HAL_GetTick()>= last100 + 100)
 	{
 		CAN_SendDiagnostic(ams_diagnostic_code);
+		CAN_SendIMDCode(imd_error_code);
 		CAN_10(AMS1_databytes);
 
 		HAL_GPIO_TogglePin(GPIOA, WDI_Pin);		// toggle watchdog
@@ -660,7 +722,7 @@ void LTCTemperature(void)
         for (uint8_t raw = 0; raw < NUM_STACK; raw++)
         {
             uint16_t itmp = (uint16_t)stA[raw][2] | ((uint16_t)stA[raw][3] << 8);
-            ltcTemps_raw[raw] = (int16_t)(((int32_t)itmp * 10 + 37) / 75 - 2730);
+            ltcTemps_raw[raw] = (int16_t)(((int32_t)itmp * 10 ) / 75 - 2730);
         }
 
         for (uint8_t raw = 0; raw < NUM_STACK; raw++)

@@ -62,6 +62,7 @@ void CAN_UpdateLTCDiagnostic(int16_t temp_min_c10,
                              uint8_t stack_min,
                              uint8_t stack_max,
                              uint8_t valid_count);
+void CAN_SendIMDCode(uint8_t code);
 
 /* USER CODE END Prototypes */
 

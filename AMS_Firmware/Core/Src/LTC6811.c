@@ -761,7 +761,8 @@ void LTC6811_read_all_internal_temps(void)
     /* Rohdaten pruefen und den physischen Stacks zuordnen. */
     for (uint8_t ic = 0; ic < NUM_STACK; ic++)
     {
-        uint8_t stack = ltc_raw_to_stack[ic];
+        //uint8_t stack = ltc_raw_to_stack[ic];
+    	uint8_t stack = ic;
 
         if (stack >= NUM_STACK)
         {

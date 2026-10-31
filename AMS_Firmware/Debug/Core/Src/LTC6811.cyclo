@@ -17,5 +17,5 @@
 ../Core/Src/LTC6811.c:576:6:LTC6811_rdaux_reg	4
 ../Core/Src/LTC6811.c:675:6:LTC6811x_rdstat_reg	6
 ../Core/Src/LTC6811.c:735:6:LTC6811_read_all_internal_temps	11
-../Core/Src/LTC6811.c:830:6:LTC6811_clrstat	1
-../Core/Src/LTC6811.c:899:10:pec15_calc	2
+../Core/Src/LTC6811.c:831:6:LTC6811_clrstat	1
+../Core/Src/LTC6811.c:900:10:pec15_calc	2

@@ -234,6 +234,46 @@ void can_put_data()
 	AMS0_databytes[7] = ams_status;
 }
 
+/*
+ * Zusatzdaten fuer CAN-ID 0x204.
+ * Anfangszustand:
+ * Temperaturen = INT16_MIN (ungueltig)
+ * Stacknummern = 0 (ungueltig)
+ * Anzahl gueltiger Werte = 0
+ */
+static volatile uint8_t ltc_diag_data[7] = {
+    0x00, 0x80,
+    0x00, 0x80,
+    0, 0, 0
+};
+
+void CAN_UpdateLTCDiagnostic(int16_t temp_min_c10,
+                             int16_t temp_max_c10,
+                             uint8_t stack_min,
+                             uint8_t stack_max,
+                             uint8_t valid_count)
+{
+    uint16_t min_bits = (uint16_t)temp_min_c10;
+    uint16_t max_bits = (uint16_t)temp_max_c10;
+
+    /*
+     * Zusammengehoerigen Datensatz veroeffentlichen.
+     * Der CAN-Interrupt darf nicht zwischen den Bytes lesen.
+     */
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+
+    ltc_diag_data[0] = (uint8_t)(min_bits & 0xFFU);
+    ltc_diag_data[1] = (uint8_t)(min_bits >> 8);
+    ltc_diag_data[2] = (uint8_t)(max_bits & 0xFFU);
+    ltc_diag_data[3] = (uint8_t)(max_bits >> 8);
+    ltc_diag_data[4] = stack_min;
+    ltc_diag_data[5] = stack_max;
+    ltc_diag_data[6] = valid_count;
+
+    __set_PRIMASK(primask);
+}
+
 void CAN_RX_IVT(CAN_HandleTypeDef hcan)
 {
 	CAN_RxHeaderTypeDef RxHeader;
@@ -300,6 +340,7 @@ void CAN_10(uint8_t bms_data[])		// CAN Messages transmitted with 10 Hz
 	//get_ts_ready();
 }
 
+/*
 void CAN_SendDiagnostic(uint8_t code)
 {
     uint32_t mailbox;
@@ -307,6 +348,37 @@ void CAN_SendDiagnostic(uint8_t code)
 
     data[0] = code;
 
+    if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0U)
+    {
+        (void)HAL_CAN_AddTxMessage(
+            &hcan1,
+            &AMS_DIAG_header,
+            data,
+            &mailbox
+        );
+    }
+}
+*/
+void CAN_SendDiagnostic(uint8_t code)
+{
+    uint32_t mailbox;
+    uint8_t data[8];
+
+    /* Byte 0: bestehender AMS-Fehlercode */
+    data[0] = code;
+
+    /* Byte 1 bis 7: zusammengehoerige LTC-Diagnosedaten */
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+
+    for (uint8_t i = 0; i < 7U; i++)
+    {
+        data[i + 1U] = ltc_diag_data[i];
+    }
+
+    __set_PRIMASK(primask);
+
+    /* Bei belegten Mailboxen nicht blockieren. */
     if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0U)
     {
         (void)HAL_CAN_AddTxMessage(
